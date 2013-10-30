@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         style="@style/textViewServiceFragmentLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
+    
     <GridView
         android:id="@+id/gcGridViewServices"
         android:layout_width="match_parent"
