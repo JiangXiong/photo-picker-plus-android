@@ -27,19 +27,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.chute.android.photopickerplus.R;
 import com.chute.sdk.v2.model.AssetModel;
 import com.chute.sdk.v2.utils.Utils;
 

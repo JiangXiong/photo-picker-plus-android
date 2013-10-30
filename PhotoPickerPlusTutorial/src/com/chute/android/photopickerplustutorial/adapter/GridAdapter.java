@@ -26,14 +26,11 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.chute.android.photopickerplustutorial.R;
 import com.chute.sdk.v2.model.AssetModel;
@@ -46,9 +43,6 @@ public class GridAdapter extends BaseAdapter {
   private static LayoutInflater inflater;
   public ImageLoader loader;
   private ArrayList<AssetModel> collection;
-  private final DisplayMetrics displayMetrics;
-  private final int orientation;
-  private Activity context;
 
   public GridAdapter(final Activity context, final ArrayList<AssetModel> collection) {
     if (collection == null) {
@@ -58,9 +52,6 @@ public class GridAdapter extends BaseAdapter {
     }
     loader = ImageLoader.getLoader(context);
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    displayMetrics = context.getResources().getDisplayMetrics();
-    orientation = context.getResources().getConfiguration().orientation;
-    this.context = context;
   }
 
   @Override
@@ -91,7 +82,6 @@ public class GridAdapter extends BaseAdapter {
       vi = inflater.inflate(R.layout.gc_grid_adapter_item, null);
       holder = new ViewHolder();
       holder.image = (ImageView) vi.findViewById(R.id.gcImageViewThumb);
-      configureImageViewDimensions(holder.image);
       vi.setTag(holder);
     } else {
       holder = (ViewHolder) vi.getTag();
@@ -103,22 +93,6 @@ public class GridAdapter extends BaseAdapter {
   public void changeData(ArrayList<AssetModel> collection) {
     this.collection = collection;
     notifyDataSetChanged();
-  }
-
-  private void configureImageViewDimensions(ImageView imageViewThumb) {
-    int gridColumns = 0;
-    int imageDimension = 0;
-    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-      gridColumns = context.getResources().getInteger(R.integer.grid_columns_portrait);
-      imageDimension = context.getResources().getInteger(R.integer.asset_width_portrait);
-    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      gridColumns = context.getResources().getInteger(R.integer.grid_columns_landscape);
-      imageDimension = context.getResources().getInteger(R.integer.asset_width_landscape);
-    }
-    imageViewThumb.setLayoutParams(new RelativeLayout.LayoutParams(
-        displayMetrics.widthPixels
-            / gridColumns, (displayMetrics.widthPixels - imageDimension)
-            / gridColumns));
   }
 
 }

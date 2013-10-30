@@ -43,7 +43,6 @@ import android.widget.ImageView;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
-import com.chute.android.photopickerplus.util.AppUtil;
 
 import darko.imagedownloader.ImageLoader;
 

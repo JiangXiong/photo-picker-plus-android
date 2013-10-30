@@ -40,7 +40,6 @@ import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.dao.MediaDAO;
 import com.chute.android.photopickerplus.models.enums.LocalMediaType;
 import com.chute.android.photopickerplus.ui.fragment.FragmentServices.ServiceClickedListener;
-import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 import darko.imagedownloader.ImageLoader;

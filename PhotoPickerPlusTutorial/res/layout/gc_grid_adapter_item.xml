@@ -21,7 +21,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.chute.android.photopickerplus.ui.components.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center"
@@ -36,4 +36,4 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         android:scaleType="centerCrop" >
     </ImageView>
 
-</RelativeLayout>
+</com.chute.android.photopickerplus.ui.components.SquareFrameLayout>

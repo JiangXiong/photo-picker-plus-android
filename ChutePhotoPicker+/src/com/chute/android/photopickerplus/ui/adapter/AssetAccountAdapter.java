@@ -40,7 +40,6 @@ import android.widget.TextView;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
-import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
