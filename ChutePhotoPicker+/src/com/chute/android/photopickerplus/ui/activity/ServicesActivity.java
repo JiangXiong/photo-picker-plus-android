@@ -1,30 +1,26 @@
 /**
  * The MIT License (MIT)
 
-Copyright (c) 2013 Chute
+ Copyright (c) 2013 Chute
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ the Software, and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.ui.activity;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -39,21 +35,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 import android.widget.Toast;
-
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.dao.MediaDAO;
+import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetSelectListener;
-import com.chute.android.photopickerplus.ui.fragment.AccountFilesListener;
-import com.chute.android.photopickerplus.ui.fragment.CursorFilesListener;
-import com.chute.android.photopickerplus.ui.fragment.EmptyFragment;
-import com.chute.android.photopickerplus.ui.fragment.FragmentRoot;
+import com.chute.android.photopickerplus.ui.fragment.*;
 import com.chute.android.photopickerplus.ui.fragment.FragmentServices.ServiceClickedListener;
-import com.chute.android.photopickerplus.ui.fragment.FragmentSingle;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
-import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
 import com.chute.android.photopickerplus.util.intent.IntentUtil;
 import com.chute.android.photopickerplus.util.intent.PhotosIntentWrapper;
@@ -67,21 +58,23 @@ import com.chute.sdk.v2.utils.PreferenceUtil;
 import com.dg.libs.rest.callbacks.HttpCallback;
 import com.dg.libs.rest.domain.ResponseStatus;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
 /**
  * Activity for displaying the services.
- * 
+ * <p/>
  * This activity is used to display both local and remote services in a
  * GridView.
- * 
  */
 public class ServicesActivity extends FragmentActivity implements AccountFilesListener,
     CursorFilesListener,
     ServiceClickedListener {
 
   private static final String TAG = ServicesActivity.class.getSimpleName();
-
-  private FragmentTransaction fragmentTransaction;
   private static FragmentManager fragmentManager;
+  private FragmentTransaction fragmentTransaction;
   private AccountType accountType;
   private boolean dualPanes;
   private ArrayList<Integer> selectedItemPositions;
@@ -96,8 +89,7 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
     return assetSelectListener;
   }
 
-  public void setAssetSelectListener(AssetSelectListener assetSelectListener)
-  {
+  public void setAssetSelectListener(AssetSelectListener assetSelectListener) {
     this.assetSelectListener = assetSelectListener;
   }
 
@@ -200,7 +192,7 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
   }
 
   public void replaceContentWithSingleFragment(AccountModel account, String folderId,
-      ArrayList<Integer> selectedItemPositions) {
+                                               ArrayList<Integer> selectedItemPositions) {
     fragmentTransaction = fragmentManager.beginTransaction();
     fragmentTransaction.replace(R.id.gcFragments,
         FragmentSingle.newInstance(account, folderId, selectedItemPositions),
@@ -211,7 +203,7 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
   }
 
   public void replaceContentWithRootFragment(AccountModel account,
-      PhotoFilterType filterType) {
+                                             PhotoFilterType filterType) {
     fragmentTransaction = fragmentManager.beginTransaction();
     fragmentTransaction.replace(R.id.gcFragments,
         FragmentRoot.newInstance(account, filterType, selectedItemPositions),
@@ -244,37 +236,45 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (resultCode == Activity.RESULT_OK) {
+    if (resultCode != Activity.RESULT_OK) {
+      return;
+    }
+    if (requestCode == AuthenticationFactory.AUTHENTICATION_REQUEST_CODE) {
       GCAccounts.allUserAccounts(getApplicationContext(), new AccountsCallback())
           .executeAsync();
-      if (requestCode == PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY) {
-        finish();
-      } else if (requestCode == Constants.CAMERA_PIC_REQUEST) {
-        String path = "";
-        File tempFile = AppUtil.getTempFile(getApplicationContext());
-        if (AppUtil.hasImageCaptureBug() == false && tempFile.length() > 0) {
-          try {
-            android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),
-                tempFile.getAbsolutePath(), null, null);
-            tempFile.delete();
-            path = MediaDAO.getLastPhotoFromCameraPhotos(getApplicationContext())
-                .toString();
-          } catch (FileNotFoundException e) {
-            ALog.d(TAG, "", e);
-          }
-        } else {
-          ALog.e(TAG, "Bug " + data.getData().getPath());
-          path = Uri.fromFile(
-              new File(AppUtil.getPath(getApplicationContext(), data.getData())))
+      return;
+    }
+    if (requestCode == PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY) {
+      finish();
+      return;
+    }
+    if (requestCode == Constants.CAMERA_PIC_REQUEST) {
+      String path = "";
+      File tempFile = AppUtil.getTempFile(getApplicationContext());
+      if (AppUtil.hasImageCaptureBug() == false && tempFile.length() > 0) {
+        try {
+          android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),
+              tempFile.getAbsolutePath(), null, null);
+          tempFile.delete();
+          path = MediaDAO.getLastPhotoFromCameraPhotos(getApplicationContext())
               .toString();
+        } catch (FileNotFoundException e) {
+          ALog.d(TAG, "", e);
         }
-        ALog.d(TAG, path);
-        final AssetModel model = new AssetModel();
-        model.setThumbnail(path);
-        model.setUrl(path);
-
-        IntentUtil.deliverDataToInitialActivity(this, model);
+      } else {
+        ALog.e(TAG, "Bug " + data.getData().getPath());
+        path = Uri.fromFile(
+            new File(AppUtil.getPath(getApplicationContext(), data.getData())))
+            .toString();
       }
+      ALog.d(TAG, path);
+      final AssetModel model = new AssetModel();
+      model.setThumbnail(path);
+      model.setUrl(path);
+      ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
+      mediaCollection.add(model);
+      setResult(Activity.RESULT_OK, new Intent().putExtra(PhotosIntentWrapper.KEY_PHOTO_COLLECTION, mediaCollection));
+      finish();
     }
   }
 
@@ -283,37 +283,6 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
     super.onNewIntent(intent);
     setResult(Activity.RESULT_OK, new Intent().putExtras(intent.getExtras()));
     ServicesActivity.this.finish();
-  }
-
-  private final class AccountsCallback implements
-      HttpCallback<ListResponseModel<AccountModel>> {
-
-    @Override
-    public void onSuccess(ListResponseModel<AccountModel> responseData) {
-      if (accountType == null) {
-        accountType = PhotoPickerPreferenceUtil.get().getAccountType();
-      }
-      if (responseData.getData().size() == 0) {
-        Toast.makeText(getApplicationContext(),
-            getResources().getString(R.string.no_albums_found),
-            Toast.LENGTH_SHORT).show();
-        return;
-      }
-      for (AccountModel accountModel : responseData.getData()) {
-        if (accountModel.getType().equals(accountType.getLoginMethod())) {
-          PreferenceUtil.get().saveAccount(accountModel);
-          accountClicked(accountModel);
-        }
-      }
-
-    }
-
-    @Override
-    public void onHttpError(ResponseStatus responseStatus) {
-      ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
-          + responseStatus.getStatusMessage());
-    }
-
   }
 
   @Override
@@ -341,7 +310,7 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
 
   @Override
   public void onAccountFolderSelect(AccountModel account,
-      String folderId) {
+                                    String folderId) {
     selectedItemPositions = null;
     photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
     this.folderId = folderId;
@@ -435,6 +404,37 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
       this.finish();
     } else {
       super.onBackPressed();
+    }
+
+  }
+
+  private final class AccountsCallback implements
+      HttpCallback<ListResponseModel<AccountModel>> {
+
+    @Override
+    public void onSuccess(ListResponseModel<AccountModel> responseData) {
+      if (accountType == null) {
+        accountType = PhotoPickerPreferenceUtil.get().getAccountType();
+      }
+      if (responseData.getData().size() == 0) {
+        Toast.makeText(getApplicationContext(),
+            getResources().getString(R.string.no_albums_found),
+            Toast.LENGTH_SHORT).show();
+        return;
+      }
+      for (AccountModel accountModel : responseData.getData()) {
+        if (accountModel.getType().equals(accountType.getLoginMethod())) {
+          PreferenceUtil.get().saveAccount(accountModel);
+          accountClicked(accountModel);
+        }
+      }
+
+    }
+
+    @Override
+    public void onHttpError(ResponseStatus responseStatus) {
+      ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
+          + responseStatus.getStatusMessage());
     }
 
   }
