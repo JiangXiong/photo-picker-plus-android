@@ -26,11 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -151,12 +148,5 @@ public class AppUtil {
 		return path;
 	}
 
-	@SuppressLint("NewApi")
-	public static Bitmap getVideoThumbnail(Uri videoUri) {
-		File file = new File(videoUri.getPath());
-		return ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(),
-				MediaStore.Video.Thumbnails.MINI_KIND);
-
-	}
 
 }

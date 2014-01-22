@@ -44,7 +44,6 @@ import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
-import com.chute.android.photopickerplus.util.AppUtil;
 
 import darko.imagedownloader.ImageLoader;
 
@@ -67,7 +66,7 @@ public class AssetCursorAdapter extends CursorAdapter implements
     loader = ImageLoader.getLoader(context.getApplicationContext());
     supportVideos = PhotoPicker.getInstance().supportVideos();
     if (supportVideos) {
-    	dataIndex = c.getColumnIndex(MediaStore.Video.Media.DATA);
+    	dataIndex = c.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
     }else {
     dataIndex = c.getColumnIndex(MediaStore.Images.Media.DATA);
     }
