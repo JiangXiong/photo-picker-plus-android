@@ -47,7 +47,7 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
      * 
      * See <a href="https://apps.getchute.com">https://apps.getchute.com</a>
      */
-    Chute.init(this, new AuthConstants("app_id", "app_secret"));
+    Chute.init(this, new AuthConstants("App_ID", "APP_SECRET"));
 
     PhotoPickerConfiguration config = new PhotoPickerConfiguration.Builder(
         getApplicationContext())
