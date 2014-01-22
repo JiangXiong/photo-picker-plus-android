@@ -47,7 +47,8 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
      * 
      * See <a href="https://apps.getchute.com">https://apps.getchute.com</a>
      */
-    Chute.init(this, new AuthConstants("App_ID", "APP_SECRET"));
+    Chute.init(this, new AuthConstants("50d9c930018d1672df00002e", "ee9b33013c0592aa41d30d1f347ff62514b737e61e6ce9c64fb13a44d31917d9"));
+
 
     PhotoPickerConfiguration config = new PhotoPickerConfiguration.Builder(
         getApplicationContext())
@@ -56,6 +57,8 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
             AccountType.FOURSQUARE)
         .localMediaList(LocalMediaType.ALL_PHOTOS, LocalMediaType.CAMERA_PHOTOS)
         .configUrl(ConfigEndpointURLs.SERVICES_CONFIG_URL)
+        .supportImages(false)
+        .supportVideos(true)
         .build();
     PhotoPicker.getInstance().init(config);
 

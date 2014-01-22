@@ -155,8 +155,8 @@ public class PhotoPicker {
     ArrayList<LocalMediaType> localServiceListInPrefs = PhotoPickerPreferenceUtil.get()
         .getLocalServiceList();
     if (localServiceListInPrefs.isEmpty()) {
-      if (configuration.localMediaList != null) {
-        return checkIfLocalServiceIsSupported(configuration.localMediaList);
+      if (configuration.localImageList != null) {
+        return checkIfLocalServiceIsSupported(configuration.localImageList);
       } else {
         return new ArrayList<LocalMediaType>();
       }
@@ -262,6 +262,21 @@ public class PhotoPicker {
     return configuration.isMultiPicker;
 
   }
+  
+  public boolean supportVideos() {
+	    return configuration.supportVideos;
+
+	  }
+  
+  public boolean supportImages() {
+	    return configuration.supportImages;
+
+	  }
+  
+  public boolean supportImagesAndVideos() {
+	    return configuration.supportImagesAndVideos;
+
+	  }
 
   /**
    * Checks if PhotoPicker's configuration was initialized.

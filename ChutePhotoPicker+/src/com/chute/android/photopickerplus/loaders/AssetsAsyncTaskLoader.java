@@ -25,6 +25,7 @@ package com.chute.android.photopickerplus.loaders;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.dao.MediaDAO;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 
@@ -33,31 +34,42 @@ import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
  * loads photos that can be found on the device.
  */
 public class AssetsAsyncTaskLoader extends
-    AbstractSingleDataInstanceAsyncTaskLoader<Cursor> {
+		AbstractSingleDataInstanceAsyncTaskLoader<Cursor> {
 
-  public static final String TAG = AssetsAsyncTaskLoader.class
-      .getSimpleName();
-  private final PhotoFilterType filterType;
+	public static final String TAG = AssetsAsyncTaskLoader.class
+			.getSimpleName();
+	private final PhotoFilterType filterType;
+	private final boolean supportVideos;
 
-  public AssetsAsyncTaskLoader(Context context, PhotoFilterType filterType) {
-    super(context);
-    this.filterType = filterType;
-  }
+	public AssetsAsyncTaskLoader(Context context, PhotoFilterType filterType) {
+		super(context);
+		this.filterType = filterType;
+		supportVideos = PhotoPicker.getInstance().supportVideos();
+	}
 
-  @Override
-  public Cursor loadInBackground() {
-    if (filterType == PhotoFilterType.ALL_PHOTOS) {
-      return MediaDAO.getAllMediaPhotos(getContext());
-    } else if (filterType == PhotoFilterType.CAMERA_ROLL) {
-      return MediaDAO.getCameraPhotos(getContext());
-    } else {
-      return null;
-    }
-  }
+	@Override
+	public Cursor loadInBackground() {
+		switch (filterType) {
+		case ALL_PHOTOS:
+			if (supportVideos) {
+				return MediaDAO.getAllMediaVideos(getContext());
+			} else {
+				return MediaDAO.getAllMediaPhotos(getContext());
+			}
+		case CAMERA_ROLL:
+			if (supportVideos) {
+				return MediaDAO.getCameraVideos(getContext());
+			} else {
+				return MediaDAO.getCameraPhotos(getContext());
+			}
+		default:
+			return null;
+		}
+	}
 
-  @Override
-  public void deliverResult(Cursor data) {
-    super.deliverResult(data);
-  }
+	@Override
+	public void deliverResult(Cursor data) {
+		super.deliverResult(data);
+	}
 
 }

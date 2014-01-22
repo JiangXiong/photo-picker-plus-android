@@ -27,7 +27,7 @@ package com.chute.android.photopickerplus.models.enums;
  * 
  */
 public enum LocalMediaType {
-  CAMERA_PHOTOS("camera photos"), ALL_PHOTOS("all photos"), LAST_TAKEN_PHOTO(
+  CAMERA_PHOTOS("camera photo"), ALL_PHOTOS("all photos"), LAST_TAKEN_PHOTO(
       "last photo taken"), TAKE_PHOTO(
       "take photo");
 

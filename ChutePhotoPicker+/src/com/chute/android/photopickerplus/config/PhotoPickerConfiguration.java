@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
+import android.provider.MediaStore;
 
 import com.chute.android.photopickerplus.models.enums.LocalMediaType;
 import com.chute.sdk.v2.model.enums.AccountType;
@@ -42,7 +43,7 @@ import com.chute.sdk.v2.model.enums.AccountType;
  *  getApplicationContext())
  *  .isMultiPicker(true)
  *  .accountList(AccountType.FLICKR, AccountType.FACEBOOK)
- *  .localMediaList(LocalMediaType.ALL_PHOTOS, LocalMediaType.CAMERA_PHOTOS)
+ *  .localImageList(LocalMediaType.ALL_PHOTOS, LocalMediaType.CAMERA_PHOTOS)
  *  .configUrl("http://s3.amazonaws.com/store.getchute.com/51eeae5e6e29310c9a000001")
  * .build();
  * PhotoPicker.getInstance().init(config);
@@ -53,111 +54,137 @@ import com.chute.sdk.v2.model.enums.AccountType;
  */
 public final class PhotoPickerConfiguration {
 
-  final Context context;
-  final List<AccountType> accountList;
-  final List<LocalMediaType> localMediaList;
-  final String configUrl;
-  final boolean isMultiPicker;
+	final Context context;
+	final List<AccountType> accountList;
+	final List<LocalMediaType> localImageList;
+	final String configUrl;
+	final boolean isMultiPicker;
+	final boolean supportVideos;
+	final boolean supportImages;
+	final boolean supportImagesAndVideos;
 
-  private PhotoPickerConfiguration(final Builder builder) {
-    context = builder.context;
-    isMultiPicker = builder.isMultiPicker;
-    accountList = builder.accountList;
-    localMediaList = builder.localMediaList;
-    configUrl = builder.configUrl;
-  }
+	private PhotoPickerConfiguration(final Builder builder) {
+		context = builder.context;
+		isMultiPicker = builder.isMultiPicker;
+		accountList = builder.accountList;
+		localImageList = builder.localMediaList;
+		configUrl = builder.configUrl;
+		supportImages = builder.supportImages;
+		supportVideos = builder.supportVideos;
+		supportImagesAndVideos = builder.supportImagesAndVideos;
+	}
 
-  /**
-   * Creates default configuration for {@link PhotoPicker} <br />
-   * <b>Default values:</b>
-   * <ul>
-   * <li>isMultiPicker = false</li>
-   * <li>accountList = {@link AccountType#FACEBOOK},
-   * {@link AccountType#INSTAGRAM}</li>
-   * <li>localMediaList = {@link LocalMediaType#ALL_PHOTOS},
-   * {@link LocalMediaType#CAMERA_PHOTOS}</li>
-   * </ul>
-   * */
-  public static PhotoPickerConfiguration createDefault(Context context) {
-    return new Builder(context).build();
-  }
+	/**
+	 * Creates default configuration for {@link PhotoPicker} <br />
+	 * <b>Default values:</b>
+	 * <ul>
+	 * <li>isMultiPicker = false</li>
+	 * <li>accountList = {@link AccountType#FACEBOOK},
+	 * {@link AccountType#INSTAGRAM}</li>
+	 * <li>localMediaList = {@link LocalMediaType#ALL_PHOTOS},
+	 * {@link LocalMediaType#CAMERA_PHOTOS}</li>
+	 * </ul>
+	 * */
+	public static PhotoPickerConfiguration createDefault(Context context) {
+		return new Builder(context).build();
+	}
 
-  /**
-   * Builder for {@link PhotoPickerConfiguration}
-   * 
-   */
-  public static class Builder {
+	/**
+	 * Builder for {@link PhotoPickerConfiguration}
+	 * 
+	 */
+	public static class Builder {
 
-    private Context context;
-    private boolean isMultiPicker = false;
-    private List<AccountType> accountList = null;
-    private List<LocalMediaType> localMediaList = null;
-    private String configUrl = null;
+		private Context context;
+		private boolean isMultiPicker = false;
+		private List<AccountType> accountList = null;
+		private List<LocalMediaType> localMediaList = null;
+		private String configUrl = null;
+		private boolean supportImages = true;
+		private boolean supportVideos = false;
+		private boolean supportImagesAndVideos = false;
 
-    public Builder(Context context) {
-      this.context = context.getApplicationContext();
-    }
+		public Builder(Context context) {
+			this.context = context.getApplicationContext();
+		}
 
-    /** Builds configured {@link PhotoPickerConfiguration} object */
-    public PhotoPickerConfiguration build() {
-      initEmptyFieldsWithDefaultValues();
-      return new PhotoPickerConfiguration(this);
-    }
+		/** Builds configured {@link PhotoPickerConfiguration} object */
+		public PhotoPickerConfiguration build() {
+			initEmptyFieldsWithDefaultValues();
+			return new PhotoPickerConfiguration(this);
+		}
 
-    /**
-     * Sets list of remote services.
-     * 
-     * @param accountList
-     *          List of {@link AccountType} services.
-     */
-    public Builder accountList(AccountType... accountList) {
-      this.accountList = Arrays.asList(accountList);
-      return this;
-    }
+		/**
+		 * Sets list of remote services.
+		 * 
+		 * @param accountList
+		 *            List of {@link AccountType} services.
+		 */
+		public Builder accountList(AccountType... accountList) {
+			this.accountList = Arrays.asList(accountList);
+			return this;
+		}
 
-    /**
-     * Sets list of local services.
-     * 
-     * @param localMediaList
-     *          List of {@link LocalMediaType} services.
-     */
-    public Builder localMediaList(LocalMediaType... localMediaList) {
-      this.localMediaList = Arrays.asList(localMediaList);
-      return this;
-    }
+		/**
+		 * Sets list of local services.
+		 * 
+		 * @param localMediaList
+		 *            List of {@link LocalMediaType} services.
+		 */
+		public Builder localMediaList(LocalMediaType... localMediaList) {
+			this.localMediaList = Arrays.asList(localMediaList);
+			return this;
+		}
 
-    /**
-     * Sets the URL giving the base location of the config file containing the
-     * services.
-     * 
-     * @param configUrl
-     */
-    public Builder configUrl(String configUrl) {
-      this.configUrl = configUrl;
-      return this;
-    }
+		/**
+		 * Sets the URL giving the base location of the config file containing
+		 * the services.
+		 * 
+		 * @param configUrl
+		 */
+		public Builder configUrl(String configUrl) {
+			this.configUrl = configUrl;
+			return this;
+		}
 
-    /**
-     * Allows selection of one or multiple photos in the PhotoPicker.
-     * 
-     * @param isMultiPicker
-     *          <b>true</b> for enabling multi-picking and <b>false</b> for
-     *          enabling single-picking feature.
-     * @return
-     */
-    public Builder isMultiPicker(boolean isMultiPicker) {
-      this.isMultiPicker = isMultiPicker;
-      return this;
-    }
+		/**
+		 * Allows selection of one or multiple photos in the PhotoPicker.
+		 * 
+		 * @param isMultiPicker
+		 *            <b>true</b> for enabling multi-picking and <b>false</b>
+		 *            for enabling single-picking feature.
+		 * @return
+		 */
+		public Builder supportVideos(boolean supportVideos) {
+			this.supportVideos = supportVideos;
+			return this;
+		}
+		
+		public Builder supportImages(boolean supportImages) {
+			this.supportImages = supportImages;
+			return this;
+		}
+		
+		public Builder supportImagesAndVideos(boolean supportImagesAndVideos) {
+			this.supportImagesAndVideos = supportImagesAndVideos;
+			return this;
+		}
+		
+		public Builder isMultiPicker(boolean isMultiPicker) {
+			this.isMultiPicker = isMultiPicker;
+			return this;
+		}
 
-    private void initEmptyFieldsWithDefaultValues() {
-      if (localMediaList == null){
-        localMediaList = DefaultConfigurationFactory.createLocalMediaList();
-      }
-      if(accountList == null) {
-        accountList = DefaultConfigurationFactory.createAccountTypeList();
-      }
-      
-    }
-  }
+		private void initEmptyFieldsWithDefaultValues() {
+			if (localMediaList == null) {
+				localMediaList = DefaultConfigurationFactory
+						.createLocalMediaList();
+			}
+			if (accountList == null) {
+				accountList = DefaultConfigurationFactory
+						.createAccountTypeList();
+			}
+
+		}
+	}
 }
