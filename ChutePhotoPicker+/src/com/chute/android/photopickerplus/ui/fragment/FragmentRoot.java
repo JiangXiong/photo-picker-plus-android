@@ -49,6 +49,7 @@ import com.chute.android.photopickerplus.loaders.LocalVideosAsyncTaskLoader;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
 import com.chute.android.photopickerplus.ui.adapter.AssetCursorAdapter;
+import com.chute.android.photopickerplus.ui.adapter.MergeAdapter;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
@@ -75,6 +76,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
   private AssetCursorAdapter cursorImagesAdapter;
   private AssetCursorAdapter cursorVideosAdapter;
   private AssetAccountAdapter accountAssetAdapter;
+  private MergeAdapter mergeAdapter;
   private TextView textViewSelectPhotos;
   private View emptyView;
 
@@ -154,8 +156,14 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
     if ((filterType == PhotoFilterType.ALL_PHOTOS)
         || (filterType == PhotoFilterType.CAMERA_ROLL)) {
+      if (supportImages) {
       getActivity().getSupportLoaderManager().initLoader(1, null,
           new ImagesLoaderCallback());
+      }
+      if (supportVideos) {
+    	  getActivity().getSupportLoaderManager().initLoader(2, null,
+    	          new VideosLoaderCallback()); 
+      }
     } else if (filterType == PhotoFilterType.SOCIAL_PHOTOS && getActivity() != null) {
       accountType = PhotoPickerPreferenceUtil.get().getAccountType();
       GCAccounts.accountRoot(getActivity().getApplicationContext(),
@@ -163,6 +171,22 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
           account.getShortcut(),
           new RootCallback()).executeAsync();
     }
+    
+    mergeAdapter = new MergeAdapter();
+    cursorImagesAdapter = new AssetCursorAdapter(getActivity(), null);
+    cursorVideosAdapter = new AssetCursorAdapter(getActivity(), null);
+    mergeAdapter.addAdapter(cursorImagesAdapter);
+    mergeAdapter.addAdapter(cursorVideosAdapter);
+    gridView.setAdapter(mergeAdapter);
+    if (isMultipicker == true) {
+        textViewSelectPhotos.setText(getActivity().getApplicationContext().getResources()
+            .getString(R.string.select_photos));
+        gridView.setOnItemClickListener(new OnMultiSelectGridItemClickListener());
+      } else {
+        textViewSelectPhotos.setText(getActivity().getApplicationContext().getResources()
+            .getString(R.string.select_a_photo));
+        gridView.setOnItemClickListener(new OnSingleSelectGridItemClickListener());
+      }
 
   }
 
@@ -239,12 +263,13 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
         return;
       }
       
-      cursorImagesAdapter = new AssetCursorAdapter(getActivity(), cursor);
-      gridView.setAdapter(cursorImagesAdapter);
+      emptyView.setVisibility(View.GONE);
+      cursorImagesAdapter.changeCursor(cursor);
+      
 
-      if (cursorImagesAdapter.getCount() == 0) {
-        emptyView.setVisibility(View.GONE);
-      }
+//      if (cursorImagesAdapter.getCount() == 0) {
+//        emptyView.setVisibility(View.GONE);
+//      }
 
       if (selectedItemsPositions != null) {
         for (int position : selectedItemsPositions) {
@@ -252,17 +277,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
         }
       }
 
-      if (isMultipicker == true) {
-        textViewSelectPhotos.setText(getActivity().getApplicationContext().getResources()
-            .getString(R.string.select_photos));
-        gridView.setOnItemClickListener(new OnMultiSelectGridItemClickListener());
-      } else {
-        textViewSelectPhotos.setText(getActivity().getApplicationContext().getResources()
-            .getString(R.string.select_a_photo));
-        gridView.setOnItemClickListener(new OnSingleSelectGridItemClickListener());
-      }
-      NotificationUtil.showPhotosAdapterToast(getActivity().getApplicationContext(),
-          cursorImagesAdapter.getCount());
+//      NotificationUtil.showPhotosAdapterToast(getActivity().getApplicationContext(),
+//          cursorImagesAdapter.getCount());
 
     }
 
@@ -274,6 +290,42 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
   }
   
+
+  /*
+   * DEVICE VIDEOS LOADER
+   */
+  private final class VideosLoaderCallback implements LoaderCallbacks<Cursor> {
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+      return new LocalVideosAsyncTaskLoader(getActivity().getApplicationContext(), filterType);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+      if (cursor == null) {
+        return;
+      }
+      
+      emptyView.setVisibility(View.GONE);
+      cursorVideosAdapter.changeCursor(cursor);
+      
+      if (selectedItemsPositions != null) {
+          for (int position : selectedItemsPositions) {
+          	cursorImagesAdapter.toggleTick(position);
+          }
+        }
+
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+      // TODO Auto-generated method stub
+
+    }
+
+  }
   
  
 
