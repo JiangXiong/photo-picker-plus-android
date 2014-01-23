@@ -37,7 +37,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ServiceResponseModel {
 
-  public static final String TAG = ServiceResponseModel.class.getSimpleName();
 
   /**
    * List of remote services.
