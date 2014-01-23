@@ -273,10 +273,6 @@ public class PhotoPicker {
 
 	  }
   
-  public boolean supportImagesAndVideos() {
-	    return configuration.supportImagesAndVideos;
-
-	  }
 
   /**
    * Checks if PhotoPicker's configuration was initialized.
@@ -346,10 +342,10 @@ public class PhotoPicker {
     Iterator<LocalMediaType> iterator = localServiceList.iterator();
     while (iterator.hasNext()) {
       LocalMediaType localMediaType = iterator.next();
-      if (!localMediaType.equals(LocalMediaType.ALL_PHOTOS)
-          && !localMediaType.equals(LocalMediaType.CAMERA_PHOTOS)
-          && !localMediaType.equals(LocalMediaType.LAST_TAKEN_PHOTO)
-          && !localMediaType.equals(LocalMediaType.TAKE_PHOTO)) {
+      if (!localMediaType.equals(LocalMediaType.ALL_MEDIA)
+          && !localMediaType.equals(LocalMediaType.CAMERA_MEDIA)
+          && !localMediaType.equals(LocalMediaType.LAST_MEDIA_TAKEN)
+          && !localMediaType.equals(LocalMediaType.TAKE_MEDIA)) {
         ALog.w(WARNING_UNSUPPORTED_LOCAL_SERVICES);
         iterator.remove();
       }

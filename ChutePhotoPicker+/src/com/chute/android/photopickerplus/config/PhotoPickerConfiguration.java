@@ -61,7 +61,6 @@ public final class PhotoPickerConfiguration {
 	final boolean isMultiPicker;
 	final boolean supportVideos;
 	final boolean supportImages;
-	final boolean supportImagesAndVideos;
 
 	private PhotoPickerConfiguration(final Builder builder) {
 		context = builder.context;
@@ -71,7 +70,6 @@ public final class PhotoPickerConfiguration {
 		configUrl = builder.configUrl;
 		supportImages = builder.supportImages;
 		supportVideos = builder.supportVideos;
-		supportImagesAndVideos = builder.supportImagesAndVideos;
 	}
 
 	/**
@@ -102,7 +100,6 @@ public final class PhotoPickerConfiguration {
 		private String configUrl = null;
 		private boolean supportImages = true;
 		private boolean supportVideos = false;
-		private boolean supportImagesAndVideos = false;
 
 		public Builder(Context context) {
 			this.context = context.getApplicationContext();
@@ -159,17 +156,12 @@ public final class PhotoPickerConfiguration {
 			this.supportVideos = supportVideos;
 			return this;
 		}
-		
+
 		public Builder supportImages(boolean supportImages) {
 			this.supportImages = supportImages;
 			return this;
 		}
-		
-		public Builder supportImagesAndVideos(boolean supportImagesAndVideos) {
-			this.supportImagesAndVideos = supportImagesAndVideos;
-			return this;
-		}
-		
+
 		public Builder isMultiPicker(boolean isMultiPicker) {
 			this.isMultiPicker = isMultiPicker;
 			return this;

@@ -164,20 +164,20 @@ public class ServicesAdapter extends BaseAdapter {
 					.getApplicationContext());
 		}
 		switch (type) {
-		case TAKE_PHOTO:
+		case TAKE_MEDIA:
 			holder.imageView.setBackgroundResource(R.drawable.take_photo);
 			holder.textViewServiceTitle.setText(R.string.take_photos);
 			break;
-		case CAMERA_PHOTOS:
+		case CAMERA_MEDIA:
 			loader.displayImage(uriLastItem.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(R.string.camera_shots);
 			break;
-		case LAST_TAKEN_PHOTO:
+		case LAST_MEDIA_TAKEN:
 			loader.displayImage(uriLastItem.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(context.getResources()
 					.getString(R.string.last_photo));
 			break;
-		case ALL_PHOTOS:
+		case ALL_MEDIA:
 			loader.displayImage(uriAllItems.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(context.getResources()
 					.getString(R.string.all_photos));
@@ -186,7 +186,7 @@ public class ServicesAdapter extends BaseAdapter {
 
 		/* Click listeners */
 		switch (type) {
-		case ALL_PHOTOS:
+		case ALL_MEDIA:
 			holder.imageView.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -195,7 +195,7 @@ public class ServicesAdapter extends BaseAdapter {
 				}
 			});
 			break;
-		case CAMERA_PHOTOS:
+		case CAMERA_MEDIA:
 			holder.imageView.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -205,7 +205,7 @@ public class ServicesAdapter extends BaseAdapter {
 			});
 
 			break;
-		case TAKE_PHOTO:
+		case TAKE_MEDIA:
 			holder.imageView.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -215,7 +215,7 @@ public class ServicesAdapter extends BaseAdapter {
 			});
 
 			break;
-		case LAST_TAKEN_PHOTO:
+		case LAST_MEDIA_TAKEN:
 			holder.imageView.setOnClickListener(new OnClickListener() {
 
 				@Override

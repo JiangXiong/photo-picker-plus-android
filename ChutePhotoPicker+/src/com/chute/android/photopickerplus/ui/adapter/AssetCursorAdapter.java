@@ -57,16 +57,14 @@ public class AssetCursorAdapter extends CursorAdapter implements
   private final int dataIndex;
   public HashMap<Integer, String> tick;
   private boolean shouldLoadImages = true;
-  private final boolean supportVideos;
 
   @SuppressWarnings("deprecation")
   public AssetCursorAdapter(FragmentActivity context, Cursor c) {
     super(context, c);
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     loader = ImageLoader.getLoader(context.getApplicationContext());
-    supportVideos = PhotoPicker.getInstance().supportVideos();
-    if (supportVideos) {
-    	dataIndex = c.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
+    if (PhotoPicker.getInstance().supportVideos()) {
+    dataIndex = c.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
     }else {
     dataIndex = c.getColumnIndex(MediaStore.Images.Media.DATA);
     }

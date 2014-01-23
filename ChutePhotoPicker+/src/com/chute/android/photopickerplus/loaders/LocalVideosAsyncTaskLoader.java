@@ -20,29 +20,46 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.chute.android.photopickerplus.models.enums;
+package com.chute.android.photopickerplus.loaders;
+
+import android.content.Context;
+import android.database.Cursor;
+
+import com.chute.android.photopickerplus.dao.MediaDAO;
+import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 
 /**
- * Enumeration for the type of the local service displayed.
- * 
+ * The {@link LocalVideosAsyncTaskLoader} class is an AsyncTaskLoader subclass
+ * that loads photos that can be found on the device.
  */
-public enum LocalMediaType {
-  CAMERA_MEDIA("camera media"), ALL_MEDIA("all media"), LAST_MEDIA_TAKEN(
-      "last media taken"), TAKE_MEDIA(
-      "take media");
+public class LocalVideosAsyncTaskLoader extends
+		AbstractSingleDataInstanceAsyncTaskLoader<Cursor> {
 
-  private final String name;
+	public static final String TAG = LocalVideosAsyncTaskLoader.class
+			.getSimpleName();
+	private final PhotoFilterType filterType;
 
-  private LocalMediaType(String name) {
-    this.name = name;
-  }
+	public LocalVideosAsyncTaskLoader(Context context,
+			PhotoFilterType filterType) {
+		super(context);
+		this.filterType = filterType;
+	}
 
-  @Override
-  public String toString() {
-    return name;
-  };
+	@Override
+	public Cursor loadInBackground() {
+		switch (filterType) {
+		case ALL_PHOTOS:
+			return MediaDAO.getAllMediaVideos(getContext());
+		case CAMERA_ROLL:
+			return MediaDAO.getCameraVideos(getContext());
+		default:
+			return null;
+		}
+	}
 
-  public String getName() {
-    return name;
-  }
+	@Override
+	public void deliverResult(Cursor data) {
+		super.deliverResult(data);
+	}
+
 }

@@ -91,6 +91,7 @@ public class MediaDAO {
 		return context.getContentResolver().query(videos, projection, null,
 				null, MediaStore.Video.Thumbnails.DEFAULT_SORT_ORDER);
 	}
+	
 
 	/**
 	 * Returns the last photo URI from all photos on the device.

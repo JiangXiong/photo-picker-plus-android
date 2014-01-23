@@ -43,8 +43,8 @@ public class DefaultConfigurationFactory {
    */
   public static List<LocalMediaType> createLocalMediaList() {
     List<LocalMediaType> localMediaTypeList = new ArrayList<LocalMediaType>();
-    localMediaTypeList.add(LocalMediaType.ALL_PHOTOS);
-    localMediaTypeList.add(LocalMediaType.CAMERA_PHOTOS);
+    localMediaTypeList.add(LocalMediaType.ALL_MEDIA);
+    localMediaTypeList.add(LocalMediaType.CAMERA_MEDIA);
     return localMediaTypeList;
   }
 
