@@ -55,6 +55,7 @@ public class ServicesAdapter extends BaseAdapter {
 
 	private static LayoutInflater inflater;
 	private final boolean supportsVideos;
+	private final boolean supportsImages;
 	public ImageLoader loader;
 	private final Activity context;
 
@@ -74,6 +75,7 @@ public class ServicesAdapter extends BaseAdapter {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		loader = ImageLoader.getLoader(context.getApplicationContext());
 		supportsVideos = PhotoPicker.getInstance().supportVideos();
+		supportsImages = PhotoPicker.getInstance().supportImages();
 
 	}
 
@@ -150,14 +152,15 @@ public class ServicesAdapter extends BaseAdapter {
 	}
 
 	private void setupLocalService(ViewHolder holder, LocalMediaType type) {
-		Uri uriAllItems;
-		Uri uriLastItem;
+		Uri uriAllItems = null;
+		Uri uriLastItem = null;
 		if (supportsVideos) {
 			uriAllItems = MediaDAO.getLastVideoFromAllVideos(context
 					.getApplicationContext());
 			uriLastItem = MediaDAO.getLastVideoFromCameraVideos(context
 					.getApplicationContext());
-		} else {
+		} 
+		if (supportsImages){
 			uriAllItems = MediaDAO.getLastPhotoFromAllPhotos(context
 					.getApplicationContext());
 			uriLastItem = MediaDAO.getLastPhotoFromCameraPhotos(context
@@ -271,6 +274,9 @@ public class ServicesAdapter extends BaseAdapter {
 			holder.imageView.setBackgroundDrawable(context.getResources()
 					.getDrawable(R.drawable.dropbox));
 			break;
+		case YOUTUBE:
+			holder.imageView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.photo_placeholder));
+		break;
 		}
 	}
 
