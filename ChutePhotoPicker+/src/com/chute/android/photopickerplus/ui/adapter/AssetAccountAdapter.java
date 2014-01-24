@@ -48,185 +48,209 @@ import com.chute.sdk.v2.model.interfaces.AccountMedia;
 
 import darko.imagedownloader.ImageLoader;
 
-public class AssetAccountAdapter extends BaseAdapter implements AssetSelectListener {
+public class AssetAccountAdapter extends BaseAdapter implements
+		AssetSelectListener {
 
-  @SuppressWarnings("unused")
-  private static final String TAG = AssetAccountAdapter.class.getSimpleName();
+	@SuppressWarnings("unused")
+	private static final String TAG = AssetAccountAdapter.class.getSimpleName();
 
-  private static final int TYPE_MAX_COUNT = 2;
+	private static final int TYPE_MAX_COUNT = 2;
 
-  private static LayoutInflater inflater;
-  public ImageLoader loader;
-  public HashMap<Integer, AccountMediaModel> tick;
-  private final FragmentActivity context;
-  private List<AccountMedia> rows;
-  private AdapterItemClickListener adapterItemClickListener;
+	private static LayoutInflater inflater;
+	public ImageLoader loader;
+	public HashMap<Integer, AccountMediaModel> tick;
+	private final FragmentActivity context;
+	private List<AccountMedia> rows;
+	private AdapterItemClickListener adapterItemClickListener;
 
-  public interface AdapterItemClickListener {
+	public interface AdapterItemClickListener {
 
-    public void onFolderClicked(int position);
+		public void onFolderClicked(int position);
 
-    public void onFileClicked(int position);
-  }
+		public void onFileClicked(int position);
+	}
 
-  public AssetAccountAdapter(FragmentActivity context, AccountBaseModel baseModel,
-      AdapterItemClickListener adapterItemClicklistener) {
-    this.context = context;
-    this.adapterItemClickListener = adapterItemClicklistener;
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    loader = ImageLoader.getLoader(context.getApplicationContext());
-    tick = new HashMap<Integer, AccountMediaModel>();
-    rows = new ArrayList<AccountMedia>();
+	public AssetAccountAdapter(FragmentActivity context,
+			AccountBaseModel baseModel,
+			AdapterItemClickListener adapterItemClicklistener) {
+		this.context = context;
+		this.adapterItemClickListener = adapterItemClicklistener;
+		inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		loader = ImageLoader.getLoader(context.getApplicationContext());
+		tick = new HashMap<Integer, AccountMediaModel>();
+		rows = new ArrayList<AccountMedia>();
 
-    if (baseModel.getFiles() != null) {
-      for (AccountMediaModel file : baseModel.getFiles()) {
-        rows.add(file);
-      }
-    }
-    if (baseModel.getFolders() != null) {
-      for (AccountAlbumModel folder : baseModel.getFolders()) {
-        rows.add(folder);
-      }
-    }
-    if (context.getResources().getBoolean(R.bool.has_two_panes)) {
-      ((ServicesActivity) context).setAssetSelectListener(this);
-    } else {
-      ((AssetActivity) context).setAssetSelectListener(this);
-    }
-  }
+		if (baseModel.getFiles() != null) {
+			for (AccountMediaModel file : baseModel.getFiles()) {
+				rows.add(file);
+			}
+		}
+		if (baseModel.getFolders() != null) {
+			for (AccountAlbumModel folder : baseModel.getFolders()) {
+				rows.add(folder);
+			}
+		}
+		if (context.getResources().getBoolean(R.bool.has_two_panes)) {
+			((ServicesActivity) context).setAssetSelectListener(this);
+		} else {
+			((AssetActivity) context).setAssetSelectListener(this);
+		}
+	}
 
-  @Override
-  public int getViewTypeCount() {
-    return TYPE_MAX_COUNT;
-  }
+	@Override
+	public int getViewTypeCount() {
+		return TYPE_MAX_COUNT;
+	}
 
-  @Override
-  public int getItemViewType(int position) {
-    return rows.get(position).getViewType().ordinal();
-  }
+	@Override
+	public int getItemViewType(int position) {
+		return rows.get(position).getViewType().ordinal();
+	}
 
-  public int getCount() {
-    return rows.size();
-  }
+	public int getCount() {
+		return rows.size();
+	}
 
-  public Object getItem(int position) {
-    return rows.get(position);
-  }
+	public Object getItem(int position) {
+		return rows.get(position);
+	}
 
-  public long getItemId(int position) {
-    return position;
-  }
+	public long getItemId(int position) {
+		return position;
+	}
 
-  public static class ViewHolder {
+	public static class ViewHolder {
 
-    public ImageView imageViewThumb;
-    public ImageView imageViewTick;
-    public TextView textViewFolderTitle;
-  }
+		public ImageView imageViewThumb;
+		public ImageView imageViewTick;
+		public ImageView imageVewPlay;
+		public TextView textViewFolderTitle;
+	}
 
-  @SuppressWarnings("deprecation")
-  @Override
-  public View getView(final int position, View convertView, final ViewGroup parent) {
-    ViewHolder holder;
-    int type = getItemViewType(position);
-    if (convertView == null) {
-      convertView = inflater.inflate(R.layout.gc_adapter_assets, null);
-      holder = new ViewHolder();
-      holder.imageViewThumb = (ImageView) convertView.findViewById(R.id.gcImageViewThumb);
-      holder.imageViewTick = (ImageView) convertView.findViewById(R.id.gcImageViewTick);
-      holder.imageViewTick.setTag(position);
-      holder.textViewFolderTitle = (TextView) convertView
-          .findViewById(R.id.gcTextViewFolderTitle);
-      convertView.setTag(holder);
-    } else {
-      holder = (ViewHolder) convertView.getTag();
-    }
+	@SuppressWarnings("deprecation")
+	@Override
+	public View getView(final int position, View convertView,
+			final ViewGroup parent) {
+		ViewHolder holder;
+		int type = getItemViewType(position);
+		if (convertView == null) {
+			convertView = inflater.inflate(R.layout.gc_adapter_assets, null);
+			holder = new ViewHolder();
+			holder.imageViewThumb = (ImageView) convertView
+					.findViewById(R.id.gcImageViewThumb);
+			holder.imageViewTick = (ImageView) convertView
+					.findViewById(R.id.gcImageViewTick);
+			holder.imageVewPlay = (ImageView) convertView
+					.findViewById(R.id.gcImageViewPlay);
+			holder.imageViewTick.setTag(position);
+			holder.textViewFolderTitle = (TextView) convertView
+					.findViewById(R.id.gcTextViewFolderTitle);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
+		}
 
-    holder.imageViewThumb.setTag(position);
-    if (type == AccountMediaType.FOLDER.ordinal()) {
-      holder.imageViewTick.setVisibility(View.GONE);
-      holder.textViewFolderTitle.setVisibility(View.VISIBLE);
-      String folderName = ((AccountAlbumModel) getItem(position)).getName();
-      holder.textViewFolderTitle.setText(folderName != null ? folderName : "");
-      holder.imageViewThumb.setBackgroundDrawable(context.getResources().getDrawable(
-          R.drawable.album_default));
-      holder.imageViewThumb.setOnClickListener(new OnFolderClickedListener());
-    } else if (type == AccountMediaType.FILE.ordinal()) {
-      holder.imageViewTick.setVisibility(View.VISIBLE);
-      loader.displayImage(((AccountMediaModel) getItem(position)).getThumbnail(),
-          holder.imageViewThumb, null);
-      holder.imageViewThumb.setOnClickListener(new OnFileClickedListener());
-    }
+		holder.imageViewThumb.setTag(position);
+		if (type == AccountMediaType.FOLDER.ordinal()) {
+			holder.imageViewTick.setVisibility(View.GONE);
+			holder.textViewFolderTitle.setVisibility(View.VISIBLE);
+			String folderName = ((AccountAlbumModel) getItem(position))
+					.getName();
+			holder.textViewFolderTitle.setText(folderName != null ? folderName
+					: "");
+			holder.imageViewThumb.setBackgroundDrawable(context.getResources()
+					.getDrawable(R.drawable.album_default));
+			holder.imageViewThumb
+					.setOnClickListener(new OnFolderClickedListener());
+		} else if (type == AccountMediaType.FILE.ordinal()) {
+			AccountMediaModel file = (AccountMediaModel) getItem(position);
+			holder.imageViewTick.setVisibility(View.VISIBLE);
+			loader.displayImage(file.getThumbnail(), holder.imageViewThumb,
+					null);
+			holder.imageViewThumb
+					.setOnClickListener(new OnFileClickedListener());
+			if (file.getVideoUrl() != null) {
+				holder.imageVewPlay.setVisibility(View.VISIBLE);
+			}
+		}
 
-    if (tick.containsKey(position)) {
-      holder.imageViewTick.setVisibility(View.VISIBLE);
-      convertView.setBackgroundColor(context.getResources().getColor(R.color.sky_blue));
-    } else {
-      holder.imageViewTick.setVisibility(View.GONE);
-      convertView.setBackgroundColor(context.getResources().getColor(R.color.gray_light));
-    }
-    return convertView;
-  }
+		if (tick.containsKey(position)) {
+			holder.imageViewTick.setVisibility(View.VISIBLE);
+			convertView.setBackgroundColor(context.getResources().getColor(
+					R.color.sky_blue));
+		} else {
+			holder.imageViewTick.setVisibility(View.GONE);
+			convertView.setBackgroundColor(context.getResources().getColor(
+					R.color.gray_light));
+		}
+		return convertView;
+	}
 
-  public ArrayList<AccountMediaModel> getPhotoCollection() {
-    final ArrayList<AccountMediaModel> photos = new ArrayList<AccountMediaModel>();
-    final Iterator<AccountMediaModel> iterator = tick.values().iterator();
-    while (iterator.hasNext()) {
-      photos.add(iterator.next());
-    }
-    return photos;
-  }
+	public ArrayList<AccountMediaModel> getPhotoCollection() {
+		final ArrayList<AccountMediaModel> photos = new ArrayList<AccountMediaModel>();
+		final Iterator<AccountMediaModel> iterator = tick.values().iterator();
+		while (iterator.hasNext()) {
+			photos.add(iterator.next());
+		}
+		return photos;
+	}
 
-  public boolean hasSelectedItems() {
-    return tick.size() > 0;
-  }
+	public boolean hasSelectedItems() {
+		return tick.size() > 0;
+	}
 
-  public int getSelectedItemsCount() {
-    return tick.size();
-  }
+	public int getSelectedItemsCount() {
+		return tick.size();
+	}
 
-  public void toggleTick(final int position) {
-    if (getCount() > position) {
-      if (getItemViewType(position) == AccountMediaType.FILE.ordinal()) {
-        if (tick.containsKey(position)) {
-          tick.remove(position);
-        } else {
-          tick.put(position, (AccountMediaModel) getItem(position));
-        }
-      }
-    }
-    notifyDataSetChanged();
-  }
+	public void toggleTick(final int position) {
+		if (getCount() > position) {
+			if (getItemViewType(position) == AccountMediaType.FILE.ordinal()) {
+				if (tick.containsKey(position)) {
+					tick.remove(position);
+				} else {
+					tick.put(position, (AccountMediaModel) getItem(position));
+				}
+			}
+		}
+		notifyDataSetChanged();
+	}
 
-  private final class OnFolderClickedListener implements OnClickListener {
+	private final class OnFolderClickedListener implements OnClickListener {
 
-    @Override
-    public void onClick(View v) {
-      Integer position = (Integer) v.getTag();
-      adapterItemClickListener.onFolderClicked(position);
+		@Override
+		public void onClick(View v) {
+			Integer position = (Integer) v.getTag();
+			adapterItemClickListener.onFolderClicked(position);
 
-    }
+		}
 
-  }
+	}
 
-  private final class OnFileClickedListener implements OnClickListener {
+	private final class OnFileClickedListener implements OnClickListener {
 
-    @Override
-    public void onClick(View v) {
-      Integer position = (Integer) v.getTag();
-      adapterItemClickListener.onFileClicked(position);
+		@Override
+		public void onClick(View v) {
+			Integer position = (Integer) v.getTag();
+			adapterItemClickListener.onFileClicked(position);
 
-    }
+		}
 
-  }
+	}
 
-  @Override
-  public ArrayList<Integer> getSelectedItemPositions() {
-    final ArrayList<Integer> positions = new ArrayList<Integer>();
-    final Iterator<Integer> iterator = tick.keySet().iterator();
-    while (iterator.hasNext()) {
-      positions.add(iterator.next());
-    }
-    return positions;
-  }
+	@Override
+	public List<Integer> getSelectedImagesPositions() {
+		final ArrayList<Integer> positions = new ArrayList<Integer>();
+		final Iterator<Integer> iterator = tick.keySet().iterator();
+		while (iterator.hasNext()) {
+			positions.add(iterator.next());
+		}
+		return positions;
+	}
+
+	@Override
+	public List<Integer> getSelectedVideosPositions() {
+		return new ArrayList<Integer>();
+	}
 }

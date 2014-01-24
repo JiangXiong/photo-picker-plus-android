@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -41,6 +42,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
+import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
@@ -52,24 +54,24 @@ public class AssetCursorAdapter extends CursorAdapter implements
 		OnScrollListener, AssetSelectListener {
 
 	public static final String TAG = AssetCursorAdapter.class.getSimpleName();
+	public static final String VIDEOS = "videos";
+	public static final String IMAGES = "images";
 
 	private static LayoutInflater inflater = null;
 	public ImageLoader loader;
 	private int dataIndex;
 	public HashMap<Integer, String> tick;
 	private boolean shouldLoadImages = true;
+	private final String type;
 
 	@SuppressLint("NewApi")
-	public AssetCursorAdapter(FragmentActivity context, Cursor c) {
+	public AssetCursorAdapter(FragmentActivity context, Cursor c, String type) {
 		super(context, c, 0);
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		loader = ImageLoader.getLoader(context.getApplicationContext());
-		if (c == null) {
-			dataIndex = 0;
-		} else {
-			dataIndex = getDataIndex(c);
-		}
+		this.type = type;
+		dataIndex = getDataIndex(c);
 		tick = new HashMap<Integer, String>();
 		if (context.getResources().getBoolean(R.bool.has_two_panes)) {
 			((ServicesActivity) context).setAssetSelectListener(this);
@@ -83,6 +85,7 @@ public class AssetCursorAdapter extends CursorAdapter implements
 
 		public ImageView imageViewThumb;
 		public ImageView imageViewTick;
+		public ImageView imageViewPlay;
 	}
 
 	@Override
@@ -104,6 +107,9 @@ public class AssetCursorAdapter extends CursorAdapter implements
 			view.setBackgroundColor(context.getResources().getColor(
 					R.color.gray_light));
 		}
+		if (type.equals(VIDEOS)) {
+			holder.imageViewPlay.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -115,6 +121,8 @@ public class AssetCursorAdapter extends CursorAdapter implements
 				.findViewById(R.id.gcImageViewThumb);
 		holder.imageViewTick = (ImageView) vi
 				.findViewById(R.id.gcImageViewTick);
+		holder.imageViewPlay = (ImageView) vi
+				.findViewById(R.id.gcImageViewPlay);
 		vi.setTag(holder);
 		return vi;
 	}
@@ -164,25 +172,18 @@ public class AssetCursorAdapter extends CursorAdapter implements
 		return tick.size();
 	}
 
-	public void toggleTick(int position) {
-		if (getCount() > position) {
-			if (tick.containsKey(position)) {
-				tick.remove(position);
-			} else {
-				tick.put(position, getItem(position));
+	public void toggleTick(int position, String mediaType) {
+		if (type.equals(mediaType)) {
+			ALog.d("toggle click position = " + position);
+			if (getCount() > position) {
+				if (tick.containsKey(position)) {
+					tick.remove(position);
+				} else {
+					tick.put(position, getItem(position));
+				}
 			}
+			notifyDataSetChanged();
 		}
-		notifyDataSetChanged();
-	}
-
-	@Override
-	public ArrayList<Integer> getSelectedItemPositions() {
-		final ArrayList<Integer> positions = new ArrayList<Integer>();
-		final Iterator<Integer> iterator = tick.keySet().iterator();
-		while (iterator.hasNext()) {
-			positions.add(iterator.next());
-		}
-		return positions;
 	}
 
 	@Override
@@ -193,10 +194,39 @@ public class AssetCursorAdapter extends CursorAdapter implements
 	}
 
 	private int getDataIndex(Cursor cursor) {
-		if (PhotoPicker.getInstance().supportVideos()) {
-			return cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
+		if (cursor == null) {
+			return 0;
 		} else {
-			return cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+			if (PhotoPicker.getInstance().supportVideos()) {
+				return cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
+			} else {
+				return cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+			}
+		}
+	}
+
+	@Override
+	public List<Integer> getSelectedImagesPositions() {
+		ALog.d("positions images = " + getPositions(IMAGES));
+		return getPositions(IMAGES);
+	}
+
+	@Override
+	public List<Integer> getSelectedVideosPositions() {
+		ALog.d("positions videos = " + getPositions(VIDEOS));
+		return getPositions(VIDEOS);
+	}
+
+	private List<Integer> getPositions(String itemType) {
+		if (type.equals(itemType)) {
+			final ArrayList<Integer> positions = new ArrayList<Integer>();
+			final Iterator<Integer> iterator = tick.keySet().iterator();
+			while (iterator.hasNext()) {
+				positions.add(iterator.next());
+			}
+			return positions;
+		} else {
+			return new ArrayList<Integer>();
 		}
 	}
 

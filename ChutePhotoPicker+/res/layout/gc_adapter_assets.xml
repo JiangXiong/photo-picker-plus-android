@@ -40,6 +40,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         android:layout_gravity="bottom|right"
         >
     </ImageView>
+    
+    <ImageView
+        android:id="@+id/gcImageViewPlay"
+        style="@style/imageViewTick"
+        android:layout_gravity="bottom|left"
+        android:visibility="gone"
+        >
+    </ImageView>
 
     <TextView
         android:id="@+id/gcTextViewFolderTitle"

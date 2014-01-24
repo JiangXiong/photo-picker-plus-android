@@ -67,8 +67,8 @@ public class MediaDataModel implements Parcelable {
 		return videoUrl;
 	}
 
-	public void setVideoUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
 	}
 
 	public String getThumbnail() {

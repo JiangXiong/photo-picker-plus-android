@@ -56,68 +56,76 @@ import com.dg.libs.rest.domain.ResponseStatus;
  */
 public class ImageDataResponseLoader {
 
-  public static void postImageData(Context context,
-      ArrayList<AccountMediaModel> selectedImages, AccountFilesListener accountListener) {
+	public static void postImageData(Context context,
+			ArrayList<AccountMediaModel> selectedImages,
+			AccountFilesListener accountListener) {
 
-    String token = TokenAuthenticationProvider.getInstance().getToken();
-    AuthConstants authConstants = AuthenticationFactory.getInstance().getAuthConstants();
-    String clientId = authConstants.clientId;
-    String clientSecret = authConstants.clientSecret;
-    Chute.init(context, new AuthConstants(clientId, clientSecret), token);
+		String token = TokenAuthenticationProvider.getInstance().getToken();
+		AuthConstants authConstants = AuthenticationFactory.getInstance()
+				.getAuthConstants();
+		String clientId = authConstants.clientId;
+		String clientSecret = authConstants.clientSecret;
+		Chute.init(context, new AuthConstants(clientId, clientSecret), token);
 
-    ArrayList<MediaDataModel> mediaModelList = new ArrayList<MediaDataModel>();
-    for (AccountMediaModel media : selectedImages) {
-      MediaDataModel mediaModel = new MediaDataModel();
-      mediaModel.setImageUrl(media.getImageUrl());
-      mediaModel.setVideoUrl(media.getVideoUrl());
-      mediaModel.setThumbnail(media.getThumbnail());
-      mediaModelList.add(mediaModel);
-    }
+		ArrayList<MediaDataModel> mediaModelList = new ArrayList<MediaDataModel>();
+		for (AccountMediaModel media : selectedImages) {
+			MediaDataModel mediaModel = new MediaDataModel();
+			if (media.getVideoUrl() != null) {
+			mediaModel.setImageUrl(media.getVideoUrl());
+			} else {
+			mediaModel.setImageUrl(media.getImageUrl());
+			}
+			mediaModel.setThumbnail(media.getThumbnail());
+			mediaModelList.add(mediaModel);
+		}
 
-    OptionsModel options = new OptionsModel();
-    options.setCliendId(clientId);
-    MediaModel imageDataModel = new MediaModel();
-    imageDataModel.setOptions(options);
-    imageDataModel.setMedia(mediaModelList);
+		OptionsModel options = new OptionsModel();
+		options.setCliendId(clientId);
+		MediaModel imageDataModel = new MediaModel();
+		imageDataModel.setOptions(options);
+		imageDataModel.setMedia(mediaModelList);
 
-    getImageData(context, imageDataModel,
-        new ImageDataCallback(context, accountListener)).executeAsync();
+		getImageData(context, imageDataModel,
+				new ImageDataCallback(context, accountListener)).executeAsync();
 
-  }
+	}
 
-  private static HttpRequest getImageData(final Context context, MediaModel imageData,
-      final HttpCallback<ResponseModel<ImageResponseModel>> callback) {
-    return new ImageDataRequest(context, imageData, callback);
-  }
+	private static HttpRequest getImageData(final Context context,
+			MediaModel imageData,
+			final HttpCallback<ResponseModel<ImageResponseModel>> callback) {
+		return new ImageDataRequest(context, imageData, callback);
+	}
 
-  private static final class ImageDataCallback implements
-      HttpCallback<ResponseModel<ImageResponseModel>> {
+	private static final class ImageDataCallback implements
+			HttpCallback<ResponseModel<ImageResponseModel>> {
 
-    private Context context;
-    private AccountFilesListener listener;
+		private Context context;
+		private AccountFilesListener listener;
 
-    private ImageDataCallback(Context context, AccountFilesListener listener) {
-      this.context = context;
-      this.listener = listener;
-    }
+		private ImageDataCallback(Context context, AccountFilesListener listener) {
+			this.context = context;
+			this.listener = listener;
+		}
 
-    @Override
-    public void onHttpError(ResponseStatus responseStatus) {
-      Toast.makeText(context, "An error occurred, please try again later",
-          Toast.LENGTH_SHORT).show();
-      ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
-          + responseStatus.getStatusMessage());
+		@Override
+		public void onHttpError(ResponseStatus responseStatus) {
+			Toast.makeText(context,
+					"An error occurred, please try again later",
+					Toast.LENGTH_SHORT).show();
+			ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
+					+ responseStatus.getStatusMessage());
 
-    }
+		}
 
-    @Override
-    public void onSuccess(ResponseModel<ImageResponseModel> responseData) {
-      if (responseData.getData() != null) {
-        List<AssetModel> assetList = responseData.getData().getAssetList();
-        listener.onDeliverAccountFiles((ArrayList<AssetModel>) assetList);
-      }
+		@Override
+		public void onSuccess(ResponseModel<ImageResponseModel> responseData) {
+			if (responseData.getData() != null) {
+				List<AssetModel> assetList = responseData.getData()
+						.getAssetList();
+				listener.onDeliverAccountFiles((ArrayList<AssetModel>) assetList);
+			}
 
-    }
-  }
+		}
+	}
 
 }

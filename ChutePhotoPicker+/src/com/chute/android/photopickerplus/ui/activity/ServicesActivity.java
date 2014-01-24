@@ -61,6 +61,7 @@ import com.dg.libs.rest.domain.ResponseStatus;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity for displaying the services.
@@ -68,378 +69,394 @@ import java.util.ArrayList;
  * This activity is used to display both local and remote services in a
  * GridView.
  */
-public class ServicesActivity extends FragmentActivity implements AccountFilesListener,
-    CursorFilesListener,
-    ServiceClickedListener {
+public class ServicesActivity extends FragmentActivity implements
+		AccountFilesListener, CursorFilesListener, ServiceClickedListener {
 
-  private static final String TAG = ServicesActivity.class.getSimpleName();
-  private static FragmentManager fragmentManager;
-  private FragmentTransaction fragmentTransaction;
-  private AccountType accountType;
-  private boolean dualPanes;
-  private ArrayList<Integer> selectedItemPositions;
-  private String folderId;
-  private AccountModel account;
-  private AssetSelectListener assetSelectListener;
-  private FragmentSingle fragmentSingle;
-  private FragmentRoot fragmentRoot;
-  private int photoFilterType;
+	private static final String TAG = ServicesActivity.class.getSimpleName();
+	private static FragmentManager fragmentManager;
+	private FragmentTransaction fragmentTransaction;
+	private AccountType accountType;
+	private boolean dualPanes;
+	private ArrayList<Integer> selectedItemPositions;
+	private String folderId;
+	private AccountModel account;
+	private AssetSelectListener assetSelectListener;
+	private FragmentSingle fragmentSingle;
+	private FragmentRoot fragmentRoot;
+	private int photoFilterType;
 
-  public AssetSelectListener getAssetSelectListener() {
-    return assetSelectListener;
-  }
+	public AssetSelectListener getAssetSelectListener() {
+		return assetSelectListener;
+	}
 
-  public void setAssetSelectListener(AssetSelectListener assetSelectListener) {
-    this.assetSelectListener = assetSelectListener;
-  }
+	public void setAssetSelectListener(AssetSelectListener assetSelectListener) {
+		this.assetSelectListener = assetSelectListener;
+	}
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    fragmentManager = getSupportFragmentManager();
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-    setContentView(R.layout.main_layout);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		fragmentManager = getSupportFragmentManager();
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.main_layout);
 
-    retrieveValuesFromBundle(savedInstanceState);
+		retrieveValuesFromBundle(savedInstanceState);
 
-    dualPanes = getResources().getBoolean(R.bool.has_two_panes);
-    if (dualPanes
-        && savedInstanceState == null
-        && getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
-      replaceContentWithEmptyFragment();
-    }
+		dualPanes = getResources().getBoolean(R.bool.has_two_panes);
+		if (dualPanes
+				&& savedInstanceState == null
+				&& getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
+			replaceContentWithEmptyFragment();
+		}
 
-  }
+	}
 
-  @Override
-  public void takePhoto() {
-    if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-      NotificationUtil.makeToast(getApplicationContext(), R.string.toast_feature_camera);
-      return;
-    }
-    final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    if (AppUtil.hasImageCaptureBug() == false) {
-      intent.putExtra(MediaStore.EXTRA_OUTPUT,
-          Uri.fromFile(AppUtil.getTempFile(ServicesActivity.this)));
-    } else {
-      intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
-          android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-    }
-    startActivityForResult(intent, Constants.CAMERA_PIC_REQUEST);
+	@Override
+	public void takePhoto() {
+		if (!getPackageManager()
+				.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+			NotificationUtil.makeToast(getApplicationContext(),
+					R.string.toast_feature_camera);
+			return;
+		}
+		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (AppUtil.hasImageCaptureBug() == false) {
+			intent.putExtra(MediaStore.EXTRA_OUTPUT,
+					Uri.fromFile(AppUtil.getTempFile(ServicesActivity.this)));
+		} else {
+			intent.putExtra(
+					android.provider.MediaStore.EXTRA_OUTPUT,
+					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		}
+		startActivityForResult(intent, Constants.CAMERA_PIC_REQUEST);
 
-  }
+	}
 
-  @Override
-  public void lastPhoto() {
-    Uri uri = MediaDAO.getLastPhotoFromCameraPhotos(getApplicationContext());
-    if (uri.toString().equals("")) {
-      NotificationUtil.makeToast(getApplicationContext(),
-          getResources().getString(R.string.no_camera_photos));
-    } else {
-      final AssetModel model = new AssetModel();
-      model.setThumbnail(uri.toString());
-      model.setUrl(uri.toString());
+	@Override
+	public void lastPhoto() {
+		Uri uri = MediaDAO
+				.getLastPhotoFromCameraPhotos(getApplicationContext());
+		if (uri.toString().equals("")) {
+			NotificationUtil.makeToast(getApplicationContext(), getResources()
+					.getString(R.string.no_camera_photos));
+		} else {
+			final AssetModel model = new AssetModel();
+			model.setThumbnail(uri.toString());
+			model.setUrl(uri.toString());
 
-      IntentUtil.deliverDataToInitialActivity(ServicesActivity.this, model);
-    }
+			IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
+					model);
+		}
 
-  }
+	}
 
-  @Override
-  public void photoStream() {
-    photoFilterType = PhotoFilterType.ALL_PHOTOS.ordinal();
-    selectedItemPositions = null;
-    if (!dualPanes) {
-      final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(ServicesActivity.this);
-      wrapper.setFilterType(PhotoFilterType.ALL_PHOTOS);
-      wrapper.startActivityForResult(ServicesActivity.this,
-          PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY);
-    } else {
-      replaceContentWithRootFragment(null, PhotoFilterType.ALL_PHOTOS);
-    }
+	@Override
+	public void photoStream() {
+		photoFilterType = PhotoFilterType.ALL_PHOTOS.ordinal();
+		selectedItemPositions = null;
+		if (!dualPanes) {
+			final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(
+					ServicesActivity.this);
+			wrapper.setFilterType(PhotoFilterType.ALL_PHOTOS);
+			wrapper.startActivityForResult(ServicesActivity.this,
+					PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY);
+		} else {
+			replaceContentWithRootFragment(null, PhotoFilterType.ALL_PHOTOS);
+		}
 
-  }
+	}
 
-  @Override
-  public void cameraRoll() {
-    photoFilterType = PhotoFilterType.CAMERA_ROLL.ordinal();
-    selectedItemPositions = null;
-    if (!dualPanes) {
-      final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(ServicesActivity.this);
-      wrapper.setFilterType(PhotoFilterType.CAMERA_ROLL);
-      wrapper.startActivityForResult(ServicesActivity.this,
-          PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY);
-    } else {
-      replaceContentWithRootFragment(null, PhotoFilterType.CAMERA_ROLL);
-    }
+	@Override
+	public void cameraRoll() {
+		photoFilterType = PhotoFilterType.CAMERA_ROLL.ordinal();
+		selectedItemPositions = null;
+		if (!dualPanes) {
+			final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(
+					ServicesActivity.this);
+			wrapper.setFilterType(PhotoFilterType.CAMERA_ROLL);
+			wrapper.startActivityForResult(ServicesActivity.this,
+					PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY);
+		} else {
+			replaceContentWithRootFragment(null, PhotoFilterType.CAMERA_ROLL);
+		}
 
-  }
+	}
 
-  public void accountClicked(AccountModel account) {
-	  ALog.d("account clicked");
-    photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
-    selectedItemPositions = null;
-    this.account = account;
-    if (!dualPanes) {
-      final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(ServicesActivity.this);
-      wrapper.setFilterType(PhotoFilterType.SOCIAL_PHOTOS);
-      wrapper.setAccount(account);
-      wrapper.startActivityForResult(ServicesActivity.this,
-          PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY);
-    } else {
-      replaceContentWithRootFragment(account, PhotoFilterType.SOCIAL_PHOTOS);
-    }
+	public void accountClicked(AccountModel account) {
+		photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
+		selectedItemPositions = null;
+		this.account = account;
+		if (!dualPanes) {
+			final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(
+					ServicesActivity.this);
+			wrapper.setFilterType(PhotoFilterType.SOCIAL_PHOTOS);
+			wrapper.setAccount(account);
+			wrapper.startActivityForResult(ServicesActivity.this,
+					PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY);
+		} else {
+			replaceContentWithRootFragment(account,
+					PhotoFilterType.SOCIAL_PHOTOS);
+		}
 
-  }
+	}
 
-  public void replaceContentWithSingleFragment(AccountModel account, String folderId,
-                                               ArrayList<Integer> selectedItemPositions) {
-    fragmentTransaction = fragmentManager.beginTransaction();
-    fragmentTransaction.replace(R.id.gcFragments,
-        FragmentSingle.newInstance(account, folderId, selectedItemPositions),
-        Constants.TAG_FRAGMENT_FILES);
-    fragmentTransaction.addToBackStack(null);
-    fragmentTransaction.commit();
+	public void replaceContentWithSingleFragment(AccountModel account,
+			String folderId, ArrayList<Integer> selectedItemPositions) {
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.gcFragments, FragmentSingle
+				.newInstance(account, folderId, selectedItemPositions),
+				Constants.TAG_FRAGMENT_FILES);
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
 
-  }
+	}
 
-  public void replaceContentWithRootFragment(AccountModel account,
-                                             PhotoFilterType filterType) {
-    fragmentTransaction = fragmentManager.beginTransaction();
-    fragmentTransaction.replace(R.id.gcFragments,
-        FragmentRoot.newInstance(account, filterType, selectedItemPositions),
-        Constants.TAG_FRAGMENT_FOLDER);
-    fragmentTransaction.commit();
-  }
+	public void replaceContentWithRootFragment(AccountModel account,
+			PhotoFilterType filterType) {
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.gcFragments, FragmentRoot.newInstance(
+				account, filterType, selectedItemPositions),
+				Constants.TAG_FRAGMENT_FOLDER);
+		fragmentTransaction.commit();
+	}
 
-  public void replaceContentWithEmptyFragment() {
-    fragmentTransaction = fragmentManager.beginTransaction();
-    fragmentTransaction.replace(R.id.gcFragments, EmptyFragment.newInstance(),
-        Constants.TAG_FRAGMENT_EMPTY);
-    fragmentTransaction.commit();
-  }
+	public void replaceContentWithEmptyFragment() {
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.gcFragments,
+				EmptyFragment.newInstance(), Constants.TAG_FRAGMENT_EMPTY);
+		fragmentTransaction.commit();
+	}
 
-  @Override
-  public void accountLogin(AccountType type) {
-    accountType = type;
-    ALog.d("account type = " + accountType.getLoginMethod());
-    PhotoPickerPreferenceUtil.get().setAccountType(accountType);
-    if (PreferenceUtil.get().hasAccount(type.getLoginMethod())) {
-      AccountModel account = PreferenceUtil.get()
-          .getAccount(type.getLoginMethod());
-      accountClicked(account);
-    } else {
-    	ALog.d("authentication activity");
-      AuthenticationFactory.getInstance().startAuthenticationActivity(
-          ServicesActivity.this, accountType);
-    }
+	@Override
+	public void accountLogin(AccountType type) {
+		accountType = type;
+		PhotoPickerPreferenceUtil.get().setAccountType(accountType);
+		if (PreferenceUtil.get().hasAccount(type.getLoginMethod())) {
+			AccountModel account = PreferenceUtil.get().getAccount(
+					type.getLoginMethod());
+			accountClicked(account);
+		} else {
+			AuthenticationFactory.getInstance().startAuthenticationActivity(
+					ServicesActivity.this, accountType);
+		}
 
-  }
+	}
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (resultCode != Activity.RESULT_OK) {
-      return;
-    }
-    if (requestCode == AuthenticationFactory.AUTHENTICATION_REQUEST_CODE) {
-      GCAccounts.allUserAccounts(getApplicationContext(), new AccountsCallback())
-          .executeAsync();
-      return;
-    }
-    if (requestCode == PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY) {
-      finish();
-      return;
-    }
-    if (requestCode == Constants.CAMERA_PIC_REQUEST) {
-      String path = "";
-      File tempFile = AppUtil.getTempFile(getApplicationContext());
-      if (AppUtil.hasImageCaptureBug() == false && tempFile.length() > 0) {
-        try {
-          android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),
-              tempFile.getAbsolutePath(), null, null);
-          tempFile.delete();
-          path = MediaDAO.getLastPhotoFromCameraPhotos(getApplicationContext())
-              .toString();
-        } catch (FileNotFoundException e) {
-          ALog.d(TAG, "", e);
-        }
-      } else {
-        ALog.e(TAG, "Bug " + data.getData().getPath());
-        path = Uri.fromFile(
-            new File(AppUtil.getPath(getApplicationContext(), data.getData())))
-            .toString();
-      }
-      ALog.d(TAG, path);
-      final AssetModel model = new AssetModel();
-      model.setThumbnail(path);
-      model.setUrl(path);
-      ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
-      mediaCollection.add(model);
-      setResult(Activity.RESULT_OK, new Intent().putExtra(PhotosIntentWrapper.KEY_PHOTO_COLLECTION, mediaCollection));
-      finish();
-    }
-  }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode != Activity.RESULT_OK) {
+			return;
+		}
+		if (requestCode == AuthenticationFactory.AUTHENTICATION_REQUEST_CODE) {
+			GCAccounts.allUserAccounts(getApplicationContext(),
+					new AccountsCallback()).executeAsync();
+			return;
+		}
+		if (requestCode == PhotosIntentWrapper.ACTIVITY_FOR_RESULT_STREAM_KEY) {
+			finish();
+			return;
+		}
+		if (requestCode == Constants.CAMERA_PIC_REQUEST) {
+			String path = "";
+			File tempFile = AppUtil.getTempFile(getApplicationContext());
+			if (AppUtil.hasImageCaptureBug() == false && tempFile.length() > 0) {
+				try {
+					android.provider.MediaStore.Images.Media.insertImage(
+							getContentResolver(), tempFile.getAbsolutePath(),
+							null, null);
+					tempFile.delete();
+					path = MediaDAO.getLastPhotoFromCameraPhotos(
+							getApplicationContext()).toString();
+				} catch (FileNotFoundException e) {
+					ALog.d(TAG, "", e);
+				}
+			} else {
+				ALog.e(TAG, "Bug " + data.getData().getPath());
+				path = Uri.fromFile(
+						new File(AppUtil.getPath(getApplicationContext(),
+								data.getData()))).toString();
+			}
+			ALog.d(TAG, path);
+			final AssetModel model = new AssetModel();
+			model.setThumbnail(path);
+			model.setUrl(path);
+			ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
+			mediaCollection.add(model);
+			setResult(Activity.RESULT_OK, new Intent().putExtra(
+					PhotosIntentWrapper.KEY_PHOTO_COLLECTION, mediaCollection));
+			finish();
+		}
+	}
 
-  @Override
-  protected void onNewIntent(Intent intent) {
-    super.onNewIntent(intent);
-    setResult(Activity.RESULT_OK, new Intent().putExtras(intent.getExtras()));
-    ServicesActivity.this.finish();
-  }
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setResult(Activity.RESULT_OK,
+				new Intent().putExtras(intent.getExtras()));
+		ServicesActivity.this.finish();
+	}
 
-  @Override
-  public void onDeliverAccountFiles(ArrayList<AssetModel> assetList) {
-    IntentUtil.deliverDataToInitialActivity(ServicesActivity.this, assetList);
+	@Override
+	public void onDeliverAccountFiles(ArrayList<AssetModel> assetList) {
+		IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
+				assetList);
 
-  }
+	}
 
-  @Override
-  public void onDeliverCursorAssets(ArrayList<String> assetPathList) {
-    IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
-        AppUtil.getPhotoCollection(assetPathList));
+	@Override
+	public void onDeliverCursorAssets(ArrayList<String> assetPathList) {
+		IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
+				AppUtil.getPhotoCollection(assetPathList));
 
-  }
+	}
 
-  @Override
-  public void onAccountFilesSelect(AssetModel assetModel) {
-    IntentUtil.deliverDataToInitialActivity(ServicesActivity.this, assetModel);
-  }
+	@Override
+	public void onAccountFilesSelect(AssetModel assetModel) {
+		IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
+				assetModel);
+	}
 
-  @Override
-  public void onCursorAssetsSelect(AssetModel assetModel) {
-    IntentUtil.deliverDataToInitialActivity(ServicesActivity.this, assetModel);
-  }
+	@Override
+	public void onCursorAssetsSelect(AssetModel assetModel) {
+		IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
+				assetModel);
+	}
 
-  @Override
-  public void onAccountFolderSelect(AccountModel account,
-                                    String folderId) {
-    selectedItemPositions = null;
-    photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
-    this.folderId = folderId;
-    this.account = account;
-    replaceContentWithSingleFragment(account, folderId, selectedItemPositions);
-  }
+	@Override
+	public void onAccountFolderSelect(AccountModel account, String folderId) {
+		selectedItemPositions = null;
+		photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
+		this.folderId = folderId;
+		this.account = account;
+		replaceContentWithSingleFragment(account, folderId,
+				selectedItemPositions);
+	}
 
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    outState.putString(Constants.KEY_FOLDER_ID, folderId);
-    outState.putParcelable(Constants.KEY_ACCOUNT, account);
-    outState.putInt(Constants.KEY_PHOTO_FILTER_TYPE, photoFilterType);
-    if (assetSelectListener != null
-        && assetSelectListener.getSelectedItemPositions() !=
-        null) {
-      outState.putIntegerArrayList(Constants.KEY_SELECTED_ITEMS,
-          assetSelectListener
-              .getSelectedItemPositions());
-    }
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(Constants.KEY_FOLDER_ID, folderId);
+		outState.putParcelable(Constants.KEY_ACCOUNT, account);
+		outState.putInt(Constants.KEY_PHOTO_FILTER_TYPE, photoFilterType);
+		List<Integer> positions = new ArrayList<Integer>();
+		if (assetSelectListener != null) {
+			if (assetSelectListener.getSelectedImagesPositions() != null) {
+				positions.addAll(assetSelectListener
+						.getSelectedImagesPositions());
+			}
+			if (assetSelectListener.getSelectedVideosPositions() != null) {
+				positions.addAll(assetSelectListener
+						.getSelectedVideosPositions());
+			}
 
-  }
+			outState.putIntegerArrayList(Constants.KEY_SELECTED_ITEMS,
+					(ArrayList<Integer>) positions);
+		}
 
-  @Override
-  protected void onRestoreInstanceState(Bundle savedInstanceState) {
-    super.onRestoreInstanceState(savedInstanceState);
-    fragmentSingle = (FragmentSingle) getSupportFragmentManager().findFragmentByTag(
-        Constants.TAG_FRAGMENT_FILES);
-    fragmentRoot = (FragmentRoot) getSupportFragmentManager().findFragmentByTag(
-        Constants.TAG_FRAGMENT_FOLDER);
-    if (fragmentSingle != null
-        && photoFilterType == PhotoFilterType.SOCIAL_PHOTOS.ordinal()) {
-      fragmentSingle.setRetainInstance(true);
-      fragmentSingle.updateFragment(account, folderId, selectedItemPositions);
-    }
-    if (fragmentRoot != null) {
-      fragmentRoot.setRetainInstance(true);
-      fragmentRoot.updateFragment(account, PhotoFilterType.values()[photoFilterType],
-          selectedItemPositions);
-    }
-  }
+	}
 
-  private void retrieveValuesFromBundle(Bundle savedInstanceState) {
-    selectedItemPositions = savedInstanceState != null ? savedInstanceState
-        .getIntegerArrayList(Constants.KEY_SELECTED_ITEMS)
-        : null;
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		fragmentSingle = (FragmentSingle) getSupportFragmentManager()
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FILES);
+		fragmentRoot = (FragmentRoot) getSupportFragmentManager()
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FOLDER);
+		if (fragmentSingle != null
+				&& photoFilterType == PhotoFilterType.SOCIAL_PHOTOS.ordinal()) {
+			fragmentSingle.setRetainInstance(true);
+			fragmentSingle.updateFragment(account, folderId,
+					selectedItemPositions);
+		}
+		if (fragmentRoot != null) {
+			fragmentRoot.setRetainInstance(true);
+			fragmentRoot.updateFragment(account,
+					PhotoFilterType.values()[photoFilterType],
+					selectedItemPositions);
+		}
+	}
 
-    folderId = savedInstanceState != null ? savedInstanceState
-        .getString(Constants.KEY_FOLDER_ID)
-        : null;
+	private void retrieveValuesFromBundle(Bundle savedInstanceState) {
+		selectedItemPositions = savedInstanceState != null ? savedInstanceState
+				.getIntegerArrayList(Constants.KEY_SELECTED_ITEMS) : null;
 
-    account = (AccountModel) (savedInstanceState != null ? savedInstanceState
-        .getParcelable(Constants.KEY_ACCOUNT)
-        : null);
+		folderId = savedInstanceState != null ? savedInstanceState
+				.getString(Constants.KEY_FOLDER_ID) : null;
 
-    photoFilterType = savedInstanceState != null ? savedInstanceState
-        .getInt(Constants.KEY_PHOTO_FILTER_TYPE)
-        : 0;
+		account = (AccountModel) (savedInstanceState != null ? savedInstanceState
+				.getParcelable(Constants.KEY_ACCOUNT) : null);
 
-  }
+		photoFilterType = savedInstanceState != null ? savedInstanceState
+				.getInt(Constants.KEY_PHOTO_FILTER_TYPE) : 0;
 
-  @Override
-  public void onDestroy() {
-    Fragment fragmentFolder =
-        fragmentManager.findFragmentByTag(Constants.TAG_FRAGMENT_FOLDER);
-    Fragment fragmentFiles =
-        fragmentManager.findFragmentByTag(Constants.TAG_FRAGMENT_FILES);
-    if (fragmentFolder != null && fragmentFolder.isResumed()) {
-      fragmentManager.beginTransaction().remove(fragmentFolder).commit();
-    }
-    if (fragmentFiles != null && fragmentFiles.isResumed()) {
-      fragmentManager.beginTransaction().remove(fragmentFiles).commit();
-    }
-    super.onDestroy();
-  }
+	}
 
-  @Override
-  public void onSessionExpired(AccountType accountType) {
-    PhotoPickerPreferenceUtil.get().setAccountType(accountType);
-    AuthenticationFactory.getInstance().startAuthenticationActivity(
-        ServicesActivity.this, accountType);
-  }
+	@Override
+	public void onDestroy() {
+		Fragment fragmentFolder = fragmentManager
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FOLDER);
+		Fragment fragmentFiles = fragmentManager
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FILES);
+		if (fragmentFolder != null && fragmentFolder.isResumed()) {
+			fragmentManager.beginTransaction().remove(fragmentFolder).commit();
+		}
+		if (fragmentFiles != null && fragmentFiles.isResumed()) {
+			fragmentManager.beginTransaction().remove(fragmentFiles).commit();
+		}
+		super.onDestroy();
+	}
 
-  @Override
-  public void onBackPressed() {
-    fragmentRoot = (FragmentRoot) getSupportFragmentManager().findFragmentByTag(
-        Constants.TAG_FRAGMENT_FOLDER);
-    fragmentSingle = (FragmentSingle) getSupportFragmentManager().findFragmentByTag(
-        Constants.TAG_FRAGMENT_FILES);
-    if (fragmentRoot != null && fragmentRoot.isVisible()) {
-      this.finish();
-    } else {
-      super.onBackPressed();
-    }
+	@Override
+	public void onSessionExpired(AccountType accountType) {
+		PhotoPickerPreferenceUtil.get().setAccountType(accountType);
+		AuthenticationFactory.getInstance().startAuthenticationActivity(
+				ServicesActivity.this, accountType);
+	}
 
-  }
+	@Override
+	public void onBackPressed() {
+		fragmentRoot = (FragmentRoot) getSupportFragmentManager()
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FOLDER);
+		fragmentSingle = (FragmentSingle) getSupportFragmentManager()
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FILES);
+		if (fragmentRoot != null && fragmentRoot.isVisible()) {
+			this.finish();
+		} else {
+			super.onBackPressed();
+		}
 
-  private final class AccountsCallback implements
-      HttpCallback<ListResponseModel<AccountModel>> {
+	}
 
-    @Override
-    public void onSuccess(ListResponseModel<AccountModel> responseData) {
-      if (accountType == null) {
-        accountType = PhotoPickerPreferenceUtil.get().getAccountType();
-      }
-      if (responseData.getData().size() == 0) {
-        Toast.makeText(getApplicationContext(),
-            getResources().getString(R.string.no_albums_found),
-            Toast.LENGTH_SHORT).show();
-        return;
-      }
-      for (AccountModel accountModel : responseData.getData()) {
-        if (accountModel.getType().equals(accountType.getLoginMethod())) {
-          PreferenceUtil.get().saveAccount(accountModel);
-          accountClicked(accountModel);
-        }
-      }
+	private final class AccountsCallback implements
+			HttpCallback<ListResponseModel<AccountModel>> {
 
-    }
+		@Override
+		public void onSuccess(ListResponseModel<AccountModel> responseData) {
+			if (accountType == null) {
+				accountType = PhotoPickerPreferenceUtil.get().getAccountType();
+			}
+			if (responseData.getData().size() == 0) {
+				Toast.makeText(getApplicationContext(),
+						getResources().getString(R.string.no_albums_found),
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			for (AccountModel accountModel : responseData.getData()) {
+				if (accountModel.getType().equals(accountType.getLoginMethod())) {
+					PreferenceUtil.get().saveAccount(accountModel);
+					accountClicked(accountModel);
+				}
+			}
 
-    @Override
-    public void onHttpError(ResponseStatus responseStatus) {
-      ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
-          + responseStatus.getStatusMessage());
-    }
+		}
 
-  }
+		@Override
+		public void onHttpError(ResponseStatus responseStatus) {
+			ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
+					+ responseStatus.getStatusMessage());
+		}
+
+	}
 
 }

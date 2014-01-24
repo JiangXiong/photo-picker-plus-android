@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.ui.adapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface for retrieving the selected item positions used to save the
@@ -31,6 +31,8 @@ import java.util.ArrayList;
  */
 public interface AssetSelectListener {
 
-  public ArrayList<Integer> getSelectedItemPositions();
+	public List<Integer> getSelectedImagesPositions();
+
+	public List<Integer> getSelectedVideosPositions();
 
 }

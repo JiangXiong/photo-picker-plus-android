@@ -23,6 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -163,12 +164,20 @@ public class AssetActivity extends FragmentActivity implements CursorFilesListen
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
     outState.putString(Constants.KEY_FOLDER_ID, folderId);
-    if (assetSelectListener != null
-        && assetSelectListener.getSelectedItemPositions() !=
-        null) {
-      outState.putIntegerArrayList(Constants.KEY_SELECTED_ITEMS,
-          assetSelectListener.getSelectedItemPositions());
-    }
+    List<Integer> positions = new ArrayList<Integer>();
+	if (assetSelectListener != null) {
+		if (assetSelectListener.getSelectedImagesPositions() != null) {
+			positions.addAll(assetSelectListener
+					.getSelectedImagesPositions());
+		}
+		if (assetSelectListener.getSelectedVideosPositions() != null) {
+			positions.addAll(assetSelectListener
+					.getSelectedVideosPositions());
+		}
+
+		outState.putIntegerArrayList(Constants.KEY_SELECTED_ITEMS,
+				(ArrayList<Integer>) positions);
+	}
 
   }
 

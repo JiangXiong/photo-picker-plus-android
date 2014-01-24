@@ -23,7 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.fragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -46,6 +45,7 @@ import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.loaders.LocalImagesAsyncTaskLoader;
 import com.chute.android.photopickerplus.loaders.LocalVideosAsyncTaskLoader;
+import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
 import com.chute.android.photopickerplus.ui.adapter.AssetCursorAdapter;
@@ -53,24 +53,18 @@ import com.chute.android.photopickerplus.ui.adapter.MergeAdapter;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
-import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
 import com.chute.sdk.v2.api.accounts.GCAccounts;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
 import com.chute.sdk.v2.model.AccountModel;
-import com.chute.sdk.v2.model.AssetModel;
 import com.chute.sdk.v2.model.enums.AccountType;
 import com.chute.sdk.v2.model.response.ResponseModel;
 import com.dg.libs.rest.callbacks.HttpCallback;
 import com.dg.libs.rest.domain.ResponseStatus;
 
 public class FragmentRoot extends Fragment implements AdapterItemClickListener {
-
-  private static final String ARG_FILTER_TYPE = "argFilterType";
-  private static final String ARG_ACCOUNT = "argAccount";
-  private static final String ARG_SELECTED_ITEM_POSITIONS = "argSelectedItemPositions";
 
   private GridView gridView;
   private AssetCursorAdapter cursorImagesAdapter;
@@ -89,16 +83,15 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
   private AccountType accountType;
   private CursorFilesListener cursorListener;
   private AccountFilesListener accountListener;
-  private List<AssetModel> adapterList;
 
   public static FragmentRoot newInstance(AccountModel account,
       PhotoFilterType filterType,
       ArrayList<Integer> selectedItemPositions) {
     FragmentRoot frag = new FragmentRoot();
+    frag.account = account;
+    frag.filterType = filterType;
+    frag.selectedItemsPositions = selectedItemPositions;
     Bundle args = new Bundle();
-    args.putParcelable(ARG_ACCOUNT, account);
-    args.putSerializable(ARG_FILTER_TYPE, filterType);
-    args.putIntegerArrayList(ARG_SELECTED_ITEM_POSITIONS, selectedItemPositions);
     frag.setArguments(args);
     return frag;
   }
@@ -133,10 +126,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
     ok.setOnClickListener(new OkClickListener());
     cancel.setOnClickListener(new CancelClickListener());
     
-    if (getArguments() != null && savedInstanceState == null) {
-      account = getArguments().getParcelable(ARG_ACCOUNT);
-      updateFragment(account, (PhotoFilterType) getArguments().get(ARG_FILTER_TYPE),
-          getArguments().getIntegerArrayList(ARG_SELECTED_ITEM_POSITIONS));
+    if (savedInstanceState == null) {
+      updateFragment(account, filterType, selectedItemsPositions);
     }
 
     gridView.setNumColumns(getResources().getInteger(R.integer.grid_columns_assets));
@@ -173,10 +164,10 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
     }
     
     mergeAdapter = new MergeAdapter();
-    cursorImagesAdapter = new AssetCursorAdapter(getActivity(), null);
-    cursorVideosAdapter = new AssetCursorAdapter(getActivity(), null);
-    mergeAdapter.addAdapter(cursorImagesAdapter);
+    cursorVideosAdapter = new AssetCursorAdapter(getActivity(), null, AssetCursorAdapter.VIDEOS);
+    cursorImagesAdapter = new AssetCursorAdapter(getActivity(), null, AssetCursorAdapter.IMAGES);
     mergeAdapter.addAdapter(cursorVideosAdapter);
+    mergeAdapter.addAdapter(cursorImagesAdapter);
     gridView.setAdapter(mergeAdapter);
     if (isMultipicker == true) {
         textViewSelectPhotos.setText(getActivity().getApplicationContext().getResources()
@@ -273,7 +264,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
       if (selectedItemsPositions != null) {
         for (int position : selectedItemsPositions) {
-        	cursorImagesAdapter.toggleTick(position);
+        	cursorImagesAdapter.toggleTick(position, AssetCursorAdapter.IMAGES);
         }
       }
 
@@ -312,7 +303,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
       
       if (selectedItemsPositions != null) {
           for (int position : selectedItemsPositions) {
-          	cursorImagesAdapter.toggleTick(position);
+          	cursorVideosAdapter.toggleTick(position, AssetCursorAdapter.VIDEOS);
           }
         }
 
@@ -337,7 +328,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view,
         final int position, final long id) {
-    	cursorImagesAdapter.toggleTick(position);
+    	cursorImagesAdapter.toggleTick(position, AssetCursorAdapter.IMAGES);
+    	cursorVideosAdapter.toggleTick(position, AssetCursorAdapter.VIDEOS);
     }
   }
 
@@ -348,6 +340,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
         final int position, final long id) {
       cursorListener.onCursorAssetsSelect(AppUtil.getMediaModel(cursorImagesAdapter
           .getItem(position)));
+      cursorListener.onCursorAssetsSelect(AppUtil.getMediaModel(cursorVideosAdapter
+              .getItem(position)));
     }
   }
 
@@ -371,10 +365,14 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
         }
       } else if ((filterType == PhotoFilterType.ALL_PHOTOS)
           || (filterType == PhotoFilterType.CAMERA_ROLL)) {
+    	  ArrayList<String> deliverList = new ArrayList<String>();
         if (!cursorImagesAdapter.getSelectedFilePaths().isEmpty()) {
-          cursorListener.onDeliverCursorAssets(cursorImagesAdapter
-              .getSelectedFilePaths());
+        	deliverList.addAll(cursorImagesAdapter.getSelectedFilePaths());
         }
+        if (!cursorVideosAdapter.getSelectedFilePaths().isEmpty()) {
+        	deliverList.addAll(cursorVideosAdapter.getSelectedFilePaths());
+          }
+        cursorListener.onDeliverCursorAssets(deliverList);
       }
     }
   }

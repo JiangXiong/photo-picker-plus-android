@@ -40,30 +40,32 @@ import com.dg.libs.rest.requests.StringBodyHttpRequestImpl;
  * 
  */
 public class ImageDataRequest extends
-    StringBodyHttpRequestImpl<ResponseModel<ImageResponseModel>> {
+		StringBodyHttpRequestImpl<ResponseModel<ImageResponseModel>> {
 
-  private MediaModel imageData;
+	private MediaModel imageData;
 
-  public ImageDataRequest(Context context, MediaModel imageData,
-      HttpCallback<ResponseModel<ImageResponseModel>> callback) {
-    super(context, RequestMethod.POST, new ResponseParser<ImageResponseModel>(
-        ImageResponseModel.class),
-        callback);
-    if (imageData == null) {
-      throw new IllegalArgumentException("Need to provide image data");
-    }
-    this.imageData = imageData;
-    getClient().addHeader("Content-Type", "application/json");
-  }
+	public ImageDataRequest(Context context, MediaModel imageData,
+			HttpCallback<ResponseModel<ImageResponseModel>> callback) {
+		super(
+				context,
+				RequestMethod.POST,
+				new ResponseParser<ImageResponseModel>(ImageResponseModel.class),
+				callback);
+		if (imageData == null) {
+			throw new IllegalArgumentException("Need to provide image data");
+		}
+		this.imageData = imageData;
+		getClient().addHeader("Content-Type", "application/json");
+	}
 
-  @Override
-  public String bodyContents() {
-    return this.imageData.serializeImageDataModel();
-  }
+	@Override
+	public String bodyContents() {
+		return this.imageData.serializeImageDataModel();
+	}
 
-  @Override
-  protected String getUrl() {
-    return Constants.SELECTED_IMAGES_URL;
-  }
+	@Override
+	protected String getUrl() {
+		return Constants.SELECTED_IMAGES_URL;
+	}
 
 }
