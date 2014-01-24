@@ -176,6 +176,7 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
   }
 
   public void accountClicked(AccountModel account) {
+	  ALog.d("account clicked");
     photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
     selectedItemPositions = null;
     this.account = account;
@@ -221,12 +222,14 @@ public class ServicesActivity extends FragmentActivity implements AccountFilesLi
   @Override
   public void accountLogin(AccountType type) {
     accountType = type;
+    ALog.d("account type = " + accountType.getLoginMethod());
     PhotoPickerPreferenceUtil.get().setAccountType(accountType);
     if (PreferenceUtil.get().hasAccount(type.getLoginMethod())) {
       AccountModel account = PreferenceUtil.get()
           .getAccount(type.getLoginMethod());
       accountClicked(account);
     } else {
+    	ALog.d("authentication activity");
       AuthenticationFactory.getInstance().startAuthenticationActivity(
           ServicesActivity.this, accountType);
     }

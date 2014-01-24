@@ -69,6 +69,7 @@ public class ImageDataResponseLoader {
     for (AccountMediaModel media : selectedImages) {
       MediaDataModel mediaModel = new MediaDataModel();
       mediaModel.setImageUrl(media.getImageUrl());
+      mediaModel.setVideoUrl(media.getVideoUrl());
       mediaModel.setThumbnail(media.getThumbnail());
       mediaModelList.add(mediaModel);
     }

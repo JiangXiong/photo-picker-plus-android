@@ -34,6 +34,9 @@ import com.chute.sdk.v2.api.authentication.AuthConstants;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
+	
+	final String APP_ID = "4f3c39ff38ecef0c89000003";
+	final String APP_SECRET = "c9a8cb57c52f49384ab6117c4f6483a1a5c5a14c4a50d4cef276a9a13286efc9";
 
   @Override
   public void onCreate() {
@@ -47,14 +50,15 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
      * 
      * See <a href="https://apps.getchute.com">https://apps.getchute.com</a>
      */
-    Chute.init(this, new AuthConstants("50d9c930018d1672df00002e", "ee9b33013c0592aa41d30d1f347ff62514b737e61e6ce9c64fb13a44d31917d9"));
+    
+    Chute.init(this, new AuthConstants(APP_ID, APP_SECRET));
 
 
     PhotoPickerConfiguration config = new PhotoPickerConfiguration.Builder(
         getApplicationContext())
         .isMultiPicker(true)
         .accountList(AccountType.FLICKR, AccountType.TWITTER, AccountType.FACEBOOK,
-            AccountType.FOURSQUARE, AccountType.INSTAGRAM, AccountType.GOOGLE, AccountType.YOUTUBE)
+            AccountType.DROPBOX, AccountType.INSTAGRAM, AccountType.GOOGLE, AccountType.YOUTUBE)
         .localMediaList(LocalMediaType.ALL_MEDIA, LocalMediaType.CAMERA_MEDIA)
         .configUrl(ConfigEndpointURLs.SERVICES_CONFIG_URL)
         .supportImages(true)

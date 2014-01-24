@@ -34,90 +34,111 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class MediaDataModel implements Parcelable {
 
-  /**
-   * Asset's image URL.
-   */
-  @JsonProperty("image_url")
-  private String imageUrl;
+	/**
+	 * Asset's image URL.
+	 */
+	@JsonProperty("image_url")
+	private String imageUrl;
 
-  /**
-   * Asset's thumbnail URL.
-   */
-  @JsonProperty("thumbnail")
-  private String thumbnail;
+	/**
+	 * Asset's video URL.
+	 */
+	@JsonProperty("video_url")
+	private String videoUrl;
 
-  public MediaDataModel() {
-  }
+	/**
+	 * Asset's thumbnail URL.
+	 */
+	@JsonProperty("thumbnail")
+	private String thumbnail;
 
-  public String getImageUrl() {
-    return imageUrl;
-  }
+	public MediaDataModel() {
+	}
 
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
-  }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-  public String getThumbnail() {
-    return thumbnail;
-  }
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-  public void setThumbnail(String thumbnail) {
-    this.thumbnail = thumbnail;
-  }
+	public String getVideoUrl() {
+		return videoUrl;
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("MediaModel [imageUrl=");
-    builder.append(imageUrl);
-    builder.append(", thumbnail=");
-    builder.append(thumbnail);
-    builder.append("]");
-    return builder.toString();
-  }
+	public void setVideoUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see android.os.Parcelable#describeContents()
-   */
-  @Override
-  public int describeContents() {
-    return 0;
-  }
+	public String getThumbnail() {
+		return thumbnail;
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
-   */
-  @Override
-  public void writeToParcel(Parcel dest, int flags) {
-    dest.writeString(imageUrl);
-    dest.writeString(thumbnail);
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
 
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.os.Parcelable#describeContents()
+	 */
+	@Override
+	public int describeContents() {
+		return 0;
+	}
 
-  public MediaDataModel(Parcel in) {
-    this();
-    imageUrl = in.readString();
-    thumbnail = in.readString();
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("MediaDataModel [imageUrl=");
+		builder.append(imageUrl);
+		builder.append(", videoUrl=");
+		builder.append(videoUrl);
+		builder.append(", thumbnail=");
+		builder.append(thumbnail);
+		builder.append("]");
+		return builder.toString();
+	}
 
-  public static final Parcelable.Creator<MediaDataModel> CREATOR = new Parcelable.Creator<MediaDataModel>() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
+	 */
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(imageUrl);
+		dest.writeString(videoUrl);
+		dest.writeString(thumbnail);
 
-    @Override
-    public MediaDataModel createFromParcel(Parcel in) {
-      return new MediaDataModel(in);
-    }
+	}
 
-    @Override
-    public MediaDataModel[] newArray(int size) {
-      return new MediaDataModel[size];
-    }
+	public MediaDataModel(Parcel in) {
+		this();
+		imageUrl = in.readString();
+		videoUrl = in.readString();
+		thumbnail = in.readString();
+	}
 
-  };
+	public static final Parcelable.Creator<MediaDataModel> CREATOR = new Parcelable.Creator<MediaDataModel>() {
+
+		@Override
+		public MediaDataModel createFromParcel(Parcel in) {
+			return new MediaDataModel(in);
+		}
+
+		@Override
+		public MediaDataModel[] newArray(int size) {
+			return new MediaDataModel[size];
+		}
+
+	};
 
 }
