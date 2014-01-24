@@ -35,6 +35,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.chute.android.photopickerplustutorial.activity.VideoPlayerActivity"
+            android:theme="@style/PhotoPickerTheme" >
+        </activity>
+        <activity
             android:name="com.chute.android.photopickerplus.ui.activity.ServicesActivity"
             android:theme="@style/PhotoPickerTheme" >
         </activity>

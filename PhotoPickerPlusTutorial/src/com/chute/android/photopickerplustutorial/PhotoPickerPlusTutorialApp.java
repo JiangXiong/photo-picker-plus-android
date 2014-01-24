@@ -61,7 +61,7 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
             AccountType.DROPBOX, AccountType.INSTAGRAM, AccountType.GOOGLE, AccountType.YOUTUBE)
         .localMediaList(LocalMediaType.ALL_MEDIA, LocalMediaType.CAMERA_MEDIA)
         .configUrl(ConfigEndpointURLs.SERVICES_CONFIG_URL)
-        .supportImages(true)
+        .supportImages(false)
         .supportVideos(true)
         .build();
     PhotoPicker.getInstance().init(config);
