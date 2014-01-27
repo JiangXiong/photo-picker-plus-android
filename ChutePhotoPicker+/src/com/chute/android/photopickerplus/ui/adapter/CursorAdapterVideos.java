@@ -31,12 +31,14 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.CursorAdapter;
@@ -47,30 +49,30 @@ import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
+import com.chute.android.photopickerplus.ui.fragment.CursorFilesListener;
+import com.chute.android.photopickerplus.util.AppUtil;
 
 import darko.imagedownloader.ImageLoader;
 
-public class AssetCursorAdapter extends CursorAdapter implements
+public class CursorAdapterVideos extends CursorAdapter implements
 		OnScrollListener, AssetSelectListener {
 
-	public static final String TAG = AssetCursorAdapter.class.getSimpleName();
-	public static final String VIDEOS = "videos";
-	public static final String IMAGES = "images";
+	public static final String TAG = CursorAdapterVideos.class.getSimpleName();
 
 	private static LayoutInflater inflater = null;
 	public ImageLoader loader;
 	private int dataIndex;
 	public HashMap<Integer, String> tick;
 	private boolean shouldLoadImages = true;
-	private final String type;
+	private CursorFilesListener listener;
 
 	@SuppressLint("NewApi")
-	public AssetCursorAdapter(FragmentActivity context, Cursor c, String type) {
+	public CursorAdapterVideos(FragmentActivity context, Cursor c, CursorFilesListener listener) {
 		super(context, c, 0);
+		this.listener = listener;
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		loader = ImageLoader.getLoader(context.getApplicationContext());
-		this.type = type;
 		dataIndex = getDataIndex(c);
 		tick = new HashMap<Integer, String>();
 		if (context.getResources().getBoolean(R.bool.has_two_panes)) {
@@ -92,7 +94,8 @@ public class AssetCursorAdapter extends CursorAdapter implements
 	public void bindView(View view, Context context, Cursor cursor) {
 		ViewHolder holder = (ViewHolder) view.getTag();
 		String path = cursor.getString(dataIndex);
-		holder.imageViewThumb.setTag(path);
+		holder.imageViewThumb.setTag(cursor.getPosition());
+		holder.imageViewThumb.setOnClickListener(new VideosClickListener());
 		holder.imageViewTick.setTag(cursor.getPosition());
 		Uri uri = Uri.fromFile(new File(path));
 		if (shouldLoadImages) {
@@ -107,9 +110,7 @@ public class AssetCursorAdapter extends CursorAdapter implements
 			view.setBackgroundColor(context.getResources().getColor(
 					R.color.gray_light));
 		}
-		if (type.equals(VIDEOS)) {
-			holder.imageViewPlay.setVisibility(View.VISIBLE);
-		}
+		holder.imageViewPlay.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -172,18 +173,16 @@ public class AssetCursorAdapter extends CursorAdapter implements
 		return tick.size();
 	}
 
-	public void toggleTick(int position, String mediaType) {
-		if (type.equals(mediaType)) {
-			ALog.d("toggle click position = " + position);
-			if (getCount() > position) {
-				if (tick.containsKey(position)) {
-					tick.remove(position);
-				} else {
-					tick.put(position, getItem(position));
-				}
+	public void toggleTick(int position) {
+		ALog.d("videos position = " + position);
+		if (getCount() > position) {
+			if (tick.containsKey(position)) {
+				tick.remove(position);
+			} else {
+				tick.put(position, getItem(position));
 			}
-			notifyDataSetChanged();
 		}
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -197,37 +196,45 @@ public class AssetCursorAdapter extends CursorAdapter implements
 		if (cursor == null) {
 			return 0;
 		} else {
-			if (PhotoPicker.getInstance().supportVideos()) {
-				return cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
-			} else {
-				return cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-			}
+			return cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
 		}
 	}
 
 	@Override
 	public List<Integer> getSelectedImagesPositions() {
-		ALog.d("positions images = " + getPositions(IMAGES));
-		return getPositions(IMAGES);
+		return new ArrayList<Integer>();
 	}
 
 	@Override
 	public List<Integer> getSelectedVideosPositions() {
-		ALog.d("positions videos = " + getPositions(VIDEOS));
-		return getPositions(VIDEOS);
+		return getPositions();
 	}
 
-	private List<Integer> getPositions(String itemType) {
-		if (type.equals(itemType)) {
-			final ArrayList<Integer> positions = new ArrayList<Integer>();
-			final Iterator<Integer> iterator = tick.keySet().iterator();
-			while (iterator.hasNext()) {
-				positions.add(iterator.next());
-			}
-			return positions;
-		} else {
-			return new ArrayList<Integer>();
+	private List<Integer> getPositions() {
+		final ArrayList<Integer> positions = new ArrayList<Integer>();
+		final Iterator<Integer> iterator = tick.keySet().iterator();
+		while (iterator.hasNext()) {
+			positions.add(iterator.next());
 		}
+		return positions;
 	}
+	
+	private final class VideosClickListener implements OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			int position = (Integer) v.getTag();
+			if (PhotoPicker.getInstance().isMultiPicker()) {
+				ALog.d("videos position = " + position );
+				toggleTick(position);
+			} else {
+				listener.onCursorAssetsSelect(AppUtil
+						.getMediaModel(getItem(position)));
+			}
+			
+		}
+		
+	}
+
 
 }

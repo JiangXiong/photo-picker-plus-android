@@ -22,7 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.config;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import com.araneaapps.android.libs.logger.ALog;
 import com.dg.libs.rest.parsers.BaseJacksonMapperResponseParser;
@@ -39,9 +42,23 @@ public class ServiceResponseParser extends
 
   @Override
   public ServiceResponseModel parse(InputStream responseBody) throws Exception {
-	  ALog.d("response: " + responseBody.toString());
+	  ALog.d("response: " + readStream(responseBody));
     return mapper.readValue(responseBody,
         mapper.getTypeFactory().constructType(ServiceResponseModel.class));
+  }
+  
+  private String readStream(InputStream is) {
+	  BufferedReader r = new BufferedReader(new InputStreamReader(is));
+	  StringBuilder total = new StringBuilder();
+	  String line = null;
+	  try {
+		while ((line = r.readLine()) != null) {
+		      total.append(line);
+		  }
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+	  return line;
   }
 
 }
