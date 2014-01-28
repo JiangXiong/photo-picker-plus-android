@@ -29,12 +29,10 @@ import java.util.List;
  * selected items state when the orientation is changed.
  * 
  */
-public interface ListenerAssetSelection {
+public interface ListenerImageSelection {
 
-	public List<Integer> getSocialPhotosSelection();
 
 	public List<String> getCursorImagesSelection();
 	
-	public List<String> getCursorVideosSelection();
 
 }

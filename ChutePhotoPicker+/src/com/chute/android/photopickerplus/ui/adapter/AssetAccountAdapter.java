@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
@@ -40,7 +41,7 @@ import android.widget.TextView;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
-import com.chute.android.photopickerplus.ui.listener.ListenerAssetSelection;
+import com.chute.android.photopickerplus.ui.listener.ListenerAccountAssetsSelection;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
@@ -50,7 +51,7 @@ import com.chute.sdk.v2.model.interfaces.AccountMedia;
 import darko.imagedownloader.ImageLoader;
 
 public class AssetAccountAdapter extends BaseAdapter implements
-		ListenerAssetSelection {
+		ListenerAccountAssetsSelection {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = AssetAccountAdapter.class.getSimpleName();
@@ -59,7 +60,7 @@ public class AssetAccountAdapter extends BaseAdapter implements
 
 	private static LayoutInflater inflater;
 	public ImageLoader loader;
-	public HashMap<Integer, AccountMediaModel> tick;
+	public Map<Integer, AccountMediaModel> tick;
 	private final FragmentActivity context;
 	private List<AccountMedia> rows;
 	private AdapterItemClickListener adapterItemClickListener;
@@ -93,9 +94,9 @@ public class AssetAccountAdapter extends BaseAdapter implements
 			}
 		}
 		if (context.getResources().getBoolean(R.bool.has_two_panes)) {
-			((ServicesActivity) context).setAssetSelectListener(this);
+			((ServicesActivity) context).setAssetsSelectListener(this);
 		} else {
-			((AssetActivity) context).setAssetSelectListener(this);
+			((AssetActivity) context).setAssetsSelectListener(this);
 		}
 	}
 
@@ -197,14 +198,6 @@ public class AssetAccountAdapter extends BaseAdapter implements
 		return photos;
 	}
 
-	public boolean hasSelectedItems() {
-		return tick.size() > 0;
-	}
-
-	public int getSelectedItemsCount() {
-		return tick.size();
-	}
-
 	public void toggleTick(final int position) {
 		if (getCount() > position) {
 			if (getItemViewType(position) == AccountMediaType.FILE.ordinal()) {
@@ -248,16 +241,6 @@ public class AssetAccountAdapter extends BaseAdapter implements
 			positions.add(iterator.next());
 		}
 		return positions;
-	}
-
-	@Override
-	public List<String> getCursorImagesSelection() {
-		return null;
-	}
-
-	@Override
-	public List<String> getCursorVideosSelection() {
-		return null;
 	}
 
 }

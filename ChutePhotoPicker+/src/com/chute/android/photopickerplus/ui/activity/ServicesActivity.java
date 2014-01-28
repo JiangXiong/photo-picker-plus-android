@@ -43,7 +43,9 @@ import com.chute.android.photopickerplus.ui.fragment.*;
 import com.chute.android.photopickerplus.ui.fragment.FragmentServices.ServiceClickedListener;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
-import com.chute.android.photopickerplus.ui.listener.ListenerAssetSelection;
+import com.chute.android.photopickerplus.ui.listener.ListenerAccountAssetsSelection;
+import com.chute.android.photopickerplus.ui.listener.ListenerImageSelection;
+import com.chute.android.photopickerplus.ui.listener.ListenerVideoSelection;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
@@ -84,18 +86,24 @@ public class ServicesActivity extends FragmentActivity implements
 	private List<String> videoItemPaths;
 	private String folderId;
 	private AccountModel account;
-	private ListenerAssetSelection assetSelectListener;
+	private ListenerAccountAssetsSelection listenerAssetsSelection;
+	private ListenerImageSelection listenerImagesSelection;
+	private ListenerVideoSelection listenerVideosSelection;
 	private FragmentSingle fragmentSingle;
 	private FragmentRoot fragmentRoot;
 	private int photoFilterType;
 
-	public ListenerAssetSelection getAssetSelectListener() {
-		return assetSelectListener;
+	public void setAssetsSelectListener(
+			ListenerAccountAssetsSelection adapterListener) {
+		this.listenerAssetsSelection = adapterListener;
 	}
 
-	public void setAssetSelectListener(
-			ListenerAssetSelection assetSelectListener) {
-		this.assetSelectListener = assetSelectListener;
+	public void setImagesSelectListener(ListenerImageSelection adapterListener) {
+		this.listenerImagesSelection = adapterListener;
+	}
+
+	public void setVideosSelectListener(ListenerVideoSelection adapterListener) {
+		this.listenerVideosSelection = adapterListener;
 	}
 
 	@Override
@@ -355,26 +363,24 @@ public class ServicesActivity extends FragmentActivity implements
 		List<Integer> accountPositions = new ArrayList<Integer>();
 		List<String> imagePaths = new ArrayList<String>();
 		List<String> videoPaths = new ArrayList<String>();
-		if (assetSelectListener != null) {
-			if (assetSelectListener.getSocialPhotosSelection() != null) {
-				accountPositions.addAll(assetSelectListener
-						.getSocialPhotosSelection());
-			}
-			if (assetSelectListener.getCursorImagesSelection() != null) {
-				imagePaths.addAll(assetSelectListener
-						.getCursorImagesSelection());
-			}
-			if (assetSelectListener.getCursorVideosSelection() != null) {
-				ALog.d("services saveinstancestate = "
-						+ assetSelectListener.getCursorVideosSelection());
-				videoPaths.addAll(assetSelectListener
-						.getCursorVideosSelection());
-			}
-
+		if (listenerAssetsSelection != null
+				&& listenerAssetsSelection.getSocialPhotosSelection() != null) {
+			accountPositions.addAll(listenerAssetsSelection
+					.getSocialPhotosSelection());
 			outState.putIntegerArrayList(Constants.KEY_SELECTED_ACCOUNTS_ITEMS,
 					(ArrayList<Integer>) accountPositions);
+		}
+		if (listenerImagesSelection != null
+				&& listenerImagesSelection.getCursorImagesSelection() != null) {
+			imagePaths.addAll(listenerImagesSelection
+					.getCursorImagesSelection());
 			outState.putStringArrayList(Constants.KEY_SELECTED_IMAGES_ITEMS,
 					(ArrayList<String>) imagePaths);
+		}
+		if (listenerVideosSelection != null
+				&& listenerVideosSelection.getCursorVideosSelection() != null) {
+			videoPaths.addAll(listenerVideosSelection
+					.getCursorVideosSelection());
 			outState.putStringArrayList(Constants.KEY_SELECTED_VIDEOS_ITEMS,
 					(ArrayList<String>) videoPaths);
 		}

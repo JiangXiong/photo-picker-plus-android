@@ -80,8 +80,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	private boolean supportVideos;
 	private boolean supportImages;
 	private List<Integer> selectedAccountsPositions;
-	private List<String> selectedImagesPaths;
-	private List<String> selectedVideosPaths;
+	private List<String> selectedImagePaths;
+	private List<String> selectedVideoPaths;
 	private AccountModel account;
 	private PhotoFilterType filterType;
 	private AccountType accountType;
@@ -89,13 +89,15 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	private ListenerFilesAccount accountListener;
 
 	public static FragmentRoot newInstance(AccountModel account,
-			PhotoFilterType filterType, List<Integer> selectedAccountsPositions, List<String> selectedImagesPaths, List<String> selectedVideosPaths) {
+			PhotoFilterType filterType,
+			List<Integer> selectedAccountsPositions,
+			List<String> selectedImagePaths, List<String> selectedVideoPaths) {
 		FragmentRoot frag = new FragmentRoot();
 		frag.account = account;
 		frag.filterType = filterType;
 		frag.selectedAccountsPositions = selectedAccountsPositions;
-		frag.selectedImagesPaths = selectedImagesPaths;
-		frag.selectedVideosPaths = selectedVideosPaths;
+		frag.selectedImagePaths = selectedImagePaths;
+		frag.selectedVideoPaths = selectedVideoPaths;
 		Bundle args = new Bundle();
 		frag.setArguments(args);
 		return frag;
@@ -134,7 +136,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		cancel.setOnClickListener(new CancelClickListener());
 
 		if (savedInstanceState == null) {
-			updateFragment(account, filterType, selectedAccountsPositions, selectedImagesPaths, selectedVideosPaths);
+			updateFragment(account, filterType, selectedAccountsPositions,
+					selectedImagePaths, selectedVideoPaths);
 		}
 
 		gridView.setNumColumns(getResources().getInteger(
@@ -145,25 +148,25 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
 	public void updateFragment(AccountModel account,
 			PhotoFilterType filterType,
-			List<Integer> selectedAccountsPositions, List<String> selectedImagesPaths, List<String> selectedVideosPaths) {
+			List<Integer> selectedAccountsPositions,
+			List<String> selectedImagePaths, List<String> selectedVideoPaths) {
 
 		isMultipicker = PhotoPicker.getInstance().isMultiPicker();
 		supportVideos = PhotoPicker.getInstance().supportVideos();
 		supportImages = PhotoPicker.getInstance().supportImages();
 		this.filterType = filterType;
 		this.selectedAccountsPositions = selectedAccountsPositions;
-		this.selectedImagesPaths = selectedVideosPaths;
 		this.account = account;
 
 		if ((filterType == PhotoFilterType.ALL_PHOTOS)
 				|| (filterType == PhotoFilterType.CAMERA_ROLL)) {
 			if (supportImages) {
 				getActivity().getSupportLoaderManager().initLoader(1, null,
-						new ImagesLoaderCallback());
+						new ImagesLoaderCallback(selectedImagePaths));
 			}
 			if (supportVideos) {
 				getActivity().getSupportLoaderManager().initLoader(2, null,
-						new VideosLoaderCallback());
+						new VideosLoaderCallback(selectedVideoPaths));
 			}
 		} else if (filterType == PhotoFilterType.SOCIAL_PHOTOS
 				&& getActivity() != null) {
@@ -241,8 +244,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 							.getString(R.string.select_a_photo));
 				}
 				NotificationUtil.showPhotosAdapterToast(getActivity()
-						.getApplicationContext(), adapterAccounts
-						.getCount());
+						.getApplicationContext(), adapterAccounts.getCount());
 			}
 
 		}
@@ -253,6 +255,12 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	 * DEVICE IMAGES LOADER
 	 */
 	private final class ImagesLoaderCallback implements LoaderCallbacks<Cursor> {
+
+		private List<String> imagePaths;
+
+		private ImagesLoaderCallback(List<String> imagePaths) {
+			this.imagePaths = imagePaths;
+		}
 
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -269,10 +277,9 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 			emptyView.setVisibility(View.GONE);
 			adapterImages.changeCursor(cursor);
 
-			if (selectedImagesPaths != null) {
-				for (String position : selectedImagesPaths) {
-					ALog.d("root image loader " + selectedImagesPaths);
-					adapterImages.toggleTick(position);
+			if (imagePaths != null) {
+				for (String path : imagePaths) {
+					adapterImages.toggleTick(path);
 				}
 			}
 		}
@@ -290,6 +297,12 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	 */
 	private final class VideosLoaderCallback implements LoaderCallbacks<Cursor> {
 
+		private List<String> videoPaths;
+
+		private VideosLoaderCallback(List<String> videoPaths) {
+			this.videoPaths = videoPaths;
+		}
+
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 			return new LocalVideosAsyncTaskLoader(getActivity()
@@ -305,10 +318,9 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 			emptyView.setVisibility(View.GONE);
 			adapterVideos.changeCursor(cursor);
 
-			if (selectedVideosPaths != null) {
-				for (String position : selectedVideosPaths) {
-					ALog.d("root video loader " + selectedVideosPaths);
-					adapterVideos.toggleTick(position);
+			if (videoPaths != null) {
+				for (String path : videoPaths) {
+					adapterVideos.toggleTick(path);
 				}
 			}
 
