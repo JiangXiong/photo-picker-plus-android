@@ -9,9 +9,11 @@
     <string name="instagram">Instagram</string>
     <string name="picasa">Picasa</string>
     <string name="take_photos">Take a photo</string>
+    <string name="record_video">Record video</string>
     <string name="last_photo">Last photo taken</string>
-    <string name="all_photos">All photos</string>
-    <string name="camera_shots">Camera shots</string>
+    <string name="last_video_captured">Last video captured</string>
+    <string name="all_media">All media</string>
+    <string name="camera_media">Camera media</string>
 
     <!-- Exceptions -->
     <string name="parsing_exception">Invalid response format</string>

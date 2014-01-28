@@ -152,38 +152,41 @@ public class ServicesAdapter extends BaseAdapter {
 	}
 
 	private void setupLocalService(ViewHolder holder, LocalMediaType type) {
-		Uri uriAllItems = null;
-		Uri uriLastItem = null;
-		if (supportsVideos) {
-			uriAllItems = MediaDAO.getLastVideoFromAllVideos(context
+		Uri uriAllVideoItems = MediaDAO.getLastVideoFromAllVideos(context
+				.getApplicationContext());
+		Uri uriLastVideoItem = MediaDAO.getLastVideoFromCameraVideos(context
+				.getApplicationContext());
+		Uri	uriAllImageItems = MediaDAO.getLastPhotoFromAllPhotos(context
 					.getApplicationContext());
-			uriLastItem = MediaDAO.getLastVideoFromCameraVideos(context
+		Uri	uriLastImageItem = MediaDAO.getLastPhotoFromCameraPhotos(context
 					.getApplicationContext());
-		} 
-		if (supportsImages){
-			uriAllItems = MediaDAO.getLastPhotoFromAllPhotos(context
-					.getApplicationContext());
-			uriLastItem = MediaDAO.getLastPhotoFromCameraPhotos(context
-					.getApplicationContext());
-		}
 		switch (type) {
-		case TAKE_MEDIA:
+		case TAKE_PHOTO:
 			holder.imageView.setBackgroundResource(R.drawable.take_photo);
 			holder.textViewServiceTitle.setText(R.string.take_photos);
 			break;
 		case CAMERA_MEDIA:
-			loader.displayImage(uriLastItem.toString(), holder.imageView, null);
-			holder.textViewServiceTitle.setText(R.string.camera_shots);
+			loader.displayImage(uriLastImageItem.toString(), holder.imageView, null);
+			holder.textViewServiceTitle.setText(R.string.camera_media);
 			break;
-		case LAST_MEDIA_TAKEN:
-			loader.displayImage(uriLastItem.toString(), holder.imageView, null);
+		case LAST_PHOTO_TAKEN:
+			loader.displayImage(uriLastImageItem.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(context.getResources()
 					.getString(R.string.last_photo));
 			break;
 		case ALL_MEDIA:
-			loader.displayImage(uriAllItems.toString(), holder.imageView, null);
+			loader.displayImage(uriAllImageItems.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(context.getResources()
-					.getString(R.string.all_photos));
+					.getString(R.string.all_media));
+			break;
+		case LAST_VIDEO_CAPTURED:
+			loader.displayImage(uriLastVideoItem.toString(), holder.imageView, null);
+			holder.textViewServiceTitle.setText(context.getResources()
+					.getString(R.string.last_video_captured));
+			break;
+		case RECORD_VIDEO:
+			holder.imageView.setBackgroundResource(R.drawable.take_photo);
+			holder.textViewServiceTitle.setText(R.string.record_video);
 			break;
 		}
 
@@ -208,7 +211,7 @@ public class ServicesAdapter extends BaseAdapter {
 			});
 
 			break;
-		case TAKE_MEDIA:
+		case TAKE_PHOTO:
 			holder.imageView.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -218,12 +221,30 @@ public class ServicesAdapter extends BaseAdapter {
 			});
 
 			break;
-		case LAST_MEDIA_TAKEN:
+		case LAST_PHOTO_TAKEN:
 			holder.imageView.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					serviceClickedListener.lastPhoto();
+				}
+			});
+			break;
+		case LAST_VIDEO_CAPTURED:
+			holder.imageView.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					serviceClickedListener.lastVideo();
+				}
+			});
+			break;
+		case RECORD_VIDEO:
+			holder.imageView.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					serviceClickedListener.recordVideo();
 				}
 			});
 			break;

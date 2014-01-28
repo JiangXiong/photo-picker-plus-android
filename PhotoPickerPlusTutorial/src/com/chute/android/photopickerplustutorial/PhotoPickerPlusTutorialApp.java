@@ -59,8 +59,8 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
         .isMultiPicker(true)
         .accountList(AccountType.FLICKR, AccountType.TWITTER, AccountType.FACEBOOK,
             AccountType.DROPBOX, AccountType.INSTAGRAM, AccountType.GOOGLE, AccountType.YOUTUBE)
-        .localMediaList(LocalMediaType.ALL_MEDIA, LocalMediaType.CAMERA_MEDIA)
-        .configUrl(ConfigEndpointURLs.SERVICES_CONFIG_URL)
+        .localMediaList(LocalMediaType.ALL_MEDIA, LocalMediaType.CAMERA_MEDIA, LocalMediaType.RECORD_VIDEO, LocalMediaType.LAST_VIDEO_CAPTURED)
+        .configUrl(ConfigEndpointURLs.SERVICES_ENDPOINT_URL)
         .supportImages(true)
         .supportVideos(true)
         .build();

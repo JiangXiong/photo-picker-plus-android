@@ -22,10 +22,18 @@
  */
 package com.chute.android.photopickerplus.ui.activity;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -35,15 +43,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 import android.widget.Toast;
+
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.dao.MediaDAO;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
-import com.chute.android.photopickerplus.ui.fragment.*;
+import com.chute.android.photopickerplus.ui.fragment.FragmentEmpty;
+import com.chute.android.photopickerplus.ui.fragment.FragmentRoot;
 import com.chute.android.photopickerplus.ui.fragment.FragmentServices.ServiceClickedListener;
+import com.chute.android.photopickerplus.ui.fragment.FragmentSingle;
+import com.chute.android.photopickerplus.ui.listener.ListenerAccountAssetsSelection;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
-import com.chute.android.photopickerplus.ui.listener.ListenerAccountAssetsSelection;
 import com.chute.android.photopickerplus.ui.listener.ListenerImageSelection;
 import com.chute.android.photopickerplus.ui.listener.ListenerVideoSelection;
 import com.chute.android.photopickerplus.util.AppUtil;
@@ -61,11 +72,6 @@ import com.chute.sdk.v2.model.response.ListResponseModel;
 import com.chute.sdk.v2.utils.PreferenceUtil;
 import com.dg.libs.rest.callbacks.HttpCallback;
 import com.dg.libs.rest.domain.ResponseStatus;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Activity for displaying the services.
@@ -125,6 +131,35 @@ public class ServicesActivity extends FragmentActivity implements
 	}
 
 	@Override
+	public void recordVideo() {
+		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		Uri uri = AppUtil.getTempVideoFile();
+		if (uri != null) {
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+		}
+		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+		startActivityForResult(intent, Constants.CAMERA_VIDEO_REQUEST);
+
+	}
+
+	@Override
+	public void lastVideo() {
+		Uri uri = MediaDAO
+				.getLastVideoFromCameraVideos(getApplicationContext());
+		if (uri.toString().equals("")) {
+			NotificationUtil.makeToast(getApplicationContext(), getResources()
+					.getString(R.string.no_camera_photos));
+		} else {
+			final AssetModel model = new AssetModel();
+			model.setThumbnail(uri.toString());
+			model.setUrl(uri.toString());
+
+			IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
+					model);
+		}
+	}
+
+	@Override
 	public void takePhoto() {
 		if (!getPackageManager()
 				.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
@@ -134,15 +169,14 @@ public class ServicesActivity extends FragmentActivity implements
 		}
 		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		if (AppUtil.hasImageCaptureBug() == false) {
-			intent.putExtra(MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(AppUtil.getTempFile(ServicesActivity.this)));
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(AppUtil
+					.getTempImageFile(ServicesActivity.this)));
 		} else {
 			intent.putExtra(
 					android.provider.MediaStore.EXTRA_OUTPUT,
 					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		}
 		startActivityForResult(intent, Constants.CAMERA_PIC_REQUEST);
-
 	}
 
 	@Override
@@ -261,6 +295,7 @@ public class ServicesActivity extends FragmentActivity implements
 
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -278,7 +313,7 @@ public class ServicesActivity extends FragmentActivity implements
 		}
 		if (requestCode == Constants.CAMERA_PIC_REQUEST) {
 			String path = "";
-			File tempFile = AppUtil.getTempFile(getApplicationContext());
+			File tempFile = AppUtil.getTempImageFile(getApplicationContext());
 			if (AppUtil.hasImageCaptureBug() == false && tempFile.length() > 0) {
 				try {
 					android.provider.MediaStore.Images.Media.insertImage(
@@ -300,12 +335,33 @@ public class ServicesActivity extends FragmentActivity implements
 			final AssetModel model = new AssetModel();
 			model.setThumbnail(path);
 			model.setUrl(path);
+			model.setType(Constants.TYPE_IMAGE);
 			ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
 			mediaCollection.add(model);
 			setResult(Activity.RESULT_OK, new Intent().putExtra(
 					PhotosIntentWrapper.KEY_PHOTO_COLLECTION, mediaCollection));
 			finish();
 		}
+		if (requestCode == Constants.CAMERA_VIDEO_REQUEST) {
+			Uri uriVideo = data.getData();
+			File file = new File(uriVideo.getPath());
+
+			Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(
+					file.getAbsolutePath(),
+					MediaStore.Images.Thumbnails.MINI_KIND);
+
+			final AssetModel model = new AssetModel();
+			model.setThumbnail(AppUtil.getImagePath(getApplicationContext(),
+					thumbnail));
+			model.setUrl(uriVideo.toString());
+			model.setType(Constants.TYPE_VIDEO);
+			ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
+			mediaCollection.add(model);
+			setResult(Activity.RESULT_OK, new Intent().putExtra(
+					PhotosIntentWrapper.KEY_PHOTO_COLLECTION, mediaCollection));
+			finish();
+		}
+
 	}
 
 	@Override

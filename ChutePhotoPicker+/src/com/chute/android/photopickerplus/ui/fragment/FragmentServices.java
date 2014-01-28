@@ -55,6 +55,10 @@ public class FragmentServices extends Fragment {
     public void lastPhoto();
 
     public void takePhoto();
+    
+    public void recordVideo();
+    
+    public void lastVideo();
 
   }
 

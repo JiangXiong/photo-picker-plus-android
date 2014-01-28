@@ -22,18 +22,27 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.provider.MediaStore.MediaColumns;
+import android.provider.MediaStore.Video;
 import android.util.Log;
 
+import com.araneaapps.android.libs.logger.ALog;
 import com.chute.sdk.v2.model.AssetModel;
 import com.chute.sdk.v2.utils.Utils;
 
@@ -59,7 +68,7 @@ public class AppUtil {
 		return Utils.getCustomSizePhotoURL(urlNormal, 100, 100);
 	}
 
-	public static File getTempFile(Context context) {
+	public static File getTempImageFile(Context context) {
 		final File path = getAppCacheDir(context);
 		if (!path.exists()) {
 			path.mkdirs();
@@ -73,6 +82,34 @@ public class AppUtil {
 			}
 		}
 		return f;
+	}
+
+	@SuppressLint("NewApi")
+	public static Uri getTempVideoFile() {
+		if (Environment.getExternalStorageState() == null) {
+			return null;
+		}
+		File mediaStorage = new File(
+				Environment
+						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+				"_VIDEO");
+		if (!mediaStorage.exists() && !mediaStorage.mkdirs()) {
+			ALog.e("Failed to create directory: " + mediaStorage);
+			return null;
+		}
+
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
+				.format(new Date());
+		File mediaFile = new File(mediaStorage, "VID_" + timeStamp + ".mp4");
+		return Uri.fromFile(mediaFile);
+	}
+
+	public static String getImagePath(Context context, Bitmap inImage) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+		String path = Images.Media.insertImage(context.getContentResolver(), inImage,
+				"Title", null);
+		return path;
 	}
 
 	public static File getAppCacheDir(Context context) {
@@ -104,6 +141,25 @@ public class AppUtil {
 				.getColumnIndexOrThrow(MediaColumns.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
+	}
+
+	public static String getVideoPath(Context context, Uri videoUri) {
+		String result = null;
+		final String[] VIDEOTHUMBNAIL_TABLE = new String[] {
+
+		Video.Media._ID, // 0
+				Video.Media.DATA, // 1 from android.provider.MediaStore.Video
+
+		};
+		// Uri videoUri = MediaStore.Video.Thumbnails.getContentUri("external");
+
+		Cursor c = context.getContentResolver().query(videoUri,
+				VIDEOTHUMBNAIL_TABLE, Video.Thumbnails.VIDEO_ID, null, null);
+
+		if ((c != null) && c.moveToFirst()) {
+			result = c.getString(1);
+		}
+		return result;
 	}
 
 	public final static String asUpperCaseFirstChar(final String target) {
@@ -147,6 +203,5 @@ public class AppUtil {
 		cursor.close();
 		return path;
 	}
-
 
 }

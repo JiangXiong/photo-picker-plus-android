@@ -213,12 +213,14 @@ public class PhotoPicker {
 
 		@Override
 		public void onHttpError(ResponseStatus status) {
+			ALog.d("error");
 			ALog.d(ERROR_HTTP + status.getStatusMessage() + " "
 					+ status.getStatusCode());
 		}
 
 		@Override
 		public void onSuccess(ServiceResponseModel data) {
+			ALog.d("success");
 			remoteServices = new ArrayList<AccountType>();
 			localServices = new ArrayList<LocalMediaType>();
 			if (data.getServices() != null) {
@@ -352,8 +354,10 @@ public class PhotoPicker {
 			LocalMediaType localMediaType = iterator.next();
 			if (!localMediaType.equals(LocalMediaType.ALL_MEDIA)
 					&& !localMediaType.equals(LocalMediaType.CAMERA_MEDIA)
-					&& !localMediaType.equals(LocalMediaType.LAST_MEDIA_TAKEN)
-					&& !localMediaType.equals(LocalMediaType.TAKE_MEDIA)) {
+					&& !localMediaType.equals(LocalMediaType.LAST_PHOTO_TAKEN)
+					&& !localMediaType.equals(LocalMediaType.TAKE_PHOTO)
+					&& !localMediaType.equals(LocalMediaType.RECORD_VIDEO)
+					&& !localMediaType.equals(LocalMediaType.LAST_VIDEO_CAPTURED)) {
 				ALog.w(WARNING_UNSUPPORTED_LOCAL_SERVICES);
 				iterator.remove();
 			}

@@ -38,6 +38,7 @@ import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.araneaapps.android.libs.logger.ALog;
+import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.intent.PhotoPickerPlusIntentWrapper;
 import com.chute.android.photopickerplustutorial.R;
 import com.chute.android.photopickerplustutorial.adapter.GridAdapter;
@@ -124,9 +125,11 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 	private final class MediaItemClickListener implements OnItemClickListener {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View viwe, int position,
+		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			AssetModel asset = adapter.getItem(position);
+			String type = asset.getType();
+			if (type.equals(Constants.TYPE_VIDEO)) {
 			ALog.d("asset = " + asset.toString());
 			SourceModel source = asset.getSource();
 			if (source != null
@@ -141,7 +144,7 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 				intent.putExtra(KEY_VIDEO_PATH, asset.getUrl());
 				startActivity(intent);
 			}
-
+			}
 		}
 
 	}

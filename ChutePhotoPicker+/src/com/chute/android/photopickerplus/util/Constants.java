@@ -30,6 +30,7 @@ public class Constants {
   public static final int HTTP_ERROR_CODE_UNAUTHORIZED = 401;
   public static final int DELAY_TIME = 500;
   public static final int CAMERA_PIC_REQUEST = 2500;
+  public static final int CAMERA_VIDEO_REQUEST = 2501;
 
   public static final String TAG_FRAGMENT_FOLDER = "FolderFrag";
   public static final String TAG_FRAGMENT_FILES = "FilesFrag";
@@ -44,4 +45,7 @@ public class Constants {
   public static final String KEY_EXPIRED_SESSION = "keyExpiredSession";
 
   public static final String SELECTED_IMAGES_URL = "http://api.getchute.com/v2/widgets/native";
+  
+  public static final String TYPE_IMAGE = "image";
+  public static final String TYPE_VIDEO = "video";
 }
