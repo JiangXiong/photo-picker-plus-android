@@ -33,7 +33,7 @@ import com.chute.android.photopickerplus.models.ImageResponseModel;
 import com.chute.android.photopickerplus.models.MediaDataModel;
 import com.chute.android.photopickerplus.models.MediaModel;
 import com.chute.android.photopickerplus.models.OptionsModel;
-import com.chute.android.photopickerplus.ui.fragment.AccountFilesListener;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
 import com.chute.sdk.v2.api.Chute;
 import com.chute.sdk.v2.api.authentication.AuthConstants;
 import com.chute.sdk.v2.api.authentication.AuthenticationFactory;
@@ -58,7 +58,7 @@ public class ImageDataResponseLoader {
 
 	public static void postImageData(Context context,
 			ArrayList<AccountMediaModel> selectedImages,
-			AccountFilesListener accountListener) {
+			ListenerFilesAccount accountListener) {
 
 		String token = TokenAuthenticationProvider.getInstance().getToken();
 		AuthConstants authConstants = AuthenticationFactory.getInstance()
@@ -100,9 +100,9 @@ public class ImageDataResponseLoader {
 			HttpCallback<ResponseModel<ImageResponseModel>> {
 
 		private Context context;
-		private AccountFilesListener listener;
+		private ListenerFilesAccount listener;
 
-		private ImageDataCallback(Context context, AccountFilesListener listener) {
+		private ImageDataCallback(Context context, ListenerFilesAccount listener) {
 			this.context = context;
 			this.listener = listener;
 		}

@@ -35,11 +35,11 @@ import android.widget.Toast;
 
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
-import com.chute.android.photopickerplus.ui.adapter.AssetSelectListener;
-import com.chute.android.photopickerplus.ui.fragment.AccountFilesListener;
-import com.chute.android.photopickerplus.ui.fragment.CursorFilesListener;
 import com.chute.android.photopickerplus.ui.fragment.FragmentRoot;
 import com.chute.android.photopickerplus.ui.fragment.FragmentSingle;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
+import com.chute.android.photopickerplus.ui.listener.ListenerAssetSelection;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
@@ -63,189 +63,212 @@ import com.dg.libs.rest.domain.ResponseStatus;
  * services in a GridView.
  * 
  */
-public class AssetActivity extends FragmentActivity implements CursorFilesListener,
-    AccountFilesListener {
+public class AssetActivity extends FragmentActivity implements
+		ListenerFilesCursor, ListenerFilesAccount {
 
-  public static final String TAG = AssetActivity.class.getSimpleName();
-  private PhotoFilterType filterType;
-  private PhotosIntentWrapper wrapper;
-  private FragmentRoot fragmentRoot;
-  private FragmentSingle fragmentSingle;
-  private AccountModel account;
-  private ArrayList<Integer> selectedItemsPositions;
-  private AssetSelectListener assetSelectListener;
-  private String folderId;
-  private AccountType accountType;
+	public static final String TAG = AssetActivity.class.getSimpleName();
+	private PhotoFilterType filterType;
+	private PhotosIntentWrapper wrapper;
+	private FragmentRoot fragmentRoot;
+	private FragmentSingle fragmentSingle;
+	private AccountModel account;
+	private List<Integer> selectedAccountsPositions;
+	private List<String> selectedImagesPaths;
+	private List<String> selectedVideosPaths;
+	private ListenerAssetSelection assetSelectListener;
+	private String folderId;
+	private AccountType accountType;
 
-  public AssetSelectListener getAdapterListener() {
-    return assetSelectListener;
-  }
-
-  public void setAssetSelectListener(AssetSelectListener adapterListener) {
-    this.assetSelectListener = adapterListener;
-  }
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-    setContentView(R.layout.gc_activity_assets);
-
-    selectedItemsPositions = savedInstanceState != null ? savedInstanceState
-        .getIntegerArrayList(Constants.KEY_SELECTED_ITEMS)
-        : null;
-
-    folderId = savedInstanceState != null ? savedInstanceState
-        .getString(Constants.KEY_FOLDER_ID)
-        : null;
-
-    wrapper = new PhotosIntentWrapper(getIntent());
-    account = wrapper.getAccount();
-    filterType = wrapper.getFilterType();
-
-    fragmentRoot = (FragmentRoot) getSupportFragmentManager().findFragmentById(
-        R.id.gcFragmentAssets);
-    fragmentRoot.setRetainInstance(true);
-    fragmentRoot.updateFragment(account, filterType,
-        selectedItemsPositions);
-  }
-
-  @Override
-  public void onAccountFilesSelect(AssetModel assetModel) {
-    IntentUtil.deliverDataToInitialActivity(AssetActivity.this, assetModel);
-    setResult(RESULT_OK);
-    finish();
-
-  }
-
-  @Override
-  public void onCursorAssetsSelect(AssetModel assetModel) {
-    IntentUtil.deliverDataToInitialActivity(AssetActivity.this, assetModel);
-    setResult(RESULT_OK);
-    finish();
-
-  }
-
-  @Override
-  public void onDeliverCursorAssets(ArrayList<String> assetPathList) {
-    IntentUtil.deliverDataToInitialActivity(AssetActivity.this,
-        AppUtil.getPhotoCollection(assetPathList));
-    setResult(RESULT_OK);
-    finish();
-
-  }
-
-  @Override
-  public void onDeliverAccountFiles(ArrayList<AssetModel> assetModelList) {
-    IntentUtil.deliverDataToInitialActivity(AssetActivity.this, assetModelList);
-    setResult(RESULT_OK);
-    finish();
-
-  }
-
-  @Override
-  public void onAccountFolderSelect(AccountModel account,
-      String folderId) {
-    this.folderId = folderId;
-    FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-        .beginTransaction();
-    fragmentTransaction
-        .replace(R.id.gcFragments,
-            FragmentSingle.newInstance(account, folderId, selectedItemsPositions),
-            Constants.TAG_FRAGMENT_FILES);
-    fragmentTransaction.addToBackStack(null);
-    fragmentTransaction.commit();
-
-  }
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    outState.putString(Constants.KEY_FOLDER_ID, folderId);
-    List<Integer> positions = new ArrayList<Integer>();
-	if (assetSelectListener != null) {
-		if (assetSelectListener.getSelectedImagesPositions() != null) {
-			positions.addAll(assetSelectListener
-					.getSelectedImagesPositions());
-		}
-		if (assetSelectListener.getSelectedVideosPositions() != null) {
-			positions.addAll(assetSelectListener
-					.getSelectedVideosPositions());
-		}
-
-		outState.putIntegerArrayList(Constants.KEY_SELECTED_ITEMS,
-				(ArrayList<Integer>) positions);
+	public ListenerAssetSelection getAdapterListener() {
+		return assetSelectListener;
 	}
 
-  }
+	public void setAssetSelectListener(ListenerAssetSelection adapterListener) {
+		this.assetSelectListener = adapterListener;
+	}
 
-  @Override
-  protected void onRestoreInstanceState(Bundle savedInstanceState) {
-    super.onRestoreInstanceState(savedInstanceState);
-    fragmentSingle = (FragmentSingle) getSupportFragmentManager().findFragmentByTag(
-        Constants.TAG_FRAGMENT_FILES);
-    if (fragmentSingle != null) {
-      fragmentSingle.setRetainInstance(true);
-      fragmentSingle.updateFragment(account, folderId, selectedItemsPositions);
-    }
-  }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-  @Override
-  public void onSessionExpired(AccountType accountType) {
-    PhotoPickerPreferenceUtil.get().setAccountType(accountType);
-    AuthenticationFactory.getInstance().startAuthenticationActivity(
-        AssetActivity.this, accountType);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-  }
+		setContentView(R.layout.gc_activity_assets);
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (resultCode == Activity.RESULT_OK) {
-      GCAccounts.allUserAccounts(getApplicationContext(), new AccountsCallback())
-          .executeAsync();
-    }
-  }
+		selectedAccountsPositions = savedInstanceState != null ? savedInstanceState
+				.getIntegerArrayList(Constants.KEY_SELECTED_ACCOUNTS_ITEMS)
+				: null;
 
-  private final class AccountsCallback implements
-      HttpCallback<ListResponseModel<AccountModel>> {
+		selectedImagesPaths = savedInstanceState != null ? savedInstanceState
+				.getStringArrayList(Constants.KEY_SELECTED_IMAGES_ITEMS) : null;
 
-    @Override
-    public void onSuccess(ListResponseModel<AccountModel> responseData) {
-      if (accountType == null) {
-        accountType = PhotoPickerPreferenceUtil.get().getAccountType();
-      }
-      if (responseData.getData().size() == 0) {
-        Toast.makeText(getApplicationContext(),
-            getResources().getString(R.string.no_albums_found),
-            Toast.LENGTH_SHORT).show();
-        return;
-      }
-      for (AccountModel accountModel : responseData.getData()) {
-        if (accountModel.getType().equals(accountType.getLoginMethod())) {
-          PreferenceUtil.get().saveAccount(accountModel);
-          accountClicked(accountModel.getId(), accountType.name().toLowerCase(),
-              accountModel.getShortcut());
-        }
-      }
-    }
+		selectedVideosPaths = savedInstanceState != null ? savedInstanceState
+				.getStringArrayList(Constants.KEY_SELECTED_VIDEOS_ITEMS) : null;
 
-    @Override
-    public void onHttpError(ResponseStatus responseStatus) {
-      ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
-          + responseStatus.getStatusMessage());
-    }
+		folderId = savedInstanceState != null ? savedInstanceState
+				.getString(Constants.KEY_FOLDER_ID) : null;
 
-  }
+		wrapper = new PhotosIntentWrapper(getIntent());
+		account = wrapper.getAccount();
+		filterType = wrapper.getFilterType();
 
-  public void accountClicked(String accountId, String accountName, String accountShortcut) {
-    selectedItemsPositions = null;
-    if (fragmentRoot != null) {
-      fragmentRoot.setRetainInstance(true);
-      fragmentRoot.updateFragment(account, filterType, selectedItemsPositions);
-    }
-  }
+		fragmentRoot = (FragmentRoot) getSupportFragmentManager()
+				.findFragmentById(R.id.gcFragmentAssets);
+		fragmentRoot.setRetainInstance(true);
+		fragmentRoot.updateFragment(account, filterType,
+				selectedAccountsPositions, selectedImagesPaths,
+				selectedVideosPaths);
+	}
+
+	@Override
+	public void onAccountFilesSelect(AssetModel assetModel) {
+		IntentUtil.deliverDataToInitialActivity(AssetActivity.this, assetModel);
+		setResult(RESULT_OK);
+		finish();
+
+	}
+
+	@Override
+	public void onCursorAssetsSelect(AssetModel assetModel) {
+		IntentUtil.deliverDataToInitialActivity(AssetActivity.this, assetModel);
+		setResult(RESULT_OK);
+		finish();
+
+	}
+
+	@Override
+	public void onDeliverCursorAssets(ArrayList<String> assetPathList) {
+		IntentUtil.deliverDataToInitialActivity(AssetActivity.this,
+				AppUtil.getPhotoCollection(assetPathList));
+		setResult(RESULT_OK);
+		finish();
+
+	}
+
+	@Override
+	public void onDeliverAccountFiles(ArrayList<AssetModel> assetModelList) {
+		IntentUtil.deliverDataToInitialActivity(AssetActivity.this,
+				assetModelList);
+		setResult(RESULT_OK);
+		finish();
+
+	}
+
+	@Override
+	public void onAccountFolderSelect(AccountModel account, String folderId) {
+		this.folderId = folderId;
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		fragmentTransaction.replace(R.id.gcFragments, FragmentSingle
+				.newInstance(account, folderId, selectedAccountsPositions),
+				Constants.TAG_FRAGMENT_FILES);
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(Constants.KEY_FOLDER_ID, folderId);
+		List<Integer> accountPositions = new ArrayList<Integer>();
+		List<String> imagePaths = new ArrayList<String>();
+		List<String> videoPaths = new ArrayList<String>();
+		if (assetSelectListener != null) {
+			if (assetSelectListener.getSocialPhotosSelection() != null) {
+				accountPositions.addAll(assetSelectListener
+						.getSocialPhotosSelection());
+			}
+			if (assetSelectListener.getCursorImagesSelection() != null) {
+				imagePaths.addAll(assetSelectListener
+						.getCursorImagesSelection());
+			}
+			if (assetSelectListener.getCursorVideosSelection() != null) {
+				videoPaths.addAll(assetSelectListener
+						.getCursorVideosSelection());
+			}
+
+			outState.putIntegerArrayList(Constants.KEY_SELECTED_ACCOUNTS_ITEMS,
+					(ArrayList<Integer>) accountPositions);
+			outState.putStringArrayList(Constants.KEY_SELECTED_IMAGES_ITEMS,
+					(ArrayList<String>) imagePaths);
+			outState.putStringArrayList(Constants.KEY_SELECTED_VIDEOS_ITEMS,
+					(ArrayList<String>) videoPaths);
+		}
+
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		fragmentSingle = (FragmentSingle) getSupportFragmentManager()
+				.findFragmentByTag(Constants.TAG_FRAGMENT_FILES);
+		if (fragmentSingle != null) {
+			fragmentSingle.setRetainInstance(true);
+			fragmentSingle.updateFragment(account, folderId,
+					selectedAccountsPositions);
+		}
+	}
+
+	@Override
+	public void onSessionExpired(AccountType accountType) {
+		PhotoPickerPreferenceUtil.get().setAccountType(accountType);
+		AuthenticationFactory.getInstance().startAuthenticationActivity(
+				AssetActivity.this, accountType);
+
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == Activity.RESULT_OK) {
+			GCAccounts.allUserAccounts(getApplicationContext(),
+					new AccountsCallback()).executeAsync();
+		}
+	}
+
+	private final class AccountsCallback implements
+			HttpCallback<ListResponseModel<AccountModel>> {
+
+		@Override
+		public void onSuccess(ListResponseModel<AccountModel> responseData) {
+			if (accountType == null) {
+				accountType = PhotoPickerPreferenceUtil.get().getAccountType();
+			}
+			if (responseData.getData().size() == 0) {
+				Toast.makeText(getApplicationContext(),
+						getResources().getString(R.string.no_albums_found),
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			for (AccountModel accountModel : responseData.getData()) {
+				if (accountModel.getType().equals(accountType.getLoginMethod())) {
+					PreferenceUtil.get().saveAccount(accountModel);
+					accountClicked(accountModel.getId(), accountType.name()
+							.toLowerCase(), accountModel.getShortcut());
+				}
+			}
+		}
+
+		@Override
+		public void onHttpError(ResponseStatus responseStatus) {
+			ALog.d("Http Error: " + responseStatus.getStatusCode() + " "
+					+ responseStatus.getStatusMessage());
+		}
+
+	}
+
+	public void accountClicked(String accountId, String accountName,
+			String accountShortcut) {
+		selectedAccountsPositions = null;
+		selectedImagesPaths = null;
+		selectedVideosPaths = null;
+		if (fragmentRoot != null) {
+			fragmentRoot.setRetainInstance(true);
+			fragmentRoot.updateFragment(account, filterType,
+					selectedAccountsPositions, selectedImagesPaths,
+					selectedVideosPaths);
+		}
+	}
 
 }

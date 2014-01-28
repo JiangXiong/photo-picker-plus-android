@@ -20,28 +20,21 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.chute.android.photopickerplus.ui.fragment;
+package com.chute.android.photopickerplus.ui.listener;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import java.util.List;
 
-import com.chute.android.photopickerplus.R;
+/**
+ * Interface for retrieving the selected item positions used to save the
+ * selected items state when the orientation is changed.
+ * 
+ */
+public interface ListenerAssetSelection {
 
-public class EmptyFragment extends Fragment {
+	public List<Integer> getSocialPhotosSelection();
 
-  public static EmptyFragment newInstance() {
-    EmptyFragment frag = new EmptyFragment();
-    return frag;
-  }
-
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.gc_fragment_empty, container, false);
-    return view;
-  }
+	public List<String> getCursorImagesSelection();
+	
+	public List<String> getCursorVideosSelection();
 
 }

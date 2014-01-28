@@ -40,6 +40,7 @@ import android.widget.TextView;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
+import com.chute.android.photopickerplus.ui.listener.ListenerAssetSelection;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
@@ -49,7 +50,7 @@ import com.chute.sdk.v2.model.interfaces.AccountMedia;
 import darko.imagedownloader.ImageLoader;
 
 public class AssetAccountAdapter extends BaseAdapter implements
-		AssetSelectListener {
+		ListenerAssetSelection {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = AssetAccountAdapter.class.getSimpleName();
@@ -240,7 +241,7 @@ public class AssetAccountAdapter extends BaseAdapter implements
 	}
 
 	@Override
-	public List<Integer> getSelectedImagesPositions() {
+	public List<Integer> getSocialPhotosSelection() {
 		final ArrayList<Integer> positions = new ArrayList<Integer>();
 		final Iterator<Integer> iterator = tick.keySet().iterator();
 		while (iterator.hasNext()) {
@@ -250,7 +251,13 @@ public class AssetAccountAdapter extends BaseAdapter implements
 	}
 
 	@Override
-	public List<Integer> getSelectedVideosPositions() {
-		return new ArrayList<Integer>();
+	public List<String> getCursorImagesSelection() {
+		return null;
 	}
+
+	@Override
+	public List<String> getCursorVideosSelection() {
+		return null;
+	}
+
 }

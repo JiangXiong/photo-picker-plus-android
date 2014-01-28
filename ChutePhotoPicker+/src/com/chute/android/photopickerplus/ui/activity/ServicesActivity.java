@@ -39,9 +39,11 @@ import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.dao.MediaDAO;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
-import com.chute.android.photopickerplus.ui.adapter.AssetSelectListener;
 import com.chute.android.photopickerplus.ui.fragment.*;
 import com.chute.android.photopickerplus.ui.fragment.FragmentServices.ServiceClickedListener;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
+import com.chute.android.photopickerplus.ui.listener.ListenerAssetSelection;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
@@ -70,26 +72,29 @@ import java.util.List;
  * GridView.
  */
 public class ServicesActivity extends FragmentActivity implements
-		AccountFilesListener, CursorFilesListener, ServiceClickedListener {
+		ListenerFilesAccount, ListenerFilesCursor, ServiceClickedListener {
 
 	private static final String TAG = ServicesActivity.class.getSimpleName();
 	private static FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
 	private AccountType accountType;
 	private boolean dualPanes;
-	private ArrayList<Integer> selectedItemPositions;
+	private List<Integer> accountItemPositions;
+	private List<String> imageItemPaths;
+	private List<String> videoItemPaths;
 	private String folderId;
 	private AccountModel account;
-	private AssetSelectListener assetSelectListener;
+	private ListenerAssetSelection assetSelectListener;
 	private FragmentSingle fragmentSingle;
 	private FragmentRoot fragmentRoot;
 	private int photoFilterType;
 
-	public AssetSelectListener getAssetSelectListener() {
+	public ListenerAssetSelection getAssetSelectListener() {
 		return assetSelectListener;
 	}
 
-	public void setAssetSelectListener(AssetSelectListener assetSelectListener) {
+	public void setAssetSelectListener(
+			ListenerAssetSelection assetSelectListener) {
 		this.assetSelectListener = assetSelectListener;
 	}
 
@@ -153,7 +158,9 @@ public class ServicesActivity extends FragmentActivity implements
 	@Override
 	public void photoStream() {
 		photoFilterType = PhotoFilterType.ALL_PHOTOS.ordinal();
-		selectedItemPositions = null;
+		accountItemPositions = null;
+		imageItemPaths = null;
+		videoItemPaths = null;
 		if (!dualPanes) {
 			final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(
 					ServicesActivity.this);
@@ -169,7 +176,9 @@ public class ServicesActivity extends FragmentActivity implements
 	@Override
 	public void cameraRoll() {
 		photoFilterType = PhotoFilterType.CAMERA_ROLL.ordinal();
-		selectedItemPositions = null;
+		accountItemPositions = null;
+		imageItemPaths = null;
+		videoItemPaths = null;
 		if (!dualPanes) {
 			final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(
 					ServicesActivity.this);
@@ -184,7 +193,9 @@ public class ServicesActivity extends FragmentActivity implements
 
 	public void accountClicked(AccountModel account) {
 		photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
-		selectedItemPositions = null;
+		accountItemPositions = null;
+		imageItemPaths = null;
+		videoItemPaths = null;
 		this.account = account;
 		if (!dualPanes) {
 			final PhotosIntentWrapper wrapper = new PhotosIntentWrapper(
@@ -201,7 +212,7 @@ public class ServicesActivity extends FragmentActivity implements
 	}
 
 	public void replaceContentWithSingleFragment(AccountModel account,
-			String folderId, ArrayList<Integer> selectedItemPositions) {
+			String folderId, List<Integer> selectedItemPositions) {
 		fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.gcFragments, FragmentSingle
 				.newInstance(account, folderId, selectedItemPositions),
@@ -215,15 +226,15 @@ public class ServicesActivity extends FragmentActivity implements
 			PhotoFilterType filterType) {
 		fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.gcFragments, FragmentRoot.newInstance(
-				account, filterType, selectedItemPositions),
-				Constants.TAG_FRAGMENT_FOLDER);
+				account, filterType, accountItemPositions, imageItemPaths,
+				videoItemPaths), Constants.TAG_FRAGMENT_FOLDER);
 		fragmentTransaction.commit();
 	}
 
 	public void replaceContentWithEmptyFragment() {
 		fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.gcFragments,
-				EmptyFragment.newInstance(), Constants.TAG_FRAGMENT_EMPTY);
+				FragmentEmpty.newInstance(), Constants.TAG_FRAGMENT_EMPTY);
 		fragmentTransaction.commit();
 	}
 
@@ -325,12 +336,14 @@ public class ServicesActivity extends FragmentActivity implements
 
 	@Override
 	public void onAccountFolderSelect(AccountModel account, String folderId) {
-		selectedItemPositions = null;
+		accountItemPositions = null;
+		imageItemPaths = null;
+		videoItemPaths = null;
 		photoFilterType = PhotoFilterType.SOCIAL_PHOTOS.ordinal();
 		this.folderId = folderId;
 		this.account = account;
 		replaceContentWithSingleFragment(account, folderId,
-				selectedItemPositions);
+				accountItemPositions);
 	}
 
 	@Override
@@ -339,19 +352,31 @@ public class ServicesActivity extends FragmentActivity implements
 		outState.putString(Constants.KEY_FOLDER_ID, folderId);
 		outState.putParcelable(Constants.KEY_ACCOUNT, account);
 		outState.putInt(Constants.KEY_PHOTO_FILTER_TYPE, photoFilterType);
-		List<Integer> positions = new ArrayList<Integer>();
+		List<Integer> accountPositions = new ArrayList<Integer>();
+		List<String> imagePaths = new ArrayList<String>();
+		List<String> videoPaths = new ArrayList<String>();
 		if (assetSelectListener != null) {
-			if (assetSelectListener.getSelectedImagesPositions() != null) {
-				positions.addAll(assetSelectListener
-						.getSelectedImagesPositions());
+			if (assetSelectListener.getSocialPhotosSelection() != null) {
+				accountPositions.addAll(assetSelectListener
+						.getSocialPhotosSelection());
 			}
-			if (assetSelectListener.getSelectedVideosPositions() != null) {
-				positions.addAll(assetSelectListener
-						.getSelectedVideosPositions());
+			if (assetSelectListener.getCursorImagesSelection() != null) {
+				imagePaths.addAll(assetSelectListener
+						.getCursorImagesSelection());
+			}
+			if (assetSelectListener.getCursorVideosSelection() != null) {
+				ALog.d("services saveinstancestate = "
+						+ assetSelectListener.getCursorVideosSelection());
+				videoPaths.addAll(assetSelectListener
+						.getCursorVideosSelection());
 			}
 
-			outState.putIntegerArrayList(Constants.KEY_SELECTED_ITEMS,
-					(ArrayList<Integer>) positions);
+			outState.putIntegerArrayList(Constants.KEY_SELECTED_ACCOUNTS_ITEMS,
+					(ArrayList<Integer>) accountPositions);
+			outState.putStringArrayList(Constants.KEY_SELECTED_IMAGES_ITEMS,
+					(ArrayList<String>) imagePaths);
+			outState.putStringArrayList(Constants.KEY_SELECTED_VIDEOS_ITEMS,
+					(ArrayList<String>) videoPaths);
 		}
 
 	}
@@ -367,19 +392,26 @@ public class ServicesActivity extends FragmentActivity implements
 				&& photoFilterType == PhotoFilterType.SOCIAL_PHOTOS.ordinal()) {
 			fragmentSingle.setRetainInstance(true);
 			fragmentSingle.updateFragment(account, folderId,
-					selectedItemPositions);
+					accountItemPositions);
 		}
 		if (fragmentRoot != null) {
 			fragmentRoot.setRetainInstance(true);
 			fragmentRoot.updateFragment(account,
 					PhotoFilterType.values()[photoFilterType],
-					selectedItemPositions);
+					accountItemPositions, imageItemPaths, videoItemPaths);
 		}
 	}
 
 	private void retrieveValuesFromBundle(Bundle savedInstanceState) {
-		selectedItemPositions = savedInstanceState != null ? savedInstanceState
-				.getIntegerArrayList(Constants.KEY_SELECTED_ITEMS) : null;
+		accountItemPositions = savedInstanceState != null ? savedInstanceState
+				.getIntegerArrayList(Constants.KEY_SELECTED_ACCOUNTS_ITEMS)
+				: null;
+
+		imageItemPaths = savedInstanceState != null ? savedInstanceState
+				.getStringArrayList(Constants.KEY_SELECTED_IMAGES_ITEMS) : null;
+
+		videoItemPaths = savedInstanceState != null ? savedInstanceState
+				.getStringArrayList(Constants.KEY_SELECTED_VIDEOS_ITEMS) : null;
 
 		folderId = savedInstanceState != null ? savedInstanceState
 				.getString(Constants.KEY_FOLDER_ID) : null;

@@ -23,6 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.fragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -42,6 +43,7 @@ import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
 import com.chute.android.photopickerplus.util.NotificationUtil;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
 import com.chute.sdk.v2.api.accounts.GCAccounts;
@@ -63,13 +65,13 @@ public class FragmentSingle extends Fragment implements
 	private AccountModel account;
 	private String folderId;
 	private boolean isMultipicker;
-	private ArrayList<Integer> selectedItemsPositions;
+	private List<Integer> selectedItemsPositions;
 
 	private AssetAccountAdapter accountAssetAdapter;
-	private AccountFilesListener accountListener;
+	private ListenerFilesAccount accountListener;
 
 	public static FragmentSingle newInstance(AccountModel account,
-			String folderId, ArrayList<Integer> selectedItemPositions) {
+			String folderId, List<Integer> selectedItemPositions) {
 		FragmentSingle frag = new FragmentSingle();
 		frag.account = account;
 		frag.folderId = folderId;
@@ -82,7 +84,7 @@ public class FragmentSingle extends Fragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		accountListener = (AccountFilesListener) activity;
+		accountListener = (ListenerFilesAccount) activity;
 
 	}
 
@@ -118,7 +120,7 @@ public class FragmentSingle extends Fragment implements
 	}
 
 	public void updateFragment(AccountModel account, String folderId,
-			ArrayList<Integer> selectedItemsPositions) {
+			List<Integer> selectedItemsPositions) {
 
 		isMultipicker = PhotoPicker.getInstance().isMultiPicker();
 		this.account = account;

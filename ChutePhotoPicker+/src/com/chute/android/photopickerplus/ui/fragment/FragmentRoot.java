@@ -23,6 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.fragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -38,6 +39,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
@@ -47,8 +49,10 @@ import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
 import com.chute.android.photopickerplus.ui.adapter.CursorAdapterImages;
-import com.chute.android.photopickerplus.ui.adapter.MergeAdapter;
 import com.chute.android.photopickerplus.ui.adapter.CursorAdapterVideos;
+import com.chute.android.photopickerplus.ui.adapter.MergeAdapter;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
+import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
@@ -65,29 +69,33 @@ import com.dg.libs.rest.domain.ResponseStatus;
 public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
 	private GridView gridView;
-	private CursorAdapterImages cursorImagesAdapter;
-	private CursorAdapterVideos cursorVideosAdapter;
-	private AssetAccountAdapter accountAssetAdapter;
-	private MergeAdapter mergeAdapter;
+	private CursorAdapterImages adapterImages;
+	private CursorAdapterVideos adapterVideos;
+	private AssetAccountAdapter adapterAccounts;
+	private MergeAdapter adapterMerge;
 	private TextView textViewSelectPhotos;
 	private View emptyView;
 
 	private boolean isMultipicker;
 	private boolean supportVideos;
 	private boolean supportImages;
-	private ArrayList<Integer> selectedItemsPositions;
+	private List<Integer> selectedAccountsPositions;
+	private List<String> selectedImagesPaths;
+	private List<String> selectedVideosPaths;
 	private AccountModel account;
 	private PhotoFilterType filterType;
 	private AccountType accountType;
-	private CursorFilesListener cursorListener;
-	private AccountFilesListener accountListener;
+	private ListenerFilesCursor cursorListener;
+	private ListenerFilesAccount accountListener;
 
 	public static FragmentRoot newInstance(AccountModel account,
-			PhotoFilterType filterType, ArrayList<Integer> selectedItemPositions) {
+			PhotoFilterType filterType, List<Integer> selectedAccountsPositions, List<String> selectedImagesPaths, List<String> selectedVideosPaths) {
 		FragmentRoot frag = new FragmentRoot();
 		frag.account = account;
 		frag.filterType = filterType;
-		frag.selectedItemsPositions = selectedItemPositions;
+		frag.selectedAccountsPositions = selectedAccountsPositions;
+		frag.selectedImagesPaths = selectedImagesPaths;
+		frag.selectedVideosPaths = selectedVideosPaths;
 		Bundle args = new Bundle();
 		frag.setArguments(args);
 		return frag;
@@ -96,8 +104,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		cursorListener = (CursorFilesListener) activity;
-		accountListener = (AccountFilesListener) activity;
+		cursorListener = (ListenerFilesCursor) activity;
+		accountListener = (ListenerFilesAccount) activity;
 
 	}
 
@@ -126,7 +134,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		cancel.setOnClickListener(new CancelClickListener());
 
 		if (savedInstanceState == null) {
-			updateFragment(account, filterType, selectedItemsPositions);
+			updateFragment(account, filterType, selectedAccountsPositions, selectedImagesPaths, selectedVideosPaths);
 		}
 
 		gridView.setNumColumns(getResources().getInteger(
@@ -137,13 +145,14 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
 	public void updateFragment(AccountModel account,
 			PhotoFilterType filterType,
-			ArrayList<Integer> selectedItemsPositions) {
+			List<Integer> selectedAccountsPositions, List<String> selectedImagesPaths, List<String> selectedVideosPaths) {
 
 		isMultipicker = PhotoPicker.getInstance().isMultiPicker();
 		supportVideos = PhotoPicker.getInstance().supportVideos();
 		supportImages = PhotoPicker.getInstance().supportImages();
 		this.filterType = filterType;
-		this.selectedItemsPositions = selectedItemsPositions;
+		this.selectedAccountsPositions = selectedAccountsPositions;
+		this.selectedImagesPaths = selectedVideosPaths;
 		this.account = account;
 
 		if ((filterType == PhotoFilterType.ALL_PHOTOS)
@@ -164,14 +173,14 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 					new RootCallback()).executeAsync();
 		}
 
-		mergeAdapter = new MergeAdapter();
-		cursorVideosAdapter = new CursorAdapterVideos(getActivity(), null,
+		adapterMerge = new MergeAdapter();
+		adapterImages = new CursorAdapterImages(getActivity(), null,
 				cursorListener);
-		cursorImagesAdapter = new CursorAdapterImages(getActivity(), null,
+		adapterVideos = new CursorAdapterVideos(getActivity(), null,
 				cursorListener);
-		mergeAdapter.addAdapter(cursorVideosAdapter);
-		mergeAdapter.addAdapter(cursorImagesAdapter);
-		gridView.setAdapter(mergeAdapter);
+		adapterMerge.addAdapter(adapterVideos);
+		adapterMerge.addAdapter(adapterImages);
+		gridView.setAdapter(adapterMerge);
 		if (isMultipicker == true) {
 			textViewSelectPhotos.setText(getActivity().getApplicationContext()
 					.getResources().getString(R.string.select_photos));
@@ -209,16 +218,16 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		@Override
 		public void onSuccess(ResponseModel<AccountBaseModel> responseData) {
 			if (responseData != null && getActivity() != null) {
-				accountAssetAdapter = new AssetAccountAdapter(getActivity(),
+				adapterAccounts = new AssetAccountAdapter(getActivity(),
 						responseData.getData(), FragmentRoot.this);
-				gridView.setAdapter(accountAssetAdapter);
-				if (accountAssetAdapter.getCount() == 0) {
+				gridView.setAdapter(adapterAccounts);
+				if (adapterAccounts.getCount() == 0) {
 					emptyView.setVisibility(View.GONE);
 				}
 
-				if (selectedItemsPositions != null) {
-					for (int position : selectedItemsPositions) {
-						accountAssetAdapter.toggleTick(position);
+				if (selectedAccountsPositions != null) {
+					for (int position : selectedAccountsPositions) {
+						adapterAccounts.toggleTick(position);
 					}
 				}
 
@@ -232,7 +241,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 							.getString(R.string.select_a_photo));
 				}
 				NotificationUtil.showPhotosAdapterToast(getActivity()
-						.getApplicationContext(), accountAssetAdapter
+						.getApplicationContext(), adapterAccounts
 						.getCount());
 			}
 
@@ -258,11 +267,12 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 			}
 
 			emptyView.setVisibility(View.GONE);
-			cursorImagesAdapter.changeCursor(cursor);
+			adapterImages.changeCursor(cursor);
 
-			if (selectedItemsPositions != null) {
-				for (int position : selectedItemsPositions) {
-					cursorImagesAdapter.toggleTick(position);
+			if (selectedImagesPaths != null) {
+				for (String position : selectedImagesPaths) {
+					ALog.d("root image loader " + selectedImagesPaths);
+					adapterImages.toggleTick(position);
 				}
 			}
 		}
@@ -293,11 +303,12 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 			}
 
 			emptyView.setVisibility(View.GONE);
-			cursorVideosAdapter.changeCursor(cursor);
+			adapterVideos.changeCursor(cursor);
 
-			if (selectedItemsPositions != null) {
-				for (int position : selectedItemsPositions) {
-					cursorVideosAdapter.toggleTick(position);
+			if (selectedVideosPaths != null) {
+				for (String position : selectedVideosPaths) {
+					ALog.d("root video loader " + selectedVideosPaths);
+					adapterVideos.toggleTick(position);
 				}
 			}
 
@@ -325,21 +336,19 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		@Override
 		public void onClick(View v) {
 			if (filterType == PhotoFilterType.SOCIAL_PHOTOS) {
-				if (!accountAssetAdapter.getPhotoCollection().isEmpty()) {
+				if (!adapterAccounts.getPhotoCollection().isEmpty()) {
 					ImageDataResponseLoader.postImageData(getActivity()
-							.getApplicationContext(), accountAssetAdapter
+							.getApplicationContext(), adapterAccounts
 							.getPhotoCollection(), accountListener);
 				}
 			} else if ((filterType == PhotoFilterType.ALL_PHOTOS)
 					|| (filterType == PhotoFilterType.CAMERA_ROLL)) {
 				ArrayList<String> deliverList = new ArrayList<String>();
-				if (!cursorImagesAdapter.getSelectedFilePaths().isEmpty()) {
-					deliverList.addAll(cursorImagesAdapter
-							.getSelectedFilePaths());
+				if (!adapterImages.getSelectedFilePaths().isEmpty()) {
+					deliverList.addAll(adapterImages.getSelectedFilePaths());
 				}
-				if (!cursorVideosAdapter.getSelectedFilePaths().isEmpty()) {
-					deliverList.addAll(cursorVideosAdapter
-							.getSelectedFilePaths());
+				if (!adapterVideos.getSelectedFilePaths().isEmpty()) {
+					deliverList.addAll(adapterVideos.getSelectedFilePaths());
 				}
 				cursorListener.onDeliverCursorAssets(deliverList);
 			}
@@ -348,7 +357,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
 	@Override
 	public void onFolderClicked(int position) {
-		AccountAlbumModel album = (AccountAlbumModel) accountAssetAdapter
+		AccountAlbumModel album = (AccountAlbumModel) adapterAccounts
 				.getItem(position);
 		accountListener.onAccountFolderSelect(account, album.getId());
 
@@ -357,10 +366,10 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	@Override
 	public void onFileClicked(int position) {
 		if (isMultipicker == true) {
-			accountAssetAdapter.toggleTick(position);
+			adapterAccounts.toggleTick(position);
 		} else {
 			ArrayList<AccountMediaModel> accountMediaModelList = new ArrayList<AccountMediaModel>();
-			accountMediaModelList.add((AccountMediaModel) accountAssetAdapter
+			accountMediaModelList.add((AccountMediaModel) adapterAccounts
 					.getItem(position));
 			ImageDataResponseLoader.postImageData(getActivity()
 					.getApplicationContext(), accountMediaModelList,

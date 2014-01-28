@@ -20,19 +20,39 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.chute.android.photopickerplus.ui.adapter;
+package com.chute.android.photopickerplus.ui.listener;
 
-import java.util.List;
+import java.util.ArrayList;
+
+import com.chute.android.photopickerplus.ui.activity.AssetActivity;
+import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
+import com.chute.sdk.v2.model.AssetModel;
 
 /**
- * Interface for retrieving the selected item positions used to save the
- * selected items state when the orientation is changed.
+ * This interface is implemented by {@link AssetActivity} and
+ * {@link ServicesActivity}.
  * 
  */
-public interface AssetSelectListener {
+public interface ListenerFilesCursor {
 
-	public List<Integer> getSelectedImagesPositions();
+  /**
+   * Delivers {@link AssetModel} to the main activity when a photo from a local
+   * service is selected.
+   * 
+   * @param assetModel
+   *          The {@link AssetModel} delivered to the main activity i.e. the
+   *          activity that started the PhotoPicker.
+   */
+  public void onCursorAssetsSelect(AssetModel assetModel);
 
-	public List<Integer> getSelectedVideosPositions();
+  /**
+   * Delivers a list of {@link AssetModel}s to the main activity when photos
+   * from a local service are selected.
+   * 
+   * @param assetPathList
+   *          List of selected photo paths delivered to the main activity i.e.
+   *          the activity that started the PhotoPicker.
+   */
+  public void onDeliverCursorAssets(ArrayList<String> assetPathList);
 
 }

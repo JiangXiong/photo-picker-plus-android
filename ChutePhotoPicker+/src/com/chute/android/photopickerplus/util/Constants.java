@@ -35,7 +35,9 @@ public class Constants {
   public static final String TAG_FRAGMENT_FILES = "FilesFrag";
   public static final String TAG_FRAGMENT_EMPTY = "EmptyFrag";
 
-  public static final String KEY_SELECTED_ITEMS = "keySelectedItems";
+  public static final String KEY_SELECTED_ACCOUNTS_ITEMS = "keySelectedAccountsItems";
+  public static final String KEY_SELECTED_IMAGES_ITEMS = "keySelectedImagesItems";
+  public static final String KEY_SELECTED_VIDEOS_ITEMS = "keySelectedVideosItems";
   public static final String KEY_FOLDER_ID = "keyFolderId";
   public static final String KEY_ACCOUNT = "keyAccount";
   public static final String KEY_PHOTO_FILTER_TYPE = "keyPhotoFilterType";
