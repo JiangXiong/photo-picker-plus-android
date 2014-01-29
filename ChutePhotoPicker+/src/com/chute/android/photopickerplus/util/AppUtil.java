@@ -41,7 +41,6 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
-import android.util.Log;
 
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.sdk.v2.model.AccountAlbumModel;
@@ -219,7 +218,7 @@ public class AppUtil {
 			if (file.getVideoUrl() != null && supportVideos == true) {
 				videos.add(file);
 			}
-			if (supportImages == true) {
+			if (file.getVideoUrl() == null && supportImages == true) {
 				images.add(file);
 			}
 		}
