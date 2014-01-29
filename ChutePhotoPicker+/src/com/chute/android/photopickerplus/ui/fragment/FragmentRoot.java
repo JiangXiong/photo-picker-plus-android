@@ -37,6 +37,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chute.android.photopickerplus.R;
@@ -74,7 +75,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	private AssetAccountAdapter adapterAccounts;
 	private MergeAdapter adapterMerge;
 	private TextView textViewSelectPhotos;
-	private View emptyView;
+	private ProgressBar progressBar;
 
 	private boolean isMultipicker;
 	private boolean supportVideos;
@@ -125,9 +126,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
 		textViewSelectPhotos = (TextView) view
 				.findViewById(R.id.gcTextViewSelectPhotos);
+		progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 		gridView = (GridView) view.findViewById(R.id.gcGridViewAssets);
-		emptyView = view.findViewById(R.id.gc_empty_view_layout);
-		gridView.setEmptyView(emptyView);
 
 		Button ok = (Button) view.findViewById(R.id.gcButtonOk);
 		Button cancel = (Button) view.findViewById(R.id.gcButtonCancel);
@@ -172,6 +172,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				&& getActivity() != null) {
 			accountType = PhotoPickerPreferenceUtil.get().getAccountType();
 			if (accountType.equals(AccountType.YOUTUBE)) {
+				progressBar.setVisibility(View.GONE);
 			} else {
 				GCAccounts.accountRoot(getActivity().getApplicationContext(),
 						accountType.name().toLowerCase(),
@@ -204,6 +205,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		@Override
 		public void onHttpError(ResponseStatus responseStatus) {
 			if (getActivity() != null) {
+				progressBar.setVisibility(View.GONE);
 				if (responseStatus.getStatusCode() == Constants.HTTP_ERROR_CODE_UNAUTHORIZED) {
 					NotificationUtil
 							.makeExpiredSessionLogginInAgainToast(getActivity()
@@ -214,22 +216,19 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 							.getApplicationContext());
 				}
 			}
-			emptyView.setVisibility(View.GONE);
 
 		}
 
 
 		@Override
 		public void onSuccess(ResponseModel<AccountBaseModel> responseData) {
+			progressBar.setVisibility(View.GONE);
 			if (responseData != null && getActivity() != null) {
 				adapterAccounts = new AssetAccountAdapter(getActivity(),
 						AppUtil.filterFiles(responseData.getData(),
 								supportImages, supportVideos),
 						FragmentRoot.this);
 				gridView.setAdapter(adapterAccounts);
-				if (adapterAccounts.getCount() == 0) {
-					emptyView.setVisibility(View.GONE);
-				}
 
 				if (selectedAccountsPositions != null) {
 					for (int position : selectedAccountsPositions) {
@@ -277,7 +276,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				return;
 			}
 
-			emptyView.setVisibility(View.GONE);
+			progressBar.setVisibility(View.GONE);
 			adapterImages.changeCursor(cursor);
 
 			if (imagePaths != null) {
@@ -318,7 +317,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				return;
 			}
 
-			emptyView.setVisibility(View.GONE);
+			progressBar.setVisibility(View.GONE);
 			adapterVideos.changeCursor(cursor);
 
 			if (videoPaths != null) {

@@ -35,6 +35,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.araneaapps.android.libs.logger.ALog;
@@ -61,7 +62,7 @@ public class FragmentSingle extends Fragment implements
 
 	private GridView gridView;
 	private TextView textViewSelectPhotos;
-	private View emptyView;
+	private ProgressBar progressBar;
 
 	private AccountModel account;
 	private String folderId;
@@ -104,8 +105,7 @@ public class FragmentSingle extends Fragment implements
 		textViewSelectPhotos = (TextView) view
 				.findViewById(R.id.gcTextViewSelectPhotos);
 		gridView = (GridView) view.findViewById(R.id.gcGridViewAssets);
-		emptyView = view.findViewById(R.id.gc_empty_view_layout);
-		gridView.setEmptyView(emptyView);
+		progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
 		updateFragment(account, folderId, selectedItemsPositions);
 
@@ -146,12 +146,14 @@ public class FragmentSingle extends Fragment implements
 		public void onHttpError(ResponseStatus responseStatus) {
 			ALog.d("Http Error: " + responseStatus.getStatusMessage() + " "
 					+ responseStatus.getStatusCode());
+			progressBar.setVisibility(View.GONE);
 			NotificationUtil.makeConnectionProblemToast(getActivity());
 
 		}
 
 		@Override
 		public void onSuccess(ResponseModel<AccountBaseModel> responseData) {
+			progressBar.setVisibility(View.GONE);
 			boolean supportImages = PhotoPicker.getInstance().supportImages();
 			boolean supportVideos = PhotoPicker.getInstance().supportVideos();
 			if (responseData.getData() != null && getActivity() != null) {
@@ -161,9 +163,9 @@ public class FragmentSingle extends Fragment implements
 						FragmentSingle.this);
 				gridView.setAdapter(accountAssetAdapter);
 
-				if (accountAssetAdapter.getCount() == 0) {
-					emptyView.setVisibility(View.GONE);
-				}
+//				if (accountAssetAdapter.getCount() == 0) {
+//					emptyView.setVisibility(View.GONE);
+//				}
 
 				if (selectedItemsPositions != null) {
 					for (int position : selectedItemsPositions) {
