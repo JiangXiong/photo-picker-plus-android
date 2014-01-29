@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    
+
     <!-- PhotoPicker+ Theme -->
-    <style name="PhotoPickerBaseTheme" parent="android:Theme.Light.NoTitleBar">
-    </style>
-    
+    <style name="PhotoPickerBaseTheme" parent="android:Theme.Light.NoTitleBar"></style>
+
     <style name="PhotoPickerTheme" parent="PhotoPickerBaseTheme">
-      <item name="topBarBackground">@drawable/gradient_blue</item>
-      <item name="topBarTextColor">@color/white</item>  
+        <item name="topBarBackground">@drawable/gradient_blue</item>
+        <item name="topBarTextColor">@color/white</item>
     </style>
 
     <!-- TextView Service Name -->
@@ -92,16 +91,6 @@
     <style name="imageViewDefaultAssets">
         <item name="android:background">@drawable/photo_placeholder</item>
         <item name="android:scaleType">centerCrop</item>
-    </style>
-
-    <!-- Progress Bar Indeterminate -->
-    <style name="IndeterminateProgress" parent="@android:style/Widget.ProgressBar.Small">
-        <item name="android:minWidth">35dip</item>
-        <item name="android:maxWidth">35dip</item>
-        <item name="android:minHeight">35dip</item>
-        <item name="android:maxHeight">35dip</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:indeterminateDrawable">@drawable/progress_bar_rotation</item>
     </style>
 
 </resources>

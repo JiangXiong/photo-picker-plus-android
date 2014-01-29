@@ -23,10 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.util;
 
 import android.content.Context;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chute.android.photopickerplus.R;
@@ -37,51 +33,44 @@ import com.chute.android.photopickerplus.R;
  */
 public class NotificationUtil {
 
-  private NotificationUtil() {
-  }
+	private static Toast toast;
 
-  public static void makeToast(Context context, int resId) {
-    makeToast(context, context.getString(resId));
-  }
+	public static void makeSingleShowToast(Context context, int message) {
+		if (toast != null) {
+			toast.cancel();
+		}
+		toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+		toast.show();
+	}
 
-  public static void makeToast(Context context, String message) {
-    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-  }
+	public static void makeToast(Context context, String message) {
+		Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+	}
 
-  public static void makeConnectionProblemToast(Context context) {
-    makeToast(context, R.string.http_exception);
-  }
+	public static void makeToast(Context context, int stringId) {
+		Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+	}
 
-  public static void makeConnectionProblemToast(Context context, String message) {
-    makeToast(context, message + ", " + context.getString(R.string.http_exception));
-  }
+	public static void makeConnectionProblemToast(Context context) {
+		Toast.makeText(context, R.string.http_exception, Toast.LENGTH_SHORT)
+				.show();
+	}
 
-  public static void makeExpiredSessionLogginInAgainToast(Context context) {
-    makeToast(context, R.string.expired_session_logging_in);
-  }
+	public static void makeExpiredSessionLogginInAgainToast(Context context) {
+		Toast.makeText(context, R.string.expired_session_logging_in,
+				Toast.LENGTH_SHORT).show();
+	}
 
-  public static void showAdapterToast(Context context, String message) {
-    View layout = LayoutInflater.from(context)
-        .inflate(R.layout.gc_toast_loaded_photos, null);
-    TextView toastText = (TextView) layout.findViewById(R.id.gcTextViewToastLoadedPhotos);
-    toastText.setText(message);
-    Toast toast = new Toast(context);
-    toast.setGravity(Gravity.CENTER, 0, 0);
-    toast.setDuration(Toast.LENGTH_SHORT);
-    toast.setView(layout);
-    toast.show();
-  }
+	public static void showPhotosAdapterToast(Context context, int count) {
+		String text = context.getResources().getQuantityString(
+				R.plurals.numberOfLoadedPhotos, count, count);
+		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	}
 
-  public static void showPhotosAdapterToast(Context context, int count) {
-    String text = context.getResources().getQuantityString(
-        R.plurals.numberOfLoadedPhotos, count, count);
-    showAdapterToast(context, text);
-  }
-
-  public static void showAlbumsAdapterToast(Context context, int count) {
-    String text = context.getResources().getQuantityString(
-        R.plurals.numberOfLoadedAlbums, count, count);
-    showAdapterToast(context, text);
-  }
+	public static void showAlbumsAdapterToast(Context context, int count) {
+		String text = context.getResources().getQuantityString(
+				R.plurals.numberOfLoadedAlbums, count, count);
+		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	}
 
 }

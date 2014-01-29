@@ -198,7 +198,6 @@ public class PhotoPicker {
    *          containing the services.
    */
   public void fetchConfigFromServer(String url) {
-	  ALog.d("url = " + url);
     new ServiceRequest(configuration.context, url, new ConfigServicesCallback())
         .executeAsync();
   }
@@ -218,13 +217,11 @@ public class PhotoPicker {
 
     @Override
     public void onHttpError(ResponseStatus status) {
-    	ALog.d("error");
       ALog.d(ERROR_HTTP + status.getStatusMessage() + " " + status.getStatusCode());
     }
 
     @Override
     public void onSuccess(ServiceResponseModel data) {
-    	ALog.d("success = " + data.toString());
       remoteServices = new ArrayList<AccountType>();
       localServices = new ArrayList<LocalMediaType>();
       if (data.getServices() != null) {
