@@ -166,7 +166,13 @@ public class ServicesAdapter extends BaseAdapter {
 			holder.textViewServiceTitle.setText(R.string.take_photos);
 			break;
 		case CAMERA_MEDIA:
-			loader.displayImage(uriLastImageItem.toString(), holder.imageView, null);
+			Uri uriCameraMedia = null;
+			if (supportsImages) {
+				uriCameraMedia = uriLastImageItem;
+			} else {
+				uriCameraMedia = uriLastVideoItem;
+			}
+			loader.displayImage(uriCameraMedia.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(R.string.camera_media);
 			break;
 		case LAST_PHOTO_TAKEN:
@@ -175,7 +181,13 @@ public class ServicesAdapter extends BaseAdapter {
 					.getString(R.string.last_photo));
 			break;
 		case ALL_MEDIA:
-			loader.displayImage(uriAllImageItems.toString(), holder.imageView, null);
+			Uri uriAllMedia = null;
+			if (supportsImages) {
+				uriAllMedia = uriAllImageItems;
+			} else {
+				uriAllMedia = uriAllVideoItems;
+			}
+			loader.displayImage(uriAllMedia.toString(), holder.imageView, null);
 			holder.textViewServiceTitle.setText(context.getResources()
 					.getString(R.string.all_media));
 			break;

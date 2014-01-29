@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
-import android.provider.MediaStore;
 
 import com.chute.android.photopickerplus.models.enums.LocalMediaType;
 import com.chute.sdk.v2.model.enums.AccountType;
@@ -56,7 +55,7 @@ public final class PhotoPickerConfiguration {
 
 	final Context context;
 	final List<AccountType> accountList;
-	final List<LocalMediaType> localImageList;
+	final List<LocalMediaType> localMediaList;
 	final String configUrl;
 	final boolean isMultiPicker;
 	final boolean supportVideos;
@@ -66,7 +65,7 @@ public final class PhotoPickerConfiguration {
 		context = builder.context;
 		isMultiPicker = builder.isMultiPicker;
 		accountList = builder.accountList;
-		localImageList = builder.localMediaList;
+		localMediaList = builder.localMediaList;
 		configUrl = builder.configUrl;
 		supportImages = builder.supportImages;
 		supportVideos = builder.supportVideos;

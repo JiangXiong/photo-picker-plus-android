@@ -34,38 +34,39 @@ import com.chute.sdk.v2.api.authentication.AuthConstants;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
-	
+
 	final String APP_ID = "4f3c39ff38ecef0c89000003";
 	final String APP_SECRET = "c9a8cb57c52f49384ab6117c4f6483a1a5c5a14c4a50d4cef276a9a13286efc9";
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    ALog.setDebugTag("PhotoPicker");
-    ALog.setDebugLevel(DebugLevel.ALL);
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		ALog.setDebugTag("PhotoPicker");
+		ALog.setDebugLevel(DebugLevel.ALL);
 
-    /**
-     * Fill in using "app_id" and "app_secret" values from your Chute
-     * application.
-     * 
-     * See <a href="https://apps.getchute.com">https://apps.getchute.com</a>
-     */
-    
-    Chute.init(this, new AuthConstants(APP_ID, APP_SECRET));
+		/**
+		 * Fill in using "app_id" and "app_secret" values from your Chute
+		 * application.
+		 * 
+		 * See <a href="https://apps.getchute.com">https://apps.getchute.com</a>
+		 */
 
+		Chute.init(this, new AuthConstants(APP_ID, APP_SECRET));
 
-    PhotoPickerConfiguration config = new PhotoPickerConfiguration.Builder(
-        getApplicationContext())
-        .isMultiPicker(true)
-        .accountList(AccountType.FLICKR, AccountType.TWITTER, AccountType.FACEBOOK,
-            AccountType.DROPBOX, AccountType.INSTAGRAM, AccountType.GOOGLE, AccountType.YOUTUBE)
-        .localMediaList(LocalMediaType.ALL_MEDIA, LocalMediaType.CAMERA_MEDIA, LocalMediaType.RECORD_VIDEO, LocalMediaType.LAST_VIDEO_CAPTURED)
-        .configUrl(ConfigEndpointURLs.SERVICES_ENDPOINT_URL)
-        .supportImages(true)
-        .supportVideos(true)
-        .build();
-    PhotoPicker.getInstance().init(config);
+		PhotoPickerConfiguration config = new PhotoPickerConfiguration.Builder(
+				getApplicationContext())
+				.isMultiPicker(true)
+				.accountList(AccountType.FLICKR, AccountType.DROPBOX,
+						AccountType.INSTAGRAM, AccountType.GOOGLE,
+						AccountType.YOUTUBE)
+				.localMediaList(LocalMediaType.ALL_MEDIA,
+						LocalMediaType.CAMERA_MEDIA,
+						LocalMediaType.RECORD_VIDEO,
+						LocalMediaType.LAST_VIDEO_CAPTURED)
+				.configUrl(ConfigEndpointURLs.SERVICES_CONFIG_URL)
+				.supportImages(false).supportVideos(false).build();
+		PhotoPicker.getInstance().init(config);
 
-  }
+	}
 
 }

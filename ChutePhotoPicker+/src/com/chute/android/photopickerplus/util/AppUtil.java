@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
@@ -43,6 +44,9 @@ import android.provider.MediaStore.Video;
 import android.util.Log;
 
 import com.araneaapps.android.libs.logger.ALog;
+import com.chute.sdk.v2.model.AccountAlbumModel;
+import com.chute.sdk.v2.model.AccountBaseModel;
+import com.chute.sdk.v2.model.AccountMediaModel;
 import com.chute.sdk.v2.model.AssetModel;
 import com.chute.sdk.v2.utils.Utils;
 
@@ -107,8 +111,8 @@ public class AppUtil {
 	public static String getImagePath(Context context, Bitmap inImage) {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-		String path = Images.Media.insertImage(context.getContentResolver(), inImage,
-				"Title", null);
+		String path = Images.Media.insertImage(context.getContentResolver(),
+				inImage, "Title", null);
 		return path;
 	}
 
@@ -202,6 +206,31 @@ public class AppUtil {
 		String path = cursor.getString(column_index);
 		cursor.close();
 		return path;
+	}
+
+	public static AccountBaseModel filterFiles(
+			AccountBaseModel accountBaseModel, boolean supportImages,
+			boolean supportVideos) {
+		AccountBaseModel model = new AccountBaseModel();
+		List<AccountAlbumModel> folders = accountBaseModel.getFolders();
+		List<AccountMediaModel> files = new ArrayList<AccountMediaModel>();
+		List<AccountMediaModel> videos = new ArrayList<AccountMediaModel>();
+		List<AccountMediaModel> images = new ArrayList<AccountMediaModel>();
+		if (accountBaseModel.getFiles() != null) {
+		for (AccountMediaModel file : accountBaseModel.getFiles()) {
+			if (file.getVideoUrl() != null && supportVideos == true) {
+				videos.add(file);
+			}
+			if (supportImages == true) {
+				images.add(file);
+			}
+		}
+		}
+		files.addAll(images);
+		files.addAll(videos);
+		model.setFiles(files);
+		model.setFolders(folders);
+		return model;
 	}
 
 }

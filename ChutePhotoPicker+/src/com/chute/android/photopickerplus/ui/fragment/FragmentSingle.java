@@ -44,6 +44,7 @@ import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
+import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.NotificationUtil;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
 import com.chute.sdk.v2.api.accounts.GCAccounts;
@@ -151,9 +152,13 @@ public class FragmentSingle extends Fragment implements
 
 		@Override
 		public void onSuccess(ResponseModel<AccountBaseModel> responseData) {
+			boolean supportImages = PhotoPicker.getInstance().supportImages();
+			boolean supportVideos = PhotoPicker.getInstance().supportVideos();
 			if (responseData.getData() != null && getActivity() != null) {
 				accountAssetAdapter = new AssetAccountAdapter(getActivity(),
-						responseData.getData(), FragmentSingle.this);
+						AppUtil.filterFiles(responseData.getData(),
+								supportImages, supportVideos),
+						FragmentSingle.this);
 				gridView.setAdapter(accountAssetAdapter);
 
 				if (accountAssetAdapter.getCount() == 0) {

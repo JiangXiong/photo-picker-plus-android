@@ -39,7 +39,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
@@ -53,6 +52,7 @@ import com.chute.android.photopickerplus.ui.adapter.CursorAdapterVideos;
 import com.chute.android.photopickerplus.ui.adapter.MergeAdapter;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
+import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.NotificationUtil;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
@@ -160,20 +160,24 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 
 		if ((filterType == PhotoFilterType.ALL_PHOTOS)
 				|| (filterType == PhotoFilterType.CAMERA_ROLL)) {
-			if (supportImages) {
+			if (supportImages == true) {
 				getActivity().getSupportLoaderManager().initLoader(1, null,
 						new ImagesLoaderCallback(selectedImagePaths));
 			}
-			if (supportVideos) {
+			if (supportVideos == true) {
 				getActivity().getSupportLoaderManager().initLoader(2, null,
 						new VideosLoaderCallback(selectedVideoPaths));
 			}
 		} else if (filterType == PhotoFilterType.SOCIAL_PHOTOS
 				&& getActivity() != null) {
 			accountType = PhotoPickerPreferenceUtil.get().getAccountType();
-			GCAccounts.accountRoot(getActivity().getApplicationContext(),
-					accountType.name().toLowerCase(), account.getShortcut(),
-					new RootCallback()).executeAsync();
+			if (accountType.equals(AccountType.YOUTUBE)) {
+			} else {
+				GCAccounts.accountRoot(getActivity().getApplicationContext(),
+						accountType.name().toLowerCase(),
+						account.getShortcut(), new RootCallback())
+						.executeAsync();
+			}
 		}
 
 		adapterMerge = new MergeAdapter();
@@ -210,19 +214,18 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 							.getApplicationContext());
 				}
 			}
-			toggleEmptyViewErrorMessage();
-
-		}
-
-		public void toggleEmptyViewErrorMessage() {
 			emptyView.setVisibility(View.GONE);
+
 		}
+
 
 		@Override
 		public void onSuccess(ResponseModel<AccountBaseModel> responseData) {
 			if (responseData != null && getActivity() != null) {
 				adapterAccounts = new AssetAccountAdapter(getActivity(),
-						responseData.getData(), FragmentRoot.this);
+						AppUtil.filterFiles(responseData.getData(),
+								supportImages, supportVideos),
+						FragmentRoot.this);
 				gridView.setAdapter(adapterAccounts);
 				if (adapterAccounts.getCount() == 0) {
 					emptyView.setVisibility(View.GONE);
@@ -234,17 +237,17 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 					}
 				}
 
-				if (isMultipicker == true) {
-					textViewSelectPhotos.setText(getActivity()
-							.getApplicationContext().getResources()
-							.getString(R.string.select_photos));
-				} else {
-					textViewSelectPhotos.setText(getActivity()
-							.getApplicationContext().getResources()
-							.getString(R.string.select_a_photo));
-				}
 				NotificationUtil.showPhotosAdapterToast(getActivity()
 						.getApplicationContext(), adapterAccounts.getCount());
+			}
+			if (isMultipicker == true) {
+				textViewSelectPhotos.setText(getActivity()
+						.getApplicationContext().getResources()
+						.getString(R.string.select_photos));
+			} else {
+				textViewSelectPhotos.setText(getActivity()
+						.getApplicationContext().getResources()
+						.getString(R.string.select_a_photo));
 			}
 
 		}

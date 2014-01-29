@@ -106,14 +106,6 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 		adapter.changeData(accountMediaList);
 		ALog.d(wrapper.getMediaCollection().toString());
 
-		// String path;
-		// Uri uri = Uri.parse(wrapper.getMediaCollection().get(0).getUrl());
-		// if (uri.getScheme().contentEquals("http")) {
-		// path = uri.toString();
-		// } else {
-		// path = uri.getPath();
-		// }
-		// ALog.d("The Path or url of the file " + path);
 	}
 
 	@Override
@@ -130,20 +122,19 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 			AssetModel asset = adapter.getItem(position);
 			String type = asset.getType();
 			if (type.equals(Constants.TYPE_VIDEO)) {
-			ALog.d("asset = " + asset.toString());
-			SourceModel source = asset.getSource();
-			if (source != null
-					&& source.getSourceUrl().contains(AccountType.YOUTUBE.name()
-							.toLowerCase())) {
-				Intent intent = new Intent(Intent.ACTION_VIEW);
-				intent.setData(Uri.parse(source.getSourceUrl()));
-				startActivity(intent);
-			} else {
-				Intent intent = new Intent(getApplicationContext(),
-						VideoPlayerActivity.class);
-				intent.putExtra(KEY_VIDEO_PATH, asset.getUrl());
-				startActivity(intent);
-			}
+				SourceModel source = asset.getSource();
+				if (source != null
+						&& source.getSourceUrl().contains(
+								AccountType.YOUTUBE.name().toLowerCase())) {
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse(source.getSourceUrl()));
+					startActivity(intent);
+				} else {
+					Intent intent = new Intent(getApplicationContext(),
+							VideoPlayerActivity.class);
+					intent.putExtra(KEY_VIDEO_PATH, asset.getUrl());
+					startActivity(intent);
+				}
 			}
 		}
 
