@@ -48,8 +48,6 @@ import com.chute.sdk.v2.model.enums.AccountType;
 
 public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 
-	public static final String TAG = PhotoPickerPlusTutorialActivity.class
-			.getSimpleName();
 	public static final String KEY_SELECTED_ITEMS = "keySelectedItems";
 	public static final String KEY_VIDEO_PATH = "keyVideoPath";
 	private GridView grid;

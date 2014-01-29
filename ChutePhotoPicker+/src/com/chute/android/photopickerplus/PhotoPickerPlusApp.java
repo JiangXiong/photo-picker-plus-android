@@ -33,8 +33,6 @@ import darko.imagedownloader.ImageLoader;
 
 public class PhotoPickerPlusApp extends Application {
 
-  public static final String TAG = PhotoPickerPlusApp.class.getSimpleName();
-
   private static ImageLoader createImageLoader(Context context) {
     ImageLoader imageLoader = new ImageLoader(context, R.drawable.photo_placeholder);
     imageLoader.setDefaultBitmapSize((int) TypedValue.applyDimension(

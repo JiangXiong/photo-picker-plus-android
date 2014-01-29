@@ -53,8 +53,6 @@ import darko.imagedownloader.ImageLoader;
 public class AssetAccountAdapter extends BaseAdapter implements
 		ListenerAccountAssetsSelection {
 
-	@SuppressWarnings("unused")
-	private static final String TAG = AssetAccountAdapter.class.getSimpleName();
 
 	private static final int TYPE_MAX_COUNT = 2;
 

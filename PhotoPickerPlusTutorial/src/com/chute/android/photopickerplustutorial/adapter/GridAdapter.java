@@ -39,7 +39,6 @@ import darko.imagedownloader.ImageLoader;
 
 public class GridAdapter extends BaseAdapter {
 
-  public static final String TAG = GridAdapter.class.getSimpleName();
   private static LayoutInflater inflater;
   public ImageLoader loader;
   private ArrayList<AssetModel> collection;

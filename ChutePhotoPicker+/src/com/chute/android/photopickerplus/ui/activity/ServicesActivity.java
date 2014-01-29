@@ -82,7 +82,6 @@ import com.dg.libs.rest.domain.ResponseStatus;
 public class ServicesActivity extends FragmentActivity implements
 		ListenerFilesAccount, ListenerFilesCursor, ServiceClickedListener {
 
-	private static final String TAG = ServicesActivity.class.getSimpleName();
 	private static FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
 	private AccountType accountType;
@@ -323,15 +322,14 @@ public class ServicesActivity extends FragmentActivity implements
 					path = MediaDAO.getLastPhotoFromCameraPhotos(
 							getApplicationContext()).toString();
 				} catch (FileNotFoundException e) {
-					ALog.d(TAG, "", e);
+					ALog.d("", e);
 				}
 			} else {
-				ALog.e(TAG, "Bug " + data.getData().getPath());
+				ALog.e("Bug " + data.getData().getPath());
 				path = Uri.fromFile(
 						new File(AppUtil.getPath(getApplicationContext(),
 								data.getData()))).toString();
 			}
-			ALog.d(TAG, path);
 			final AssetModel model = new AssetModel();
 			model.setThumbnail(path);
 			model.setUrl(path);

@@ -42,7 +42,6 @@ import android.preference.PreferenceManager;
  */
 public class PhotoPickerPreferenceUtil {
 
-  public static final String TAG = PhotoPickerPreferenceUtil.class.getSimpleName();
   private static final String KEY_ACCOUNT_TYPE = "accountType";
   private static final String KEY_ACCOUNT_SERVICE_LIST = "accountServiceList";
   private static final String KEY_LOCAL_SERVICE_LIST = "localServiceList";

@@ -35,8 +35,6 @@ import android.content.Intent;
  */
 public class IntentWrapper {
 
-  public static final String TAG = IntentWrapper.class.getSimpleName();
-
   private final Intent intent;
 
   public IntentWrapper(Intent intent) {

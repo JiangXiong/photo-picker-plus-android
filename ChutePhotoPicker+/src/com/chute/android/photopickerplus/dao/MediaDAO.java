@@ -24,6 +24,8 @@ package com.chute.android.photopickerplus.dao;
 
 import java.io.File;
 
+import com.araneaapps.android.libs.logger.ALog;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -37,7 +39,6 @@ import android.util.Log;
  */
 public class MediaDAO {
 
-	public static final String TAG = MediaDAO.class.getSimpleName();
 
 	private MediaDAO() {
 	}
@@ -177,7 +178,7 @@ public class MediaDAO {
 				c.close();
 			}
 		} catch (Exception e) {
-			Log.d(TAG, "", e);
+			ALog.d("", e);
 		}
 	}
 }

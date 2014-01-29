@@ -68,7 +68,6 @@ import com.dg.libs.rest.domain.ResponseStatus;
 public class AssetActivity extends FragmentActivity implements
 		ListenerFilesCursor, ListenerFilesAccount {
 
-	public static final String TAG = AssetActivity.class.getSimpleName();
 	private PhotoFilterType filterType;
 	private PhotosIntentWrapper wrapper;
 	private FragmentRoot fragmentRoot;

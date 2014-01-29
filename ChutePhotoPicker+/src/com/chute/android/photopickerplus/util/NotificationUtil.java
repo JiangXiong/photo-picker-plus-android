@@ -37,8 +37,6 @@ import com.chute.android.photopickerplus.R;
  */
 public class NotificationUtil {
 
-  public static final String TAG = NotificationUtil.class.getSimpleName();
-
   private NotificationUtil() {
   }
 

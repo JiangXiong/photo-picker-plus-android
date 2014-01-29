@@ -50,8 +50,6 @@ public class ServicesAdapter extends BaseAdapter {
 	private static final int VIEW_TYPE_REMOTE_ACCOUNT = 1;
 	private static final int VIEW_TYPE_LOCAL_ACCOUNT = 0;
 
-	@SuppressWarnings("unused")
-	private static final String TAG = ServicesAdapter.class.getSimpleName();
 
 	private static LayoutInflater inflater;
 	private final boolean supportsVideos;

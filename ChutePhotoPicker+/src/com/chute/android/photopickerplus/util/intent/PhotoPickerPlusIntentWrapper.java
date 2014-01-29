@@ -42,9 +42,6 @@ import java.util.ArrayList;
  */
 public class PhotoPickerPlusIntentWrapper extends IntentWrapper {
 
-  @SuppressWarnings("unused")
-  private static final String TAG = PhotoPickerPlusIntentWrapper.class
-      .getSimpleName();
 
   public static final int ACTIVITY_FOR_RESULT_KEY = 115;
   private static final String KEY_ACCOUNT_ID = "accountId";

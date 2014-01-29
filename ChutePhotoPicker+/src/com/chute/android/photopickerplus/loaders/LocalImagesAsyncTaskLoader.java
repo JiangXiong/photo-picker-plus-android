@@ -35,8 +35,6 @@ import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 public class LocalImagesAsyncTaskLoader extends
 		AbstractSingleDataInstanceAsyncTaskLoader<Cursor> {
 
-	public static final String TAG = LocalImagesAsyncTaskLoader.class
-			.getSimpleName();
 	private final PhotoFilterType filterType;
 
 	public LocalImagesAsyncTaskLoader(Context context,

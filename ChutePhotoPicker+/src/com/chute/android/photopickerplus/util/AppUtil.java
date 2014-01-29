@@ -63,8 +63,6 @@ import com.chute.sdk.v2.utils.Utils;
  */
 public class AppUtil {
 
-	private static final String TAG = AppUtil.class.getSimpleName();
-
 	private static String SDCARD_FOLDER_CACHE = Environment
 			.getExternalStorageDirectory() + "/Android/data/%s/files/";
 
@@ -82,7 +80,7 @@ public class AppUtil {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
-				Log.w(TAG, e.getMessage(), e);
+				ALog.w(e.getMessage() + " " + e);
 			}
 		}
 		return f;
