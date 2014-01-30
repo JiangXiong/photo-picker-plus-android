@@ -22,6 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.ui.adapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -121,6 +123,30 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 			map.put(MediaType.IMAGE, photo);
 		}
 		return map;
+	}
+	
+	@Override
+	public void bindView(View view, Context context, Cursor cursor) {
+		ViewHolder holder = (ViewHolder) view.getTag();
+		String path = cursor.getString(dataIndex);
+		holder.imageViewTick.setTag(path);
+		Uri uri = Uri.fromFile(new File(path));
+		if (shouldLoadImages) {
+			loader.displayImage(uri.toString(), holder.imageViewThumb, null);
+		}
+		if (tick.containsKey(path)) {
+			holder.imageViewTick.setVisibility(View.VISIBLE);
+			view.setBackgroundColor(context.getResources().getColor(
+					R.color.sky_blue));
+		} else {
+			holder.imageViewTick.setVisibility(View.GONE);
+			view.setBackgroundColor(context.getResources().getColor(
+					R.color.gray_light));
+		}
+		holder.imageViewPlay.setVisibility(View.VISIBLE);
+		setViewClickListener(view, path);
+        setPlayButtonVisibility(holder.imageViewPlay);
+		
 	}
 
 

@@ -28,9 +28,10 @@ import com.araneaapps.android.libs.logger.ALog;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 /**
  * The definition of the Database Access Objects that handles the reading and
@@ -38,7 +39,6 @@ import android.util.Log;
  * 
  */
 public class MediaDAO {
-
 
 	private MediaDAO() {
 	}
@@ -60,13 +60,24 @@ public class MediaDAO {
 				null, MediaStore.Images.Media.DATE_ADDED + " DESC");
 	}
 
+	// public static Cursor getCameraVideos(final Context context) {
+	// final String[] projection = new String[] {
+	// MediaStore.Video.Thumbnails._ID,
+	// MediaStore.Video.Thumbnails.DATA };
+	// final Uri videos = MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI;
+	// final String query = MediaStore.Video.Thumbnails.DATA +
+	// " LIKE \"%DCIM%\"";
+	// return context.getContentResolver().query(videos, projection, query,
+	// null, MediaStore.Video.Thumbnails.DEFAULT_SORT_ORDER);
+	// }
+
 	public static Cursor getCameraVideos(final Context context) {
-		final String[] projection = new String[] { MediaStore.Video.Thumbnails._ID,
-				MediaStore.Video.Thumbnails.DATA };
-		final Uri videos = MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI;
-		final String query = MediaStore.Video.Thumbnails.DATA + " LIKE \"%DCIM%\"";
+		final String[] projection = new String[] { MediaStore.Video.Media._ID,
+				MediaStore.Video.Media.DATA };
+		final Uri videos = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+		final String query = MediaStore.Video.Media.DATA + " LIKE \"%DCIM%\"";
 		return context.getContentResolver().query(videos, projection, query,
-				null, MediaStore.Video.Thumbnails.DEFAULT_SORT_ORDER);
+				null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
 	}
 
 	/**
@@ -85,14 +96,22 @@ public class MediaDAO {
 				null, MediaStore.Images.Media.DATE_ADDED + " DESC");
 	}
 
+	// public static Cursor getAllMediaVideos(final Context context) {
+	// final String[] projection = new String[] {
+	// MediaStore.Video.Thumbnails._ID,
+	// MediaStore.Video.Thumbnails.DATA };
+	// final Uri videos = MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI;
+	// return context.getContentResolver().query(videos, projection, null,
+	// null, MediaStore.Video.Thumbnails.DEFAULT_SORT_ORDER);
+	// }
+
 	public static Cursor getAllMediaVideos(final Context context) {
-		final String[] projection = new String[] { MediaStore.Video.Thumbnails._ID,
-				MediaStore.Video.Thumbnails.DATA };
-		final Uri videos = MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI;
+		final String[] projection = new String[] { MediaStore.Video.Media._ID,
+				MediaStore.Video.Media.DATA };
+		final Uri videos = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 		return context.getContentResolver().query(videos, projection, null,
-				null, MediaStore.Video.Thumbnails.DEFAULT_SORT_ORDER);
+				null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
 	}
-	
 
 	/**
 	 * Returns the last photo URI from all photos on the device.
@@ -103,7 +122,7 @@ public class MediaDAO {
 	 */
 	public static Uri getLastPhotoFromAllPhotos(final Context context) {
 		Cursor allMediaPhotos = getAllMediaPhotos(context);
-		Uri uri = getFirstItemUri(allMediaPhotos);
+		Uri uri = getFirstImageItemUri(allMediaPhotos);
 		safelyCloseCursor(allMediaPhotos);
 		if (uri == null) {
 			return Uri.parse("");
@@ -113,7 +132,7 @@ public class MediaDAO {
 
 	public static Uri getLastVideoFromAllVideos(final Context context) {
 		Cursor allMediaVideos = getAllMediaVideos(context);
-		Uri uri = getFirstItemUri(allMediaVideos);
+		Uri uri = getFirstVideoItemUri(allMediaVideos);
 		safelyCloseCursor(allMediaVideos);
 		if (uri == null) {
 			return Uri.parse("");
@@ -130,7 +149,7 @@ public class MediaDAO {
 	 */
 	public static Uri getLastPhotoFromCameraPhotos(final Context context) {
 		Cursor allMediaPhotos = getCameraPhotos(context);
-		Uri uri = getFirstItemUri(allMediaPhotos);
+		Uri uri = getFirstImageItemUri(allMediaPhotos);
 		safelyCloseCursor(allMediaPhotos);
 		if (uri == null) {
 			return Uri.parse("");
@@ -140,7 +159,7 @@ public class MediaDAO {
 
 	public static Uri getLastVideoFromCameraVideos(final Context context) {
 		Cursor allMediaVideos = getCameraVideos(context);
-		Uri uri = getFirstItemUri(allMediaVideos);
+		Uri uri = getFirstVideoItemUri(allMediaVideos);
 		safelyCloseCursor(allMediaVideos);
 		if (uri == null) {
 			return Uri.parse("");
@@ -156,12 +175,27 @@ public class MediaDAO {
 	 *            device.
 	 * @return The URI for the requested query.
 	 */
-	private static Uri getFirstItemUri(Cursor allMedia) {
+	private static Uri getFirstImageItemUri(Cursor allMedia) {
 		if (allMedia != null && allMedia.moveToFirst()) {
 			return Uri.fromFile(new File(allMedia.getString(allMedia
 					.getColumnIndex(MediaStore.Images.Media.DATA))));
 		}
 		return null;
+	}
+
+	private static Uri getFirstVideoItemUri(Cursor allMedia) {
+		if (allMedia != null && allMedia.moveToFirst()) {
+			return Uri.fromFile(new File(allMedia.getString(allMedia
+					.getColumnIndex(MediaStore.Video.Media.DATA))));
+		}
+		return null;
+	}
+
+	public static Bitmap getVideoThumbnail(Context context, int id) {
+		return MediaStore.Video.Thumbnails.getThumbnail(
+				context.getContentResolver(), id,
+				MediaStore.Video.Thumbnails.MICRO_KIND,
+				(BitmapFactory.Options) null);
 	}
 
 	/**

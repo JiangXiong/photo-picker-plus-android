@@ -26,9 +26,9 @@ public abstract class BaseCursorAdapter extends CursorAdapter implements OnScrol
 	
 	private static LayoutInflater inflater = null;
 	public ImageLoader loader;
-	private int dataIndex;
+	protected int dataIndex;
 	public Map<String, String> tick;
-	private boolean shouldLoadImages = true;
+	protected boolean shouldLoadImages = true;
 
 	@SuppressLint("NewApi")
 	public BaseCursorAdapter(Context context, Cursor c) {
@@ -59,29 +59,6 @@ public abstract class BaseCursorAdapter extends CursorAdapter implements OnScrol
 		public ImageView imageViewPlay;
 	}
 
-	@Override
-	public void bindView(View view, Context context, Cursor cursor) {
-		ViewHolder holder = (ViewHolder) view.getTag();
-		String path = cursor.getString(dataIndex);
-		holder.imageViewTick.setTag(path);
-		Uri uri = Uri.fromFile(new File(path));
-		if (shouldLoadImages) {
-			loader.displayImage(uri.toString(), holder.imageViewThumb, null);
-		}
-		if (tick.containsKey(path)) {
-			holder.imageViewTick.setVisibility(View.VISIBLE);
-			view.setBackgroundColor(context.getResources().getColor(
-					R.color.sky_blue));
-		} else {
-			holder.imageViewTick.setVisibility(View.GONE);
-			view.setBackgroundColor(context.getResources().getColor(
-					R.color.gray_light));
-		}
-		holder.imageViewPlay.setVisibility(View.VISIBLE);
-		setViewClickListener(view, path);
-        setPlayButtonVisibility(holder.imageViewPlay);
-		
-	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {

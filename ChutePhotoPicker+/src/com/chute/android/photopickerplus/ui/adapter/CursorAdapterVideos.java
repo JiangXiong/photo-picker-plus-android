@@ -37,6 +37,7 @@ import android.widget.ImageView;
 
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
+import com.chute.android.photopickerplus.dao.MediaDAO;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
@@ -75,7 +76,7 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 		if (cursor == null) {
 			return 0;
 		} else {
-			return cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
+			return cursor.getColumnIndex(MediaStore.Video.Media.DATA);
 		}
 	}
 
@@ -104,13 +105,14 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 			if (PhotoPicker.getInstance().isMultiPicker()) {
 				toggleTick(path);
 			} else {
-				listener.onCursorAssetsSelect(AppUtil.getMediaModel(path, MediaType.VIDEO));
+				listener.onCursorAssetsSelect(AppUtil.getMediaModel(path,
+						MediaType.VIDEO));
 			}
 
 		}
 
 	}
-	
+
 	public Map<MediaType, String> getSelectedFilePaths() {
 		final Map<MediaType, String> map = new HashMap<MediaType, String>();
 		final List<String> photos = new ArrayList<String>();
@@ -122,6 +124,32 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 			map.put(MediaType.VIDEO, photo);
 		}
 		return map;
+	}
+
+	@Override
+	public void bindView(View view, Context context, Cursor cursor) {
+		ViewHolder holder = (ViewHolder) view.getTag();
+		String path = cursor.getString(dataIndex);
+		int id = cursor.getInt(cursor
+				.getColumnIndexOrThrow(MediaStore.Video.VideoColumns._ID));
+		holder.imageViewTick.setTag(path);
+		if (shouldLoadImages) {
+			holder.imageViewThumb.setImageBitmap(MediaDAO.getVideoThumbnail(
+					context, id));
+		}
+		if (tick.containsKey(path)) {
+			holder.imageViewTick.setVisibility(View.VISIBLE);
+			view.setBackgroundColor(context.getResources().getColor(
+					R.color.sky_blue));
+		} else {
+			holder.imageViewTick.setVisibility(View.GONE);
+			view.setBackgroundColor(context.getResources().getColor(
+					R.color.gray_light));
+		}
+		holder.imageViewPlay.setVisibility(View.VISIBLE);
+		setViewClickListener(view, path);
+		setPlayButtonVisibility(holder.imageViewPlay);
+
 	}
 
 }
