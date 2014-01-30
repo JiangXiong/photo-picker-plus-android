@@ -193,11 +193,12 @@ public class AppUtil {
 		return collection;
 	}
 
-	public static AssetModel getMediaModel(String path) {
+	public static AssetModel getMediaModel(String path, MediaType type) {
 		final AssetModel model = new AssetModel();
 		path = Uri.fromFile(new File(path)).toString();
 		model.setThumbnail(path);
 		model.setUrl(path);
+		model.setType(type.name().toLowerCase());
 		return model;
 	}
 

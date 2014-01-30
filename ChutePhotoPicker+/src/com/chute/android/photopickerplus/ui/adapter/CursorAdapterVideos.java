@@ -104,7 +104,7 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 			if (PhotoPicker.getInstance().isMultiPicker()) {
 				toggleTick(path);
 			} else {
-				listener.onCursorAssetsSelect(AppUtil.getMediaModel(path));
+				listener.onCursorAssetsSelect(AppUtil.getMediaModel(path, MediaType.VIDEO));
 			}
 
 		}
