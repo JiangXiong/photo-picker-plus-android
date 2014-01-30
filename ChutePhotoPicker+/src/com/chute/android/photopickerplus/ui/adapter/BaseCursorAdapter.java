@@ -120,14 +120,6 @@ public abstract class BaseCursorAdapter extends CursorAdapter implements OnScrol
 		
 	}
 	
-	public ArrayList<String> getSelectedFilePaths() {
-		final ArrayList<String> photos = new ArrayList<String>();
-		final Iterator<String> iterator = tick.values().iterator();
-		while (iterator.hasNext()) {
-			photos.add(iterator.next());
-		}
-		return photos;
-	}
 
 	public void toggleTick(String path) {
 		if (tick.containsKey(path)) {

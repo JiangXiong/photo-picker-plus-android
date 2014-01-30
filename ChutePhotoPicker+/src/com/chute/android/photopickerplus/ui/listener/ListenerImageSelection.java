@@ -34,5 +34,6 @@ public interface ListenerImageSelection {
 
 	public List<String> getCursorImagesSelection();
 	
+	
 
 }

@@ -32,5 +32,6 @@ import java.util.List;
 public interface ListenerVideoSelection {
 
 	public List<String> getCursorVideosSelection();
+	
 
 }

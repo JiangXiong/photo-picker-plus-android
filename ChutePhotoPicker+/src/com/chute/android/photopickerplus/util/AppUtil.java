@@ -28,8 +28,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -43,6 +46,7 @@ import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
 
 import com.araneaapps.android.libs.logger.ALog;
+import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
@@ -173,13 +177,17 @@ public class AppUtil {
 	}
 
 	public static ArrayList<AssetModel> getPhotoCollection(
-			ArrayList<String> paths) {
+			Map<MediaType, String> deliverMap) {
 		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
-		for (String path : paths) {
+		Iterator<Entry<MediaType, String>> iterator = deliverMap.entrySet()
+				.iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<MediaType, String> pairs = iterator.next();
 			final AssetModel model = new AssetModel();
-			path = Uri.fromFile(new File(path)).toString();
+			String path = Uri.fromFile(new File(pairs.getValue())).toString();
 			model.setThumbnail(path);
 			model.setUrl(path);
+			model.setType(pairs.getKey().name().toLowerCase());
 			collection.add(model);
 		}
 		return collection;
@@ -214,14 +222,14 @@ public class AppUtil {
 		List<AccountMediaModel> videos = new ArrayList<AccountMediaModel>();
 		List<AccountMediaModel> images = new ArrayList<AccountMediaModel>();
 		if (accountBaseModel.getFiles() != null) {
-		for (AccountMediaModel file : accountBaseModel.getFiles()) {
-			if (file.getVideoUrl() != null && supportVideos == true) {
-				videos.add(file);
+			for (AccountMediaModel file : accountBaseModel.getFiles()) {
+				if (file.getVideoUrl() != null && supportVideos == true) {
+					videos.add(file);
+				}
+				if (file.getVideoUrl() == null && supportImages == true) {
+					images.add(file);
+				}
 			}
-			if (file.getVideoUrl() == null && supportImages == true) {
-				images.add(file);
-			}
-		}
 		}
 		files.addAll(images);
 		files.addAll(videos);

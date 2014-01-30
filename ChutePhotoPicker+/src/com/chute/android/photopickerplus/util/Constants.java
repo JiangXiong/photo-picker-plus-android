@@ -43,6 +43,6 @@ public class Constants {
 
   public static final String SELECTED_IMAGES_URL = "http://api.getchute.com/v2/widgets/native";
   
-  public static final String TYPE_IMAGE = "image";
-  public static final String TYPE_VIDEO = "video";
+//  public static final String TYPE_IMAGE = "image";
+//  public static final String TYPE_VIDEO = "video";
 }

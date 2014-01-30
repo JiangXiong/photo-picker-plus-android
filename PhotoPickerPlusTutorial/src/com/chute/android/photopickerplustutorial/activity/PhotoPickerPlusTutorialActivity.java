@@ -38,6 +38,7 @@ import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.araneaapps.android.libs.logger.ALog;
+import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.intent.PhotoPickerPlusIntentWrapper;
 import com.chute.android.photopickerplustutorial.R;
@@ -119,7 +120,7 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 				long id) {
 			AssetModel asset = adapter.getItem(position);
 			String type = asset.getType();
-			if (type.equals(Constants.TYPE_VIDEO)) {
+			if (type.equals(MediaType.VIDEO.name().toLowerCase())) {
 				SourceModel source = asset.getSource();
 				if (source != null
 						&& source.getSourceUrl().contains(

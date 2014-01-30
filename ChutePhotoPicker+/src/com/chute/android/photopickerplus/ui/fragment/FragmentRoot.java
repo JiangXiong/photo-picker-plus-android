@@ -23,7 +23,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -45,6 +47,7 @@ import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.loaders.LocalImagesAsyncTaskLoader;
 import com.chute.android.photopickerplus.loaders.LocalVideosAsyncTaskLoader;
+import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
@@ -357,14 +360,14 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				}
 			} else if ((filterType == PhotoFilterType.ALL_PHOTOS)
 					|| (filterType == PhotoFilterType.CAMERA_ROLL)) {
-				ArrayList<String> deliverList = new ArrayList<String>();
+				Map<MediaType, String> deliverMap = new HashMap<MediaType, String>();
 				if (!adapterImages.getSelectedFilePaths().isEmpty()) {
-					deliverList.addAll(adapterImages.getSelectedFilePaths());
+						deliverMap.putAll(adapterImages.getSelectedFilePaths());
 				}
 				if (!adapterVideos.getSelectedFilePaths().isEmpty()) {
-					deliverList.addAll(adapterVideos.getSelectedFilePaths());
+					deliverMap.putAll(adapterVideos.getSelectedFilePaths());
 				}
-				cursorListener.onDeliverCursorAssets(deliverList);
+				cursorListener.onDeliverCursorAssets(deliverMap);
 			}
 		}
 	}

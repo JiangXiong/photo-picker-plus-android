@@ -23,8 +23,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.adapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -35,6 +37,7 @@ import android.widget.ImageView;
 
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
+import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
@@ -106,5 +109,19 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		}
 
 	}
+	
+	public Map<MediaType, String> getSelectedFilePaths() {
+		final Map<MediaType, String> map = new HashMap<MediaType, String>();
+		final List<String> photos = new ArrayList<String>();
+		final Iterator<String> iterator = tick.values().iterator();
+		while (iterator.hasNext()) {
+			photos.add(iterator.next());
+		}
+		for (String photo : photos) {
+			map.put(MediaType.IMAGE, photo);
+		}
+		return map;
+	}
+
 
 }

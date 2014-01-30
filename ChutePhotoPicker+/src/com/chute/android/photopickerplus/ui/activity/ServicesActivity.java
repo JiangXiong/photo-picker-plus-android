@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -47,6 +48,7 @@ import android.widget.Toast;
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.dao.MediaDAO;
+import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.fragment.FragmentEmpty;
 import com.chute.android.photopickerplus.ui.fragment.FragmentRoot;
@@ -152,7 +154,7 @@ public class ServicesActivity extends FragmentActivity implements
 			final AssetModel model = new AssetModel();
 			model.setThumbnail(uri.toString());
 			model.setUrl(uri.toString());
-
+			model.setType(MediaType.VIDEO.name().toLowerCase());
 			IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
 					model);
 		}
@@ -189,7 +191,7 @@ public class ServicesActivity extends FragmentActivity implements
 			final AssetModel model = new AssetModel();
 			model.setThumbnail(uri.toString());
 			model.setUrl(uri.toString());
-
+			model.setType(MediaType.IMAGE.name().toLowerCase());
 			IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
 					model);
 		}
@@ -333,7 +335,7 @@ public class ServicesActivity extends FragmentActivity implements
 			final AssetModel model = new AssetModel();
 			model.setThumbnail(path);
 			model.setUrl(path);
-			model.setType(Constants.TYPE_IMAGE);
+			model.setType(MediaType.IMAGE.name().toLowerCase());
 			ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
 			mediaCollection.add(model);
 			setResult(Activity.RESULT_OK, new Intent().putExtra(
@@ -352,7 +354,7 @@ public class ServicesActivity extends FragmentActivity implements
 			model.setThumbnail(AppUtil.getImagePath(getApplicationContext(),
 					thumbnail));
 			model.setUrl(uriVideo.toString());
-			model.setType(Constants.TYPE_VIDEO);
+			model.setType(MediaType.VIDEO.name().toLowerCase());
 			ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
 			mediaCollection.add(model);
 			setResult(Activity.RESULT_OK, new Intent().putExtra(
@@ -378,9 +380,9 @@ public class ServicesActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onDeliverCursorAssets(ArrayList<String> assetPathList) {
+	public void onDeliverCursorAssets(Map<MediaType, String> deliverMap) {
 		IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
-				AppUtil.getPhotoCollection(assetPathList));
+				AppUtil.getPhotoCollection(deliverMap));
 
 	}
 
