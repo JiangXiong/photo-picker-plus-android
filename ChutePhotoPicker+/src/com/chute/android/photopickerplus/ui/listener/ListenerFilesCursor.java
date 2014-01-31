@@ -22,8 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.ui.listener;
 
+import java.util.List;
 import java.util.Map;
 
+import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
@@ -54,6 +56,6 @@ public interface ListenerFilesCursor {
    *          List of selected photo paths delivered to the main activity i.e.
    *          the activity that started the PhotoPicker.
    */
-  public void onDeliverCursorAssets(Map<MediaType, String> assetPathList);
+  public void onDeliverCursorAssets(List<MediaResultModel> deliverList);
 
 }

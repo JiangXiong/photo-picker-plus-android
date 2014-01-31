@@ -1,15 +1,11 @@
 package com.chute.android.photopickerplus.ui.adapter;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,21 +94,13 @@ public abstract class BaseCursorAdapter extends CursorAdapter implements OnScrol
 	}
 	
 
-	public void toggleTick(String path) {
-		if (tick.containsKey(path)) {
-			tick.remove(path);
-		} else {
-			tick.put(path, path);
-		}
-		notifyDataSetChanged();
-	}
-
 	@Override
 	public void changeCursor(Cursor cursor) {
 		super.changeCursor(cursor);
 		dataIndex = getDataIndex(cursor);
 
 	}
+
 
 	
 

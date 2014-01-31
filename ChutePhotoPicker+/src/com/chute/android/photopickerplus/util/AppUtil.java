@@ -46,6 +46,7 @@ import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
 
 import com.araneaapps.android.libs.logger.ALog;
+import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
@@ -116,6 +117,28 @@ public class AppUtil {
 				inImage, "Title", null);
 		return path;
 	}
+	
+	
+	public static String getImageUri(Context inContext, Bitmap inImage) {
+	    Uri uri = Uri.parse(getImagePath(inContext, inImage));
+	    return getRealPathFromURI(inContext, uri);
+	}
+	
+
+	public static String getRealPathFromURI(Context context, Uri uri) {
+		Cursor cursor = null;
+	    try {
+	        String[] proj = { MediaStore.Images.Media.DATA };
+	        cursor = context.getContentResolver().query(uri, proj, null, null, null);
+	        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+	        cursor.moveToFirst();
+	        return cursor.getString(column_index);
+	    } finally {
+	        if (cursor != null) {
+	            cursor.close();
+	        }
+	    }
+	}
 
 	public static File getAppCacheDir(Context context) {
 		return new File(String.format(SDCARD_FOLDER_CACHE,
@@ -176,18 +199,32 @@ public class AppUtil {
 				+ (target.length() > 1 ? target.substring(1) : "");
 	}
 
+//	public static ArrayList<AssetModel> getPhotoCollection(
+//			Map<MediaType, String> deliverMap) {
+//		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
+//		Iterator<Entry<MediaType, String>> iterator = deliverMap.entrySet()
+//				.iterator();
+//		while (iterator.hasNext()) {
+//			Map.Entry<MediaType, String> pairs = iterator.next();
+//			final AssetModel model = new AssetModel();
+//			String path = Uri.fromFile(new File(pairs.getValue())).toString();
+//			model.setThumbnail(path);
+//			model.setUrl(path);
+//			model.setType(pairs.getKey().name().toLowerCase());
+//			collection.add(model);
+//		}
+//		return collection;
+//	}
+	
 	public static ArrayList<AssetModel> getPhotoCollection(
-			Map<MediaType, String> deliverMap) {
+			List<MediaResultModel> resultList) {
 		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
-		Iterator<Entry<MediaType, String>> iterator = deliverMap.entrySet()
-				.iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<MediaType, String> pairs = iterator.next();
+		for (MediaResultModel result : resultList) {
 			final AssetModel model = new AssetModel();
-			String path = Uri.fromFile(new File(pairs.getValue())).toString();
-			model.setThumbnail(path);
-			model.setUrl(path);
-			model.setType(pairs.getKey().name().toLowerCase());
+//			String path = Uri.fromFile(new File(pairs.getValue())).toString();
+			model.setThumbnail(result.getThumbnail());
+			model.setUrl(result.getUrl());
+			model.setType(result.getMediaType().name().toLowerCase());
 			collection.add(model);
 		}
 		return collection;
@@ -238,5 +275,7 @@ public class AppUtil {
 		model.setFolders(folders);
 		return model;
 	}
-
+	
+	
+	
 }

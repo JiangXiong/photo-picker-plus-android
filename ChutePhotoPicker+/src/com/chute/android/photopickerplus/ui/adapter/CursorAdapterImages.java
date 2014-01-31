@@ -39,6 +39,7 @@ import android.widget.ImageView;
 
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
+import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
@@ -112,17 +113,18 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 
 	}
 	
-	public Map<MediaType, String> getSelectedFilePaths() {
-		final Map<MediaType, String> map = new HashMap<MediaType, String>();
-		final List<String> photos = new ArrayList<String>();
+	public List<MediaResultModel> getSelectedFilePaths() {
+		final List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
 		final Iterator<String> iterator = tick.values().iterator();
 		while (iterator.hasNext()) {
-			photos.add(iterator.next());
+			MediaResultModel resultModel = new MediaResultModel();
+			String url = iterator.next();
+			resultModel.setUrl(url);
+			resultModel.setThumbnail(url);
+			resultModel.setMediaType(MediaType.VIDEO);
+			deliverList.add(resultModel);
 		}
-		for (String photo : photos) {
-			map.put(MediaType.IMAGE, photo);
-		}
-		return map;
+		return deliverList;
 	}
 	
 	@Override
@@ -147,6 +149,15 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		setViewClickListener(view, path);
         setPlayButtonVisibility(holder.imageViewPlay);
 		
+	}
+	
+	public void toggleTick(String path) {
+		if (tick.containsKey(path)) {
+			tick.remove(path);
+		} else {
+			tick.put(path, path);
+		}
+		notifyDataSetChanged();
 	}
 
 

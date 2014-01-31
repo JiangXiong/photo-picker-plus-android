@@ -26,6 +26,8 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +88,7 @@ public class GridAdapter extends BaseAdapter {
       holder = (ViewHolder) vi.getTag();
     }
     loader.displayImage(getItem(position).getThumbnail(), holder.image, null);
+//    holder.image.setImageBitmap(BitmapFactory.decodeFile(getItem(position).getThumbnail()));
     return vi;
   }
 

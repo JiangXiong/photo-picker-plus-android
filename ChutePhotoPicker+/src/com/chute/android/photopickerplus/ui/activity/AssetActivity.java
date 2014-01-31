@@ -45,6 +45,7 @@ import com.chute.android.photopickerplus.ui.listener.ListenerImageSelection;
 import com.chute.android.photopickerplus.ui.listener.ListenerVideoSelection;
 import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.android.photopickerplus.util.Constants;
+import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
@@ -148,9 +149,9 @@ public class AssetActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onDeliverCursorAssets(Map<MediaType, String> deliverMap) {
+	public void onDeliverCursorAssets(List<MediaResultModel> deliverList) {
 		IntentUtil.deliverDataToInitialActivity(AssetActivity.this,
-				AppUtil.getPhotoCollection(deliverMap));
+				AppUtil.getPhotoCollection(deliverList));
 		setResult(RESULT_OK);
 		finish();
 

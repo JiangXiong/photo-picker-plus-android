@@ -47,6 +47,7 @@ import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.loaders.LocalImagesAsyncTaskLoader;
 import com.chute.android.photopickerplus.loaders.LocalVideosAsyncTaskLoader;
+import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
@@ -188,7 +189,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		adapterImages = new CursorAdapterImages(getActivity(), null,
 				cursorListener);
 		adapterVideos = new CursorAdapterVideos(getActivity(), null,
-				cursorListener);
+				cursorListener, filterType);
 		adapterMerge.addAdapter(adapterVideos);
 		adapterMerge.addAdapter(adapterImages);
 		gridView.setAdapter(adapterMerge);
@@ -360,14 +361,14 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				}
 			} else if ((filterType == PhotoFilterType.ALL_PHOTOS)
 					|| (filterType == PhotoFilterType.CAMERA_ROLL)) {
-				Map<MediaType, String> deliverMap = new HashMap<MediaType, String>();
+				List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
 				if (!adapterImages.getSelectedFilePaths().isEmpty()) {
-						deliverMap.putAll(adapterImages.getSelectedFilePaths());
+						deliverList.addAll(adapterImages.getSelectedFilePaths());
 				}
 				if (!adapterVideos.getSelectedFilePaths().isEmpty()) {
-					deliverMap.putAll(adapterVideos.getSelectedFilePaths());
+					deliverList.addAll(adapterVideos.getSelectedFilePaths());
 				}
-				cursorListener.onDeliverCursorAssets(deliverMap);
+				cursorListener.onDeliverCursorAssets(deliverList);
 			}
 		}
 	}

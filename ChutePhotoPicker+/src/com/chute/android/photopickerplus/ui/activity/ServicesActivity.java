@@ -48,6 +48,7 @@ import android.widget.Toast;
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.dao.MediaDAO;
+import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.fragment.FragmentEmpty;
@@ -380,9 +381,9 @@ public class ServicesActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onDeliverCursorAssets(Map<MediaType, String> deliverMap) {
+	public void onDeliverCursorAssets(List<MediaResultModel> deliverList) {
 		IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
-				AppUtil.getPhotoCollection(deliverMap));
+				AppUtil.getPhotoCollection(deliverList));
 
 	}
 
