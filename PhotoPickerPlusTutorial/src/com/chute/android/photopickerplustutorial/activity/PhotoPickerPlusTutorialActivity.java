@@ -121,12 +121,9 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 			AssetModel asset = adapter.getItem(position);
 			String type = asset.getType();
 			if (type.equals(MediaType.VIDEO.name().toLowerCase())) {
-				SourceModel source = asset.getSource();
-				if (source != null
-						&& source.getSourceUrl().contains(
-								AccountType.YOUTUBE.name().toLowerCase())) {
+				if (asset.getVideoUrl().contains("http")) {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
-					intent.setData(Uri.parse(source.getSourceUrl()));
+					intent.setData(Uri.parse(asset.getVideoUrl()));
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(getApplicationContext(),

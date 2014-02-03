@@ -52,7 +52,18 @@ public class MediaDataModel implements Parcelable {
 	@JsonProperty("thumbnail")
 	private String thumbnail;
 
+	@JsonProperty("file_type")
+	private String fileType;
+
 	public MediaDataModel() {
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
 	}
 
 	public String getImageUrl() {
@@ -92,6 +103,20 @@ public class MediaDataModel implements Parcelable {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
+	 */
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(imageUrl);
+		dest.writeString(videoUrl);
+		dest.writeString(thumbnail);
+		dest.writeString(fileType);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -103,21 +128,10 @@ public class MediaDataModel implements Parcelable {
 		builder.append(videoUrl);
 		builder.append(", thumbnail=");
 		builder.append(thumbnail);
+		builder.append(", fileType=");
+		builder.append(fileType);
 		builder.append("]");
 		return builder.toString();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
-	 */
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(imageUrl);
-		dest.writeString(videoUrl);
-		dest.writeString(thumbnail);
-
 	}
 
 	public MediaDataModel(Parcel in) {
@@ -125,6 +139,7 @@ public class MediaDataModel implements Parcelable {
 		imageUrl = in.readString();
 		videoUrl = in.readString();
 		thumbnail = in.readString();
+		fileType = in.readString();
 	}
 
 	public static final Parcelable.Creator<MediaDataModel> CREATOR = new Parcelable.Creator<MediaDataModel>() {

@@ -33,6 +33,7 @@ import com.chute.android.photopickerplus.models.ImageResponseModel;
 import com.chute.android.photopickerplus.models.MediaDataModel;
 import com.chute.android.photopickerplus.models.MediaModel;
 import com.chute.android.photopickerplus.models.OptionsModel;
+import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesAccount;
 import com.chute.sdk.v2.api.Chute;
 import com.chute.sdk.v2.api.authentication.AuthConstants;
@@ -68,14 +69,16 @@ public class ImageDataResponseLoader {
 		Chute.init(context, new AuthConstants(clientId, clientSecret), token);
 
 		ArrayList<MediaDataModel> mediaModelList = new ArrayList<MediaDataModel>();
-		for (AccountMediaModel media : selectedImages) {
+		for (AccountMediaModel accountMediaModel : selectedImages) {
 			MediaDataModel mediaModel = new MediaDataModel();
-			if (media.getVideoUrl() != null) {
-			mediaModel.setImageUrl(media.getVideoUrl());
+			if (accountMediaModel.getVideoUrl() != null) {
+			mediaModel.setFileType(MediaType.VIDEO.name().toLowerCase());
 			} else {
-			mediaModel.setImageUrl(media.getImageUrl());
+			mediaModel.setFileType(MediaType.IMAGE.name().toLowerCase());
 			}
-			mediaModel.setThumbnail(media.getThumbnail());
+			mediaModel.setVideoUrl(accountMediaModel.getVideoUrl());
+			mediaModel.setImageUrl(accountMediaModel.getImageUrl());
+			mediaModel.setThumbnail(accountMediaModel.getThumbnail());
 			mediaModelList.add(mediaModel);
 		}
 
