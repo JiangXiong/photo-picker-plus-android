@@ -174,15 +174,15 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 			}
 		} else if (filterType == PhotoFilterType.SOCIAL_PHOTOS
 				&& getActivity() != null) {
-			accountType = PhotoPickerPreferenceUtil.get().getAccountType();
-//			if (accountType.equals(AccountType.YOUTUBE)) {
-//				progressBar.setVisibility(View.GONE);
-//			} else {
+			    accountType = PhotoPickerPreferenceUtil.get().getAccountType();
+			    if (supportVideos == false && accountType.equals(AccountType.YOUTUBE)) {
+			    	//Do nothing
+			    } else {
 				GCAccounts.accountRoot(getActivity().getApplicationContext(),
 						accountType.name().toLowerCase(),
 						account.getShortcut(), new RootCallback())
 						.executeAsync();
-//			}
+			    }
 		}
 
 		adapterMerge = new MergeAdapter();
