@@ -4,16 +4,25 @@ import com.chute.android.photopickerplus.models.enums.MediaType;
 
 public class MediaResultModel {
 
-	private String url;
+	private String imageUrl;
+	private String videoUrl;
 	private String thumbnail;
 	private MediaType mediaType;
 
-	public String getUrl() {
-		return url;
+	public String getImageUrl() {
+		return imageUrl;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
 	}
 
 	public String getThumbnail() {
@@ -35,8 +44,10 @@ public class MediaResultModel {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("MediaResultModel [url=");
-		builder.append(url);
+		builder.append("MediaResultModel [imageUrl=");
+		builder.append(imageUrl);
+		builder.append(", videoUrl=");
+		builder.append(videoUrl);
 		builder.append(", thumbnail=");
 		builder.append(thumbnail);
 		builder.append(", mediaType=");

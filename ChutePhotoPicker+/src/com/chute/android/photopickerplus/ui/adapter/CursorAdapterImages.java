@@ -24,10 +24,8 @@ package com.chute.android.photopickerplus.ui.adapter;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -83,7 +81,7 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 	}
 
 	@Override
-	public void setViewClickListener(View view, String path) {
+	public void setViewClickListener(View view, String path, int position) {
 		view.setOnClickListener(new ImageClickListener(path));
 
 	}
@@ -119,7 +117,7 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		while (iterator.hasNext()) {
 			MediaResultModel resultModel = new MediaResultModel();
 			String url = iterator.next();
-			resultModel.setUrl(url);
+			resultModel.setImageUrl(url);
 			resultModel.setThumbnail(url);
 			resultModel.setMediaType(MediaType.VIDEO);
 			deliverList.add(resultModel);
@@ -127,29 +125,6 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		return deliverList;
 	}
 	
-	@Override
-	public void bindView(View view, Context context, Cursor cursor) {
-		ViewHolder holder = (ViewHolder) view.getTag();
-		String path = cursor.getString(dataIndex);
-		holder.imageViewTick.setTag(path);
-		Uri uri = Uri.fromFile(new File(path));
-		if (shouldLoadImages) {
-			loader.displayImage(uri.toString(), holder.imageViewThumb, null);
-		}
-		if (tick.containsKey(path)) {
-			holder.imageViewTick.setVisibility(View.VISIBLE);
-			view.setBackgroundColor(context.getResources().getColor(
-					R.color.sky_blue));
-		} else {
-			holder.imageViewTick.setVisibility(View.GONE);
-			view.setBackgroundColor(context.getResources().getColor(
-					R.color.gray_light));
-		}
-		holder.imageViewPlay.setVisibility(View.VISIBLE);
-		setViewClickListener(view, path);
-        setPlayButtonVisibility(holder.imageViewPlay);
-		
-	}
 	
 	public void toggleTick(String path) {
 		if (tick.containsKey(path)) {
@@ -158,6 +133,14 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 			tick.put(path, path);
 		}
 		notifyDataSetChanged();
+	}
+
+	@Override
+	public void loadImageView(ImageView imageView, Cursor cursor) {
+		String path = cursor.getString(dataIndex);
+		Uri uri = Uri.fromFile(new File(path));
+		loader.displayImage(uri.toString(), imageView, null);
+		
 	}
 
 

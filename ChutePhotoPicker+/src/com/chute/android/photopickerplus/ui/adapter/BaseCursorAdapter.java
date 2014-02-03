@@ -38,8 +38,9 @@ public abstract class BaseCursorAdapter extends CursorAdapter implements OnScrol
 	}
 	
 	public abstract int getDataIndex(Cursor cursor);
-	abstract public void setViewClickListener(View view, String path);
+	abstract public void setViewClickListener(View view, String path, int position);
     abstract public void setPlayButtonVisibility(ImageView imageView);
+    abstract public void loadImageView(ImageView imageView, Cursor cursor);
 	
 	@Override
 	public String getItem(int position) {
@@ -102,7 +103,28 @@ public abstract class BaseCursorAdapter extends CursorAdapter implements OnScrol
 	}
 
 
-	
+	@Override
+	public void bindView(View view, Context context, Cursor cursor) {
+		ViewHolder holder = (ViewHolder) view.getTag();
+		String path = cursor.getString(dataIndex);
+		holder.imageViewTick.setTag(path);
+		if (shouldLoadImages) {
+			loadImageView(holder.imageViewThumb, cursor);
+		}
+		if (tick.containsKey(path)) {
+			holder.imageViewTick.setVisibility(View.VISIBLE);
+			view.setBackgroundColor(context.getResources().getColor(
+					R.color.sky_blue));
+		} else {
+			holder.imageViewTick.setVisibility(View.GONE);
+			view.setBackgroundColor(context.getResources().getColor(
+					R.color.gray_light));
+		}
+		holder.imageViewPlay.setVisibility(View.VISIBLE);
+		setViewClickListener(view, path, cursor.getPosition());
+		setPlayButtonVisibility(holder.imageViewPlay);
+
+	}
 
 
 

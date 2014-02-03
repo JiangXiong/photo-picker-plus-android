@@ -22,29 +22,24 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.ui.adapter;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
-import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.dao.MediaDAO;
 import com.chute.android.photopickerplus.models.MediaResultModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
-import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
 import com.chute.android.photopickerplus.ui.listener.ListenerFilesCursor;
@@ -55,14 +50,13 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 		ListenerVideoSelection {
 
 	private ListenerFilesCursor listener;
-	private PhotoFilterType filterType;
 	private Context context;
+	private int position;
 
 	public CursorAdapterVideos(Context context, Cursor c,
-			ListenerFilesCursor listener, PhotoFilterType filterType) {
+			ListenerFilesCursor listener) {
 		super(context, c);
 		this.listener = listener;
-		this.filterType = filterType;
 		this.context = context;
 		if (context.getResources().getBoolean(R.bool.has_two_panes)) {
 			((ServicesActivity) context).setVideosSelectListener(this);
@@ -92,8 +86,8 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 	
 
 	@Override
-	public void setViewClickListener(View view, String path) {
-		view.setOnClickListener(new VideoClickListener(path));
+	public void setViewClickListener(View view, String path, int position) {
+		view.setOnClickListener(new VideoClickListener(path, position));
 
 	}
 
@@ -106,13 +100,16 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 	private final class VideoClickListener implements OnClickListener {
 
 		private String path;
+		private int itemPosition;
 
-		private VideoClickListener(String path) {
+		private VideoClickListener(String path, int itemPosition) {
 			this.path = path;
+			this.itemPosition = itemPosition;
 		}
 
 		@Override
 		public void onClick(View v) {
+			position = itemPosition;
 			if (PhotoPicker.getInstance().isMultiPicker()) {
 				toggleTick(path);
 			} else {
@@ -126,51 +123,36 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 
 	public List<MediaResultModel> getSelectedFilePaths() {
 		final List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
-		final Iterator<String> iterator = tick.values().iterator();
-		while (iterator.hasNext()) {
-			MediaResultModel resultModel = new MediaResultModel();
-			String url = iterator.next();
-			resultModel.setUrl(url);
-			//TODO add video thumbnail in MediaResultModel
-			resultModel.setMediaType(MediaType.VIDEO);
-			deliverList.add(resultModel);
-		}
+		Iterator<Entry<String, String>> iterator = tick.entrySet().iterator();
+	    while (iterator.hasNext()) {
+	    	MediaResultModel model = new MediaResultModel();
+	        Map.Entry<String, String> pairs = iterator.next();
+	        String path = pairs.getKey();
+	        String position = pairs.getValue();
+	        model.setMediaType(MediaType.VIDEO);
+	        model.setVideoUrl(path);
+	        String thumbnail = MediaDAO.getVideoThumbnailFromCursor(context, getCursor(), Integer.valueOf(position));
+	        model.setThumbnail(thumbnail);
+	        deliverList.add(model);
+	    }
 		return deliverList;
 	}
 
-	@Override
-	public void bindView(View view, Context context, Cursor cursor) {
-		ViewHolder holder = (ViewHolder) view.getTag();
-		String path = cursor.getString(dataIndex);
-		holder.imageViewTick.setTag(path);
-		if (shouldLoadImages) {
-			holder.imageViewThumb.setImageBitmap(MediaDAO.getVideoThumbnail(
-					context, cursor));
-		}
-		if (tick.containsKey(path)) {
-			holder.imageViewTick.setVisibility(View.VISIBLE);
-			view.setBackgroundColor(context.getResources().getColor(
-					R.color.sky_blue));
-		} else {
-			holder.imageViewTick.setVisibility(View.GONE);
-			view.setBackgroundColor(context.getResources().getColor(
-					R.color.gray_light));
-		}
-		holder.imageViewPlay.setVisibility(View.VISIBLE);
-		setViewClickListener(view, path);
-		setPlayButtonVisibility(holder.imageViewPlay);
-
-	}
 	
 	public void toggleTick(String path) {
-		Bitmap thumb = MediaDAO.getVideoThumbnail(context, getCursor());
-		String string = AppUtil.getImageUri(context, thumb);
 		if (tick.containsKey(path)) {
 			tick.remove(path);
 		} else {
-			tick.put(path, string);
+			tick.put(path, String.valueOf(position));
 		}
 		notifyDataSetChanged();
+	}
+
+	@Override
+	public void loadImageView(ImageView imageView, Cursor cursor) {
+		imageView.setImageBitmap(MediaDAO.getVideoThumbnail(
+				context, cursor));
+		
 	}
 
 

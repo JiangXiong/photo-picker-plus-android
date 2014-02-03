@@ -23,9 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.chute.android.photopickerplus.ui.fragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -48,7 +46,6 @@ import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.loaders.LocalImagesAsyncTaskLoader;
 import com.chute.android.photopickerplus.loaders.LocalVideosAsyncTaskLoader;
 import com.chute.android.photopickerplus.models.MediaResultModel;
-import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
@@ -176,7 +173,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				&& getActivity() != null) {
 			    accountType = PhotoPickerPreferenceUtil.get().getAccountType();
 			    if (supportVideos == false && accountType.equals(AccountType.YOUTUBE)) {
-			    	//Do nothing
+			    	progressBar.setVisibility(View.GONE);
 			    } else {
 				GCAccounts.accountRoot(getActivity().getApplicationContext(),
 						accountType.name().toLowerCase(),
@@ -189,7 +186,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		adapterImages = new CursorAdapterImages(getActivity(), null,
 				cursorListener);
 		adapterVideos = new CursorAdapterVideos(getActivity(), null,
-				cursorListener, filterType);
+				cursorListener);
 		adapterMerge.addAdapter(adapterVideos);
 		adapterMerge.addAdapter(adapterImages);
 		gridView.setAdapter(adapterMerge);

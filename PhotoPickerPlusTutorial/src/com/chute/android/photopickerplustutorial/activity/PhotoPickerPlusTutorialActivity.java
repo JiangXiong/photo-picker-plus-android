@@ -33,19 +33,16 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.models.enums.MediaType;
-import com.chute.android.photopickerplus.util.Constants;
 import com.chute.android.photopickerplus.util.intent.PhotoPickerPlusIntentWrapper;
 import com.chute.android.photopickerplustutorial.R;
 import com.chute.android.photopickerplustutorial.adapter.GridAdapter;
 import com.chute.sdk.v2.model.AssetModel;
-import com.chute.sdk.v2.model.SourceModel;
-import com.chute.sdk.v2.model.enums.AccountType;
 
 public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 

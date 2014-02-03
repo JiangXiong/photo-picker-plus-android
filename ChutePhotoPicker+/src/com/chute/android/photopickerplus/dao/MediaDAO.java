@@ -170,12 +170,11 @@ public class MediaDAO {
 		return uri;
 	}
 
-	public static String getVideoThumbnailFromCursor(final Cursor dataCursor, final Context context) {
+	public static String getVideoThumbnailFromCursor(final Context context, final Cursor dataCursor,  int position) {
 		String thumbPath = null;
 		String[] thumbColumns = { MediaStore.Video.Thumbnails.DATA,
 				MediaStore.Video.Thumbnails.VIDEO_ID };
-		if (dataCursor.moveToNext()) {
-
+		if (dataCursor.moveToPosition(position)) {
 				int id = dataCursor.getInt(dataCursor
 						.getColumnIndex(MediaStore.Video.Media._ID));
 				Cursor thumbCursor = context.getContentResolver().query(

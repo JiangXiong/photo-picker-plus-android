@@ -28,11 +28,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -199,31 +196,15 @@ public class AppUtil {
 				+ (target.length() > 1 ? target.substring(1) : "");
 	}
 
-//	public static ArrayList<AssetModel> getPhotoCollection(
-//			Map<MediaType, String> deliverMap) {
-//		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
-//		Iterator<Entry<MediaType, String>> iterator = deliverMap.entrySet()
-//				.iterator();
-//		while (iterator.hasNext()) {
-//			Map.Entry<MediaType, String> pairs = iterator.next();
-//			final AssetModel model = new AssetModel();
-//			String path = Uri.fromFile(new File(pairs.getValue())).toString();
-//			model.setThumbnail(path);
-//			model.setUrl(path);
-//			model.setType(pairs.getKey().name().toLowerCase());
-//			collection.add(model);
-//		}
-//		return collection;
-//	}
 	
 	public static ArrayList<AssetModel> getPhotoCollection(
 			List<MediaResultModel> resultList) {
 		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
 		for (MediaResultModel result : resultList) {
 			final AssetModel model = new AssetModel();
-//			String path = Uri.fromFile(new File(pairs.getValue())).toString();
-			model.setThumbnail(result.getThumbnail());
-			model.setUrl(result.getUrl());
+			model.setThumbnail(Uri.fromFile(new File(result.getThumbnail())).toString());
+			model.setUrl(result.getImageUrl());
+			model.setVideoUrl(result.getVideoUrl());
 			model.setType(result.getMediaType().name().toLowerCase());
 			collection.add(model);
 		}
