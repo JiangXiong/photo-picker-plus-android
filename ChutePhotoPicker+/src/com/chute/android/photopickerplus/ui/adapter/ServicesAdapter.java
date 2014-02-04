@@ -306,7 +306,7 @@ public class ServicesAdapter extends BaseAdapter {
 					.getDrawable(R.drawable.dropbox));
 			break;
 		case YOUTUBE:
-			holder.imageView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.photo_placeholder));
+			holder.imageView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.youtube));
 		break;
 		}
 	}
