@@ -40,7 +40,7 @@ import android.widget.ImageView;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.dao.MediaDAO;
-import com.chute.android.photopickerplus.models.MediaResultModel;
+import com.chute.android.photopickerplus.models.DeliverMediaModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
@@ -124,8 +124,8 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 
 	}
 
-	public List<MediaResultModel> getSelectedFilePaths() {
-		final List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
+	public List<DeliverMediaModel> getSelectedFilePaths() {
+		final List<DeliverMediaModel> deliverList = new ArrayList<DeliverMediaModel>();
 		Iterator<Entry<String, String>> iterator = tick.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry<String, String> pairs = iterator.next();
@@ -153,9 +153,9 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 
 	}
 
-	private MediaResultModel createMediaResultModel(String thumb,
+	private DeliverMediaModel createMediaResultModel(String thumb,
 			String videoUrl) {
-		MediaResultModel model = new MediaResultModel();
+		DeliverMediaModel model = new DeliverMediaModel();
 		model.setVideoUrl(Uri.fromFile(new File(videoUrl)).toString());
 		model.setMediaType(MediaType.VIDEO);
 		model.setImageUrl(thumb);

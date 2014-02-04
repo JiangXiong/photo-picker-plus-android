@@ -34,7 +34,7 @@ import android.widget.GridView;
 
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.android.photopickerplus.ui.adapter.ServicesAdapter;
 import com.chute.sdk.v2.model.enums.AccountType;
 
@@ -95,7 +95,7 @@ public class FragmentServices extends Fragment {
   }
 
   private void configureServices(List<AccountType> remoteServices,
-      List<LocalMediaType> localServices) {
+      List<LocalServiceType> localServices) {
     adapter = new ServicesAdapter(getActivity(), remoteServices, localServices,
         serviceClickedListener);
     gridViewServices.setAdapter(adapter);

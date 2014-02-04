@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * sent.
  * 
  */
-public class ImageResponseModel implements Parcelable {
+public class MediaResponseModel implements Parcelable {
 
   /**
    * List of {@link AssetModel}s
@@ -88,7 +88,7 @@ public class ImageResponseModel implements Parcelable {
   @JsonProperty("profile")
   private ProfileModel profile;
 
-  public ImageResponseModel() {
+  public MediaResponseModel() {
   }
 
   public List<AssetModel> getAssetList() {
@@ -154,7 +154,7 @@ public class ImageResponseModel implements Parcelable {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("ImageResponseModel [assetList=");
+    builder.append("MediaResponseModel [assetList=");
     builder.append(assetList);
     builder.append(", clientId=");
     builder.append(clientId);
@@ -197,7 +197,7 @@ public class ImageResponseModel implements Parcelable {
 
   }
 
-  public ImageResponseModel(Parcel in) {
+  public MediaResponseModel(Parcel in) {
     this();
     in.readTypedList(assetList, AssetModel.CREATOR);
     clientId = in.readString();
@@ -208,16 +208,16 @@ public class ImageResponseModel implements Parcelable {
     profile = in.readParcelable(ProfileModel.class.getClassLoader());
   }
 
-  public static final Parcelable.Creator<ImageResponseModel> CREATOR = new Parcelable.Creator<ImageResponseModel>() {
+  public static final Parcelable.Creator<MediaResponseModel> CREATOR = new Parcelable.Creator<MediaResponseModel>() {
 
     @Override
-    public ImageResponseModel createFromParcel(Parcel in) {
-      return new ImageResponseModel(in);
+    public MediaResponseModel createFromParcel(Parcel in) {
+      return new MediaResponseModel(in);
     }
 
     @Override
-    public ImageResponseModel[] newArray(int size) {
-      return new ImageResponseModel[size];
+    public MediaResponseModel[] newArray(int size) {
+      return new MediaResponseModel[size];
     }
 
   };

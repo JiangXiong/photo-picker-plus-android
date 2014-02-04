@@ -26,14 +26,14 @@ package com.chute.android.photopickerplus.models.enums;
  * Enumeration for the type of the local service displayed.
  * 
  */
-public enum LocalMediaType {
+public enum LocalServiceType {
   CAMERA_MEDIA("camera media"), ALL_MEDIA("all media"), LAST_PHOTO_TAKEN(
       "last photo taken"), LAST_VIDEO_CAPTURED("last video captured"), TAKE_PHOTO(
       "take photo"), RECORD_VIDEO("record video");
 
   private final String name;
 
-  private LocalMediaType(String name) {
+  private LocalServiceType(String name) {
     this.name = name;
   }
 

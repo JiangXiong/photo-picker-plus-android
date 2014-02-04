@@ -27,7 +27,7 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 /**
@@ -42,7 +42,7 @@ import com.chute.sdk.v2.model.enums.AccountType;
  *  getApplicationContext())
  *  .isMultiPicker(true)
  *  .accountList(AccountType.FLICKR, AccountType.FACEBOOK)
- *  .localImageList(LocalMediaType.ALL_PHOTOS, LocalMediaType.CAMERA_PHOTOS)
+ *  .localImageList(LocalServiceType.ALL_PHOTOS, LocalServiceType.CAMERA_PHOTOS)
  *  .configUrl("http://s3.amazonaws.com/store.getchute.com/51eeae5e6e29310c9a000001")
  * .build();
  * PhotoPicker.getInstance().init(config);
@@ -55,7 +55,7 @@ public final class PhotoPickerConfiguration {
 
 	final Context context;
 	final List<AccountType> accountList;
-	final List<LocalMediaType> localMediaList;
+	final List<LocalServiceType> localMediaList;
 	final String configUrl;
 	final boolean isMultiPicker;
 	final boolean supportVideos;
@@ -78,8 +78,8 @@ public final class PhotoPickerConfiguration {
 	 * <li>isMultiPicker = false</li>
 	 * <li>accountList = {@link AccountType#FACEBOOK},
 	 * {@link AccountType#INSTAGRAM}</li>
-	 * <li>localMediaList = {@link LocalMediaType#ALL_PHOTOS},
-	 * {@link LocalMediaType#CAMERA_PHOTOS}</li>
+	 * <li>localMediaList = {@link LocalServiceType#ALL_PHOTOS},
+	 * {@link LocalServiceType#CAMERA_PHOTOS}</li>
 	 * </ul>
 	 * */
 	public static PhotoPickerConfiguration createDefault(Context context) {
@@ -95,7 +95,7 @@ public final class PhotoPickerConfiguration {
 		private Context context;
 		private boolean isMultiPicker = false;
 		private List<AccountType> accountList = null;
-		private List<LocalMediaType> localMediaList = null;
+		private List<LocalServiceType> localMediaList = null;
 		private String configUrl = null;
 		private boolean supportImages = true;
 		private boolean supportVideos = false;
@@ -125,9 +125,9 @@ public final class PhotoPickerConfiguration {
 		 * Sets list of local services.
 		 * 
 		 * @param localMediaList
-		 *            List of {@link LocalMediaType} services.
+		 *            List of {@link LocalServiceType} services.
 		 */
-		public Builder localMediaList(LocalMediaType... localMediaList) {
+		public Builder localMediaList(LocalServiceType... localMediaList) {
 			this.localMediaList = Arrays.asList(localMediaList);
 			return this;
 		}

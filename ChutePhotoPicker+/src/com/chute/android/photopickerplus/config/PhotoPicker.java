@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.araneaapps.android.libs.logger.ALog;
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.android.photopickerplus.util.PhotoPickerPreferenceUtil;
 import com.chute.sdk.v2.model.enums.AccountType;
 import com.dg.libs.rest.callbacks.HttpCallback;
@@ -63,10 +63,10 @@ public class PhotoPicker {
 	 */
 	private List<AccountType> remoteServices;
 	/**
-	 * List of {@link LocalMediaType} objects representing the local services to
+	 * List of {@link LocalServiceType} objects representing the local services to
 	 * be configured.
 	 */
-	private List<LocalMediaType> localServices;
+	private List<LocalServiceType> localServices;
 
 	private PhotoPickerConfiguration configuration;
 
@@ -146,21 +146,21 @@ public class PhotoPicker {
 	/**
 	 * Initializes local services.
 	 * 
-	 * If the list of {@link LocalMediaType} services stored in
+	 * If the list of {@link LocalServiceType} services stored in
 	 * {@link PhotoPickerPreferenceUtil} is empty, PhotoPicker is initialized
 	 * with local services listed in {@link PhotoPickerConfiguration}.
 	 * 
-	 * @return List of {@link LocalMediaType} services.
+	 * @return List of {@link LocalServiceType} services.
 	 */
-	public List<LocalMediaType> getLocalServices() {
+	public List<LocalServiceType> getLocalServices() {
 		checkConfiguration();
-		ArrayList<LocalMediaType> localServiceListInPrefs = PhotoPickerPreferenceUtil
+		ArrayList<LocalServiceType> localServiceListInPrefs = PhotoPickerPreferenceUtil
 				.get().getLocalServiceList();
 		if (localServiceListInPrefs.isEmpty()) {
 			if (configuration.localMediaList != null) {
 				return checkIfLocalServiceIsSupported(configuration.localMediaList);
 			} else {
-				return new ArrayList<LocalMediaType>();
+				return new ArrayList<LocalServiceType>();
 			}
 		} else {
 			return checkIfLocalServiceIsSupported(localServiceListInPrefs);
@@ -192,7 +192,7 @@ public class PhotoPicker {
 	}
 
 	/**
-	 * Gets list of {@link AccountType} and {@link LocalMediaType} services from
+	 * Gets list of {@link AccountType} and {@link LocalServiceType} services from
 	 * server.
 	 * 
 	 * @param url
@@ -210,7 +210,7 @@ public class PhotoPicker {
 	 * containing information concerning the error if the callback failed.
 	 * 
 	 * {@link ServiceResponseModel} contains both {@link AccountType} and
-	 * {@link LocalMediaType} list of services which are saved in
+	 * {@link LocalServiceType} list of services which are saved in
 	 * {@link PhotoPickerPreferenceUtil}.
 	 * 
 	 */
@@ -226,7 +226,7 @@ public class PhotoPicker {
 		@Override
 		public void onSuccess(ServiceResponseModel data) {
 			remoteServices = new ArrayList<AccountType>();
-			localServices = new ArrayList<LocalMediaType>();
+			localServices = new ArrayList<LocalServiceType>();
 			if (data.getServices() != null) {
 				for (String service : data.getServices()) {
 					if (isInEnum(service, AccountType.class)) {
@@ -244,8 +244,8 @@ public class PhotoPicker {
 			}
 			if (data.getLocalFeatures() != null) {
 				for (String localFeature : data.getLocalFeatures()) {
-					if (isInEnum(localFeature, LocalMediaType.class)) {
-						LocalMediaType localMediaType = LocalMediaType
+					if (isInEnum(localFeature, LocalServiceType.class)) {
+						LocalServiceType localMediaType = LocalServiceType
 								.valueOf(localFeature.toUpperCase());
 						localServices.add(localMediaType);
 					} else {
@@ -255,7 +255,7 @@ public class PhotoPicker {
 				PhotoPickerPreferenceUtil
 						.get()
 						.setLocalServiceList(
-								(ArrayList<LocalMediaType>) checkIfLocalServiceIsSupported(localServices));
+								(ArrayList<LocalServiceType>) checkIfLocalServiceIsSupported(localServices));
 			}
 		}
 	}
@@ -334,7 +334,7 @@ public class PhotoPicker {
 	}
 
 	/**
-	 * If the specified list of {@link LocalMediaType} services contains service
+	 * If the specified list of {@link LocalServiceType} services contains service
 	 * which is not supported by the Chute API, the service is immediately
 	 * removed.
 	 * 
@@ -342,29 +342,29 @@ public class PhotoPicker {
 	 * Photo and Take Photo.
 	 * 
 	 * @param localServices
-	 *            List of {@link LocalMediaType} services.
-	 * @return Filtered {@link LocalMediaType} list.
+	 *            List of {@link LocalServiceType} services.
+	 * @return Filtered {@link LocalServiceType} list.
 	 */
-	private List<LocalMediaType> checkIfLocalServiceIsSupported(
-			List<LocalMediaType> localServices) {
-		List<LocalMediaType> localServiceList = new ArrayList<LocalMediaType>(
+	private List<LocalServiceType> checkIfLocalServiceIsSupported(
+			List<LocalServiceType> localServices) {
+		List<LocalServiceType> localServiceList = new ArrayList<LocalServiceType>(
 				localServices);
-		Iterator<LocalMediaType> iterator = localServiceList.iterator();
+		Iterator<LocalServiceType> iterator = localServiceList.iterator();
 		while (iterator.hasNext()) {
-			LocalMediaType localMediaType = iterator.next();
-			if (!localMediaType.equals(LocalMediaType.ALL_MEDIA)
-					&& !localMediaType.equals(LocalMediaType.CAMERA_MEDIA)
-					&& !localMediaType.equals(LocalMediaType.LAST_PHOTO_TAKEN)
-					&& !localMediaType.equals(LocalMediaType.TAKE_PHOTO)
+			LocalServiceType localMediaType = iterator.next();
+			if (!localMediaType.equals(LocalServiceType.ALL_MEDIA)
+					&& !localMediaType.equals(LocalServiceType.CAMERA_MEDIA)
+					&& !localMediaType.equals(LocalServiceType.LAST_PHOTO_TAKEN)
+					&& !localMediaType.equals(LocalServiceType.TAKE_PHOTO)
 					&& !localMediaType
-							.equals(LocalMediaType.LAST_VIDEO_CAPTURED)
-					&& !localMediaType.equals(LocalMediaType.RECORD_VIDEO)) {
+							.equals(LocalServiceType.LAST_VIDEO_CAPTURED)
+					&& !localMediaType.equals(LocalServiceType.RECORD_VIDEO)) {
 				ALog.w(WARNING_UNSUPPORTED_LOCAL_SERVICES);
 				iterator.remove();
 			}
 		}
 		if (localServiceList.isEmpty()) {
-			return new ArrayList<LocalMediaType>();
+			return new ArrayList<LocalServiceType>();
 		} else {
 			return localServiceList;
 		}

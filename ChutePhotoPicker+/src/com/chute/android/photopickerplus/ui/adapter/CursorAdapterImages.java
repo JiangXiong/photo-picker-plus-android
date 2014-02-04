@@ -37,7 +37,7 @@ import android.widget.ImageView;
 
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
-import com.chute.android.photopickerplus.models.MediaResultModel;
+import com.chute.android.photopickerplus.models.DeliverMediaModel;
 import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.android.photopickerplus.ui.activity.AssetActivity;
 import com.chute.android.photopickerplus.ui.activity.ServicesActivity;
@@ -111,8 +111,8 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 
 	}
 	
-	public List<MediaResultModel> getSelectedFilePaths() {
-		final List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
+	public List<DeliverMediaModel> getSelectedFilePaths() {
+		final List<DeliverMediaModel> deliverList = new ArrayList<DeliverMediaModel>();
 		final Iterator<String> iterator = tick.values().iterator();
 		while (iterator.hasNext()) {
 			String url = iterator.next();
@@ -139,8 +139,8 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		
 	}
 	
-	private MediaResultModel createMediaResultModel(String path) {
-		MediaResultModel model = new MediaResultModel();
+	private DeliverMediaModel createMediaResultModel(String path) {
+		DeliverMediaModel model = new DeliverMediaModel();
 		model.setImageUrl(path);
 		model.setThumbnail(path);
 		model.setMediaType(MediaType.IMAGE);

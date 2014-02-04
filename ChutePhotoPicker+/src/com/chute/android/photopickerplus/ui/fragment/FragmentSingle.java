@@ -163,10 +163,6 @@ public class FragmentSingle extends Fragment implements
 						FragmentSingle.this);
 				gridView.setAdapter(accountAssetAdapter);
 
-//				if (accountAssetAdapter.getCount() == 0) {
-//					emptyView.setVisibility(View.GONE);
-//				}
-
 				if (selectedItemsPositions != null) {
 					for (int position : selectedItemsPositions) {
 						accountAssetAdapter.toggleTick(position);

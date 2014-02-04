@@ -24,7 +24,7 @@ package com.chute.android.photopickerplus.util;
 
 import java.util.ArrayList;
 
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 import android.content.Context;
@@ -36,7 +36,7 @@ import android.preference.PreferenceManager;
  * stored and retrieved across various activity in an application.
  * 
  * {@link PhotoPickerPreferenceUtil} stores {@link AccountType}, list of
- * {@link AccountType} services as well as list of {@link LocalMediaType}
+ * {@link AccountType} services as well as list of {@link LocalServiceType}
  * services.
  * 
  */
@@ -121,15 +121,15 @@ public class PhotoPickerPreferenceUtil {
     return accountList;
   }
 
-  public void setLocalServiceList(ArrayList<LocalMediaType> localServiceList) {
-    for (LocalMediaType localMediaType : localServiceList) {
+  public void setLocalServiceList(ArrayList<LocalServiceType> localServiceList) {
+    for (LocalServiceType localMediaType : localServiceList) {
       setPreference(KEY_LOCAL_SERVICE_LIST + "_" + localMediaType, localMediaType.name());
     }
   }
 
-  public ArrayList<LocalMediaType> getLocalServiceList() {
-    ArrayList<LocalMediaType> localServiceList = new ArrayList<LocalMediaType>();
-    for (LocalMediaType localMediaType : LocalMediaType.values()) {
+  public ArrayList<LocalServiceType> getLocalServiceList() {
+    ArrayList<LocalServiceType> localServiceList = new ArrayList<LocalServiceType>();
+    for (LocalServiceType localMediaType : LocalServiceType.values()) {
       if (getPreferences().contains(KEY_LOCAL_SERVICE_LIST + "_" + localMediaType)) {
         localServiceList.add(localMediaType);
       }

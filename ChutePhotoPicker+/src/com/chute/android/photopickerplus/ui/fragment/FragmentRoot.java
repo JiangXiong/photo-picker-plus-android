@@ -45,7 +45,7 @@ import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.loaders.LocalImagesAsyncTaskLoader;
 import com.chute.android.photopickerplus.loaders.LocalVideosAsyncTaskLoader;
-import com.chute.android.photopickerplus.models.MediaResultModel;
+import com.chute.android.photopickerplus.models.DeliverMediaModel;
 import com.chute.android.photopickerplus.models.enums.PhotoFilterType;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter;
 import com.chute.android.photopickerplus.ui.adapter.AssetAccountAdapter.AdapterItemClickListener;
@@ -358,7 +358,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				}
 			} else if ((filterType == PhotoFilterType.ALL_PHOTOS)
 					|| (filterType == PhotoFilterType.CAMERA_ROLL)) {
-				List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
+				List<DeliverMediaModel> deliverList = new ArrayList<DeliverMediaModel>();
 				if (!adapterImages.getSelectedFilePaths().isEmpty()) {
 						deliverList.addAll(adapterImages.getSelectedFilePaths());
 				}

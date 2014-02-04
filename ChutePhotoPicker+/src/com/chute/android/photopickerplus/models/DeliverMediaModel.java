@@ -2,7 +2,7 @@ package com.chute.android.photopickerplus.models;
 
 import com.chute.android.photopickerplus.models.enums.MediaType;
 
-public class MediaResultModel {
+public class DeliverMediaModel {
 
 	private String imageUrl;
 	private String videoUrl;
@@ -44,7 +44,7 @@ public class MediaResultModel {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("MediaResultModel [imageUrl=");
+		builder.append("DeliverMediaModel [imageUrl=");
 		builder.append(imageUrl);
 		builder.append(", videoUrl=");
 		builder.append(videoUrl);

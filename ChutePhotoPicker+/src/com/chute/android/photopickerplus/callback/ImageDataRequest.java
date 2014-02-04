@@ -24,7 +24,7 @@ package com.chute.android.photopickerplus.callback;
 
 import android.content.Context;
 
-import com.chute.android.photopickerplus.models.ImageResponseModel;
+import com.chute.android.photopickerplus.models.MediaResponseModel;
 import com.chute.android.photopickerplus.models.MediaModel;
 import com.chute.android.photopickerplus.util.Constants;
 import com.chute.sdk.v2.api.parsers.ResponseParser;
@@ -40,16 +40,16 @@ import com.dg.libs.rest.requests.StringBodyHttpRequestImpl;
  * 
  */
 public class ImageDataRequest extends
-		StringBodyHttpRequestImpl<ResponseModel<ImageResponseModel>> {
+		StringBodyHttpRequestImpl<ResponseModel<MediaResponseModel>> {
 
 	private MediaModel imageData;
 
 	public ImageDataRequest(Context context, MediaModel imageData,
-			HttpCallback<ResponseModel<ImageResponseModel>> callback) {
+			HttpCallback<ResponseModel<MediaResponseModel>> callback) {
 		super(
 				context,
 				RequestMethod.POST,
-				new ResponseParser<ImageResponseModel>(ImageResponseModel.class),
+				new ResponseParser<MediaResponseModel>(MediaResponseModel.class),
 				callback);
 		if (imageData == null) {
 			throw new IllegalArgumentException("Need to provide image data");

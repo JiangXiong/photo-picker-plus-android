@@ -39,7 +39,7 @@ import android.widget.TextView;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.dao.MediaDAO;
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.android.photopickerplus.ui.fragment.FragmentServices.ServiceClickedListener;
 import com.chute.sdk.v2.model.enums.AccountType;
 
@@ -57,12 +57,12 @@ public class ServicesAdapter extends BaseAdapter {
 	private final Activity context;
 
 	private List<AccountType> remoteAccounts = new ArrayList<AccountType>();
-	private List<LocalMediaType> localAccounts = new ArrayList<LocalMediaType>();
+	private List<LocalServiceType> localAccounts = new ArrayList<LocalServiceType>();
 	private ServiceClickedListener serviceClickedListener;
 
 	public ServicesAdapter(final Activity context,
 			List<AccountType> remoteAccounts,
-			List<LocalMediaType> localAccounts,
+			List<LocalServiceType> localAccounts,
 			ServiceClickedListener serviceClickedListener) {
 		this.context = context;
 		this.remoteAccounts = remoteAccounts;
@@ -100,7 +100,7 @@ public class ServicesAdapter extends BaseAdapter {
 		return VIEW_TYPE_REMOTE_ACCOUNT;
 	}
 
-	public LocalMediaType getLocalAccount(int position) {
+	public LocalServiceType getLocalAccount(int position) {
 		return localAccounts.get(position);
 	}
 
@@ -147,7 +147,7 @@ public class ServicesAdapter extends BaseAdapter {
 		return vi;
 	}
 
-	private void setupLocalService(ViewHolder holder, LocalMediaType type) {
+	private void setupLocalService(ViewHolder holder, LocalServiceType type) {
 		Uri lastVideoThumbFromAllVideos = MediaDAO.getLastVideoThumbnailFromAllVideos(context
 				.getApplicationContext());
 		Uri lastVideoThumbFromCameraVideos = MediaDAO.getLastVideoThumbnailFromCameraVideos(context

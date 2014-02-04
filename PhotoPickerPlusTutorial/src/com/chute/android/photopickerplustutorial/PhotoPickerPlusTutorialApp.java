@@ -27,7 +27,7 @@ import com.araneaapps.android.libs.logger.ALog.DebugLevel;
 import com.chute.android.photopickerplus.PhotoPickerPlusApp;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.config.PhotoPickerConfiguration;
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.android.photopickerplustutorial.config.ConfigEndpointURLs;
 import com.chute.sdk.v2.api.Chute;
 import com.chute.sdk.v2.api.authentication.AuthConstants;
@@ -59,10 +59,10 @@ public class PhotoPickerPlusTutorialApp extends PhotoPickerPlusApp {
 				.accountList(AccountType.FLICKR, AccountType.DROPBOX,
 						AccountType.INSTAGRAM, AccountType.GOOGLE,
 						AccountType.YOUTUBE)
-				.localMediaList(LocalMediaType.ALL_MEDIA,
-						LocalMediaType.CAMERA_MEDIA,
-						LocalMediaType.RECORD_VIDEO,
-						LocalMediaType.LAST_VIDEO_CAPTURED)
+				.localMediaList(LocalServiceType.ALL_MEDIA,
+						LocalServiceType.CAMERA_MEDIA,
+						LocalServiceType.RECORD_VIDEO,
+						LocalServiceType.LAST_VIDEO_CAPTURED)
 				.configUrl(ConfigEndpointURLs.SERVICES_CONFIG_URL)
 				.supportImages(true).supportVideos(true).build();
 		PhotoPicker.getInstance().init(config);

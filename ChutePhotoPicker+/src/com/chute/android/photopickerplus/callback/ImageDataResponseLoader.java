@@ -29,7 +29,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.araneaapps.android.libs.logger.ALog;
-import com.chute.android.photopickerplus.models.ImageResponseModel;
+import com.chute.android.photopickerplus.models.MediaResponseModel;
 import com.chute.android.photopickerplus.models.MediaDataModel;
 import com.chute.android.photopickerplus.models.MediaModel;
 import com.chute.android.photopickerplus.models.OptionsModel;
@@ -95,12 +95,12 @@ public class ImageDataResponseLoader {
 
 	private static HttpRequest getImageData(final Context context,
 			MediaModel imageData,
-			final HttpCallback<ResponseModel<ImageResponseModel>> callback) {
+			final HttpCallback<ResponseModel<MediaResponseModel>> callback) {
 		return new ImageDataRequest(context, imageData, callback);
 	}
 
 	private static final class ImageDataCallback implements
-			HttpCallback<ResponseModel<ImageResponseModel>> {
+			HttpCallback<ResponseModel<MediaResponseModel>> {
 
 		private Context context;
 		private ListenerFilesAccount listener;
@@ -121,7 +121,7 @@ public class ImageDataResponseLoader {
 		}
 
 		@Override
-		public void onSuccess(ResponseModel<ImageResponseModel> responseData) {
+		public void onSuccess(ResponseModel<MediaResponseModel> responseData) {
 			if (responseData.getData() != null) {
 				List<AssetModel> assetList = responseData.getData()
 						.getAssetList();

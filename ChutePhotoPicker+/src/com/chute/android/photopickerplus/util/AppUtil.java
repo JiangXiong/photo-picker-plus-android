@@ -42,7 +42,7 @@ import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
 
 import com.araneaapps.android.libs.logger.ALog;
-import com.chute.android.photopickerplus.models.MediaResultModel;
+import com.chute.android.photopickerplus.models.DeliverMediaModel;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
@@ -173,16 +173,16 @@ public class AppUtil {
 	}
 
 	public static ArrayList<AssetModel> getPhotoCollection(
-			List<MediaResultModel> resultList) {
+			List<DeliverMediaModel> resultList) {
 		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
-		for (MediaResultModel result : resultList) {
-			AssetModel model = getMediaModel(result);
-			collection.add(model);
+		for (DeliverMediaModel result : resultList) {
+			AssetModel asset = getMediaModel(result);
+			collection.add(asset);
 		}
 		return collection;
 	}
 
-	public static AssetModel getMediaModel(MediaResultModel model) {
+	public static AssetModel getMediaModel(DeliverMediaModel model) {
 		final AssetModel asset = new AssetModel();
 		asset.setThumbnail(Uri.fromFile(new File(model.getThumbnail()))
 				.toString());

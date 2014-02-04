@@ -25,7 +25,7 @@ package com.chute.android.photopickerplus.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chute.android.photopickerplus.models.enums.LocalMediaType;
+import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 /**
@@ -38,13 +38,13 @@ public class DefaultConfigurationFactory {
   /**
    * Creates default implementation of local media services.
    * 
-   * @return List of {@link LocalMediaType} containing All Photos and Camera
+   * @return List of {@link LocalServiceType} containing All Photos and Camera
    *         Photos as default local services.
    */
-  public static List<LocalMediaType> createLocalMediaList() {
-    List<LocalMediaType> localMediaTypeList = new ArrayList<LocalMediaType>();
-    localMediaTypeList.add(LocalMediaType.ALL_MEDIA);
-    localMediaTypeList.add(LocalMediaType.CAMERA_MEDIA);
+  public static List<LocalServiceType> createLocalMediaList() {
+    List<LocalServiceType> localMediaTypeList = new ArrayList<LocalServiceType>();
+    localMediaTypeList.add(LocalServiceType.ALL_MEDIA);
+    localMediaTypeList.add(LocalServiceType.CAMERA_MEDIA);
     return localMediaTypeList;
   }
 

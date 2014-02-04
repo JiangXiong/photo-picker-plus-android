@@ -86,7 +86,6 @@ public class GridAdapter extends BaseAdapter {
       holder = (ViewHolder) vi.getTag();
     }
     loader.displayImage(getItem(position).getThumbnail(), holder.image, null);
-//    holder.image.setImageBitmap(BitmapFactory.decodeFile(getItem(position).getThumbnail()));
     return vi;
   }
 
