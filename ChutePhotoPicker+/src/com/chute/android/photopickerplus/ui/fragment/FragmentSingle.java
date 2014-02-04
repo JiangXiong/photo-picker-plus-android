@@ -61,7 +61,7 @@ public class FragmentSingle extends Fragment implements
 		AdapterItemClickListener {
 
 	private GridView gridView;
-	private TextView textViewSelectPhotos;
+	private TextView textViewSelectMedia;
 	private ProgressBar progressBar;
 
 	private AccountModel account;
@@ -102,8 +102,8 @@ public class FragmentSingle extends Fragment implements
 		View view = inflater.inflate(R.layout.gc_fragment_assets, container,
 				false);
 
-		textViewSelectPhotos = (TextView) view
-				.findViewById(R.id.gcTextViewSelectPhotos);
+		textViewSelectMedia = (TextView) view
+				.findViewById(R.id.gcTextViewSelectMedia);
 		gridView = (GridView) view.findViewById(R.id.gcGridViewAssets);
 		progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
@@ -169,15 +169,7 @@ public class FragmentSingle extends Fragment implements
 					}
 				}
 
-				if (isMultipicker == true) {
-					textViewSelectPhotos.setText(getActivity()
-							.getApplicationContext().getResources()
-							.getString(R.string.select_photos));
-				} else {
-					textViewSelectPhotos.setText(getActivity()
-							.getApplicationContext().getResources()
-							.getString(R.string.select_a_photo));
-				}
+				AppUtil.setFragmentLabel(getActivity().getApplicationContext(), textViewSelectMedia, supportImages, supportVideos, supportVideos);
 				NotificationUtil.showPhotosAdapterToast(getActivity()
 						.getApplicationContext(), accountAssetAdapter
 						.getCount());

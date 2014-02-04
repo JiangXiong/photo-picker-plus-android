@@ -75,7 +75,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	private CursorAdapterVideos adapterVideos;
 	private AssetAccountAdapter adapterAccounts;
 	private MergeAdapter adapterMerge;
-	private TextView textViewSelectPhotos;
+	private TextView textViewSelectMedia;
 	private ProgressBar progressBar;
 
 	private boolean isMultipicker;
@@ -125,8 +125,8 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		View view = inflater.inflate(R.layout.gc_fragment_assets, container,
 				false);
 
-		textViewSelectPhotos = (TextView) view
-				.findViewById(R.id.gcTextViewSelectPhotos);
+		textViewSelectMedia = (TextView) view
+				.findViewById(R.id.gcTextViewSelectMedia);
 		progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 		gridView = (GridView) view.findViewById(R.id.gcGridViewAssets);
 
@@ -190,13 +190,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 		adapterMerge.addAdapter(adapterVideos);
 		adapterMerge.addAdapter(adapterImages);
 		gridView.setAdapter(adapterMerge);
-		if (isMultipicker == true) {
-			textViewSelectPhotos.setText(getActivity().getApplicationContext()
-					.getResources().getString(R.string.select_photos));
-		} else {
-			textViewSelectPhotos.setText(getActivity().getApplicationContext()
-					.getResources().getString(R.string.select_a_photo));
-		}
+		AppUtil.setFragmentLabel(getActivity().getApplicationContext(), textViewSelectMedia, supportImages, supportVideos, isMultipicker);
 
 	}
 
@@ -240,16 +234,7 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 				NotificationUtil.showPhotosAdapterToast(getActivity()
 						.getApplicationContext(), adapterAccounts.getCount());
 			}
-			if (isMultipicker == true) {
-				textViewSelectPhotos.setText(getActivity()
-						.getApplicationContext().getResources()
-						.getString(R.string.select_photos));
-			} else {
-				textViewSelectPhotos.setText(getActivity()
-						.getApplicationContext().getResources()
-						.getString(R.string.select_a_photo));
-			}
-
+			AppUtil.setFragmentLabel(getActivity().getApplicationContext(), textViewSelectMedia, supportImages, supportVideos, isMultipicker);
 		}
 
 	}

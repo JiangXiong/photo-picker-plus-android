@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!-- Select Photos Title -->
 
     <TextView
-        android:id="@+id/gcTextViewSelectPhotos"
+        android:id="@+id/gcTextViewSelectMedia"
         style="@style/textViewFragmentLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/gcLinearLayoutButtons"
-        android:layout_below="@+id/gcTextViewSelectPhotos"
+        android:layout_below="@+id/gcTextViewSelectMedia"
         android:fadingEdgeLength="0dip"
         android:fastScrollEnabled="true"
         android:horizontalSpacing="10dip"

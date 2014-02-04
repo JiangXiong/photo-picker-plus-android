@@ -31,74 +31,83 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.config.PhotoPicker;
 import com.chute.android.photopickerplus.models.enums.LocalServiceType;
 import com.chute.android.photopickerplus.ui.adapter.ServicesAdapter;
+import com.chute.android.photopickerplus.util.AppUtil;
 import com.chute.sdk.v2.model.enums.AccountType;
 
 public class FragmentServices extends Fragment {
 
-  private GridView gridViewServices;
-  private ServicesAdapter adapter;
-  private ServiceClickedListener serviceClickedListener;
+	private TextView textViewTitle;
+	private GridView gridViewServices;
+	private ServicesAdapter adapter;
+	private ServiceClickedListener serviceClickedListener;
 
-  public interface ServiceClickedListener {
+	public interface ServiceClickedListener {
 
-    public void accountLogin(AccountType accountType);
+		public void accountLogin(AccountType accountType);
 
-    public void photoStream();
+		public void photoStream();
 
-    public void cameraRoll();
+		public void cameraRoll();
 
-    public void lastPhoto();
+		public void lastPhoto();
 
-    public void takePhoto();
-    
-    public void recordVideo();
-    
-    public void lastVideo();
+		public void takePhoto();
 
-  }
+		public void recordVideo();
 
-  public static FragmentServices newInstance(String[] services) {
-    FragmentServices frag = new FragmentServices();
-    Bundle args = new Bundle();
-    frag.setArguments(args);
-    return frag;
-  }
+		public void lastVideo();
 
-  @Override
-  public void onAttach(Activity activity) {
-    super.onAttach(activity);
-    serviceClickedListener = (ServiceClickedListener) activity;
-  }
+	}
 
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstanceState) {
-    View view = null;
-    view = inflater.inflate(R.layout.gc_fragment_services, container, false);
-    gridViewServices = (GridView) view.findViewById(R.id.gcGridViewServices);
-    gridViewServices.setNumColumns(getResources().getInteger(
-        R.integer.grid_columns_services));
-    return view;
-  }
+	public static FragmentServices newInstance(String[] services) {
+		FragmentServices frag = new FragmentServices();
+		Bundle args = new Bundle();
+		frag.setArguments(args);
+		return frag;
+	}
 
-  @Override
-  public void onViewCreated(View view, Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    PhotoPicker singleton = PhotoPicker
-        .getInstance();
-    configureServices(singleton.getRemoteServices(), singleton.getLocalServices());
-  }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		serviceClickedListener = (ServiceClickedListener) activity;
+	}
 
-  private void configureServices(List<AccountType> remoteServices,
-      List<LocalServiceType> localServices) {
-    adapter = new ServicesAdapter(getActivity(), remoteServices, localServices,
-        serviceClickedListener);
-    gridViewServices.setAdapter(adapter);
-  }
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = null;
+		view = inflater
+				.inflate(R.layout.gc_fragment_services, container, false);
+		textViewTitle = (TextView) view.findViewById(R.id.gcTextViewTitle);
+		gridViewServices = (GridView) view
+				.findViewById(R.id.gcGridViewServices);
+		gridViewServices.setNumColumns(getResources().getInteger(
+				R.integer.grid_columns_services));
+		return view;
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		PhotoPicker singleton = PhotoPicker.getInstance();
+		AppUtil.setServiceFragmentLabel(getActivity().getApplicationContext(),
+				textViewTitle, singleton.supportImages(),
+				singleton.supportVideos());
+		configureServices(singleton.getRemoteServices(),
+				singleton.getLocalServices());
+	}
+
+	private void configureServices(List<AccountType> remoteServices,
+			List<LocalServiceType> localServices) {
+		adapter = new ServicesAdapter(getActivity(), remoteServices,
+				localServices, serviceClickedListener);
+		gridViewServices.setAdapter(adapter);
+	}
 
 }

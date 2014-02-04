@@ -40,8 +40,10 @@ import android.os.Environment;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
+import android.widget.TextView;
 
 import com.araneaapps.android.libs.logger.ALog;
+import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.models.DeliverMediaModel;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
@@ -215,6 +217,47 @@ public class AppUtil {
 		model.setFiles(files);
 		model.setFolders(folders);
 		return model;
+	}
+
+	public static void setFragmentLabel(Context context, TextView textView,
+			boolean supportImages, boolean supportVideos, boolean isMultipicker) {
+		if (isMultipicker == true) {
+			if (supportImages == true && supportVideos == false) {
+				textView.setText(context.getResources().getString(
+						R.string.select_photos));
+			} else if (supportVideos == true && supportImages == false) {
+				textView.setText(context.getResources().getString(
+						R.string.select_videos));
+			} else {
+				textView.setText(context.getResources().getString(
+						R.string.select_media));
+			}
+		} else {
+			if (supportImages == true && supportVideos == false) {
+				textView.setText(context.getResources().getString(
+						R.string.select_a_photo));
+			} else if (supportVideos == true && supportImages == false) {
+				textView.setText(context.getResources().getString(
+						R.string.select_a_video));
+			} else {
+				textView.setText(context.getResources().getString(
+						R.string.select_media));
+			}
+		}
+	}
+
+	public static void setServiceFragmentLabel(Context context,
+			TextView textView, boolean supportImages, boolean supportVideos) {
+		if (supportImages == true && supportVideos == false) {
+			textView.setText(context.getResources().getString(
+					R.string.select_photo_source));
+		} else if (supportVideos == true && supportImages == false) {
+			textView.setText(context.getResources().getString(
+					R.string.select_video_source));
+		} else {
+			textView.setText(context.getResources().getString(
+					R.string.select_media_source));
+		}
 	}
 
 }

@@ -27,8 +27,13 @@
     <string name="loading_albums">Loading albums...</string>
     <string name="loading_photos">Loading photos...</string>
     <string name="select_a_photo">Select a Photo</string>
+    <string name="select_a_video">Select a Video</string>
     <string name="select_photos">Select Photos</string>
-    <string name="select_an_album">Select Photo Source</string>
+    <string name="select_videos">Select Videos</string>
+    <string name="select_media">Select Media</string>
+    <string name="select_photo_source">Select Photo Source</string>
+    <string name="select_video_source">Select Video Source</string>
+    <string name="select_media_source">Select Media Source</string>
     <string name="title_default">Default</string>
     <string name="title_user">User</string>
 
