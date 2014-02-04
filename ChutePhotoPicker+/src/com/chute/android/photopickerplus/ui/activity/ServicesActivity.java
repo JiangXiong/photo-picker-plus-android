@@ -146,15 +146,17 @@ public class ServicesActivity extends FragmentActivity implements
 
 	@Override
 	public void lastVideo() {
-		Uri uri = MediaDAO
-				.getLastVideoFromCameraVideos(getApplicationContext());
-		if (uri.toString().equals("")) {
+		Uri lastVideoThumbnailFromCameraVideos = MediaDAO
+				.getLastVideoThumbnailFromCameraVideos(getApplicationContext());
+		Uri lastVideoItemFromCameraVideos = MediaDAO.getLastVideoFromCameraVideos(getApplicationContext());
+		if (lastVideoThumbnailFromCameraVideos.toString().equals("")) {
 			NotificationUtil.makeToast(getApplicationContext(), getResources()
 					.getString(R.string.no_camera_photos));
 		} else {
 			final AssetModel model = new AssetModel();
-			model.setThumbnail(uri.toString());
-			model.setUrl(uri.toString());
+			model.setThumbnail(lastVideoThumbnailFromCameraVideos.toString());
+			model.setUrl(lastVideoThumbnailFromCameraVideos.toString());
+			model.setVideoUrl(lastVideoItemFromCameraVideos.toString());
 			model.setType(MediaType.VIDEO.name().toLowerCase());
 			IntentUtil.deliverDataToInitialActivity(ServicesActivity.this,
 					model);
@@ -354,7 +356,9 @@ public class ServicesActivity extends FragmentActivity implements
 			final AssetModel model = new AssetModel();
 			model.setThumbnail(AppUtil.getImagePath(getApplicationContext(),
 					thumbnail));
-			model.setUrl(uriVideo.toString());
+			model.setVideoUrl(uriVideo.toString());
+			model.setUrl(AppUtil.getImagePath(getApplicationContext(),
+					thumbnail));
 			model.setType(MediaType.VIDEO.name().toLowerCase());
 			ArrayList<AssetModel> mediaCollection = new ArrayList<AssetModel>();
 			mediaCollection.add(model);

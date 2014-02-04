@@ -125,7 +125,7 @@ public class PhotoPickerPlusTutorialActivity extends FragmentActivity {
 				} else {
 					Intent intent = new Intent(getApplicationContext(),
 							VideoPlayerActivity.class);
-					intent.putExtra(KEY_VIDEO_PATH, asset.getUrl());
+					intent.putExtra(KEY_VIDEO_PATH, asset.getVideoUrl());
 					startActivity(intent);
 				}
 			}

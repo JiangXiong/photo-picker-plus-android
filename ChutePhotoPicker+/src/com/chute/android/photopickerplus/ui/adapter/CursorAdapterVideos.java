@@ -22,6 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.chute.android.photopickerplus.ui.adapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.Map.Entry;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,7 +85,6 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 			return cursor.getColumnIndex(MediaStore.Video.Media.DATA);
 		}
 	}
-	
 
 	@Override
 	public void setViewClickListener(View view, String path, int position) {
@@ -113,8 +114,10 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 			if (PhotoPicker.getInstance().isMultiPicker()) {
 				toggleTick(path);
 			} else {
-				listener.onCursorAssetsSelect(AppUtil.getMediaModel(path,
-						MediaType.VIDEO));
+				String thumb = MediaDAO.getVideoThumbnailFromCursor(context,
+						getCursor(), position);
+				listener.onCursorAssetsSelect(AppUtil
+						.getMediaModel(createMediaResultModel(thumb, path)));
 			}
 
 		}
@@ -124,21 +127,17 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 	public List<MediaResultModel> getSelectedFilePaths() {
 		final List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
 		Iterator<Entry<String, String>> iterator = tick.entrySet().iterator();
-	    while (iterator.hasNext()) {
-	    	MediaResultModel model = new MediaResultModel();
-	        Map.Entry<String, String> pairs = iterator.next();
-	        String path = pairs.getKey();
-	        String position = pairs.getValue();
-	        model.setMediaType(MediaType.VIDEO);
-	        model.setVideoUrl(path);
-	        String thumbnail = MediaDAO.getVideoThumbnailFromCursor(context, getCursor(), Integer.valueOf(position));
-	        model.setThumbnail(thumbnail);
-	        deliverList.add(model);
-	    }
+		while (iterator.hasNext()) {
+			Map.Entry<String, String> pairs = iterator.next();
+			String path = pairs.getKey();
+			String position = pairs.getValue();
+			String thumbnail = MediaDAO.getVideoThumbnailFromCursor(context,
+					getCursor(), Integer.valueOf(position));
+			deliverList.add(createMediaResultModel(thumbnail, path));
+		}
 		return deliverList;
 	}
 
-	
 	public void toggleTick(String path) {
 		if (tick.containsKey(path)) {
 			tick.remove(path);
@@ -150,10 +149,18 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 
 	@Override
 	public void loadImageView(ImageView imageView, Cursor cursor) {
-		imageView.setImageBitmap(MediaDAO.getVideoThumbnail(
-				context, cursor));
-		
+		imageView.setImageBitmap(MediaDAO.getVideoThumbnail(context, cursor));
+
 	}
 
+	private MediaResultModel createMediaResultModel(String thumb,
+			String videoUrl) {
+		MediaResultModel model = new MediaResultModel();
+		model.setVideoUrl(Uri.fromFile(new File(videoUrl)).toString());
+		model.setMediaType(MediaType.VIDEO);
+		model.setImageUrl(thumb);
+		model.setThumbnail(thumb);
+		return model;
+	}
 
 }

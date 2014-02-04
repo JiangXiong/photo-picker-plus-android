@@ -104,7 +104,7 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 			if (PhotoPicker.getInstance().isMultiPicker()) {
 				toggleTick(path);
 			} else {
-				listener.onCursorAssetsSelect(AppUtil.getMediaModel(path, MediaType.IMAGE));
+				listener.onCursorAssetsSelect(AppUtil.getMediaModel(createMediaResultModel(path)));
 			}
 
 		}
@@ -115,12 +115,12 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		final List<MediaResultModel> deliverList = new ArrayList<MediaResultModel>();
 		final Iterator<String> iterator = tick.values().iterator();
 		while (iterator.hasNext()) {
-			MediaResultModel resultModel = new MediaResultModel();
 			String url = iterator.next();
-			resultModel.setImageUrl(url);
-			resultModel.setThumbnail(url);
-			resultModel.setMediaType(MediaType.VIDEO);
-			deliverList.add(resultModel);
+//			MediaResultModel resultModel = new MediaResultModel();
+//			resultModel.setImageUrl(url);
+//			resultModel.setThumbnail(url);
+//			resultModel.setMediaType(MediaType.VIDEO);
+			deliverList.add(createMediaResultModel(url));
 		}
 		return deliverList;
 	}
@@ -141,6 +141,14 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		Uri uri = Uri.fromFile(new File(path));
 		loader.displayImage(uri.toString(), imageView, null);
 		
+	}
+	
+	private MediaResultModel createMediaResultModel(String path) {
+		MediaResultModel model = new MediaResultModel();
+		model.setImageUrl(path);
+		model.setThumbnail(path);
+		model.setMediaType(MediaType.IMAGE);
+		return model;
 	}
 
 

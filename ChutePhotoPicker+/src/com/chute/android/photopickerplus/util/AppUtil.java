@@ -44,7 +44,6 @@ import android.provider.MediaStore.Video;
 
 import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.models.MediaResultModel;
-import com.chute.android.photopickerplus.models.enums.MediaType;
 import com.chute.sdk.v2.model.AccountAlbumModel;
 import com.chute.sdk.v2.model.AccountBaseModel;
 import com.chute.sdk.v2.model.AccountMediaModel;
@@ -114,27 +113,27 @@ public class AppUtil {
 				inImage, "Title", null);
 		return path;
 	}
-	
-	
+
 	public static String getImageUri(Context inContext, Bitmap inImage) {
-	    Uri uri = Uri.parse(getImagePath(inContext, inImage));
-	    return getRealPathFromURI(inContext, uri);
+		Uri uri = Uri.parse(getImagePath(inContext, inImage));
+		return getRealPathFromURI(inContext, uri);
 	}
-	
 
 	public static String getRealPathFromURI(Context context, Uri uri) {
 		Cursor cursor = null;
-	    try {
-	        String[] proj = { MediaStore.Images.Media.DATA };
-	        cursor = context.getContentResolver().query(uri, proj, null, null, null);
-	        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-	        cursor.moveToFirst();
-	        return cursor.getString(column_index);
-	    } finally {
-	        if (cursor != null) {
-	            cursor.close();
-	        }
-	    }
+		try {
+			String[] proj = { MediaStore.Images.Media.DATA };
+			cursor = context.getContentResolver().query(uri, proj, null, null,
+					null);
+			int column_index = cursor
+					.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			cursor.moveToFirst();
+			return cursor.getString(column_index);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
 	}
 
 	public static File getAppCacheDir(Context context) {
@@ -196,28 +195,24 @@ public class AppUtil {
 				+ (target.length() > 1 ? target.substring(1) : "");
 	}
 
-	
 	public static ArrayList<AssetModel> getPhotoCollection(
 			List<MediaResultModel> resultList) {
 		final ArrayList<AssetModel> collection = new ArrayList<AssetModel>();
 		for (MediaResultModel result : resultList) {
-			final AssetModel model = new AssetModel();
-			model.setThumbnail(Uri.fromFile(new File(result.getThumbnail())).toString());
-			model.setUrl(result.getImageUrl());
-			model.setVideoUrl(result.getVideoUrl());
-			model.setType(result.getMediaType().name().toLowerCase());
+			AssetModel model = getMediaModel(result);
 			collection.add(model);
 		}
 		return collection;
 	}
 
-	public static AssetModel getMediaModel(String path, MediaType type) {
-		final AssetModel model = new AssetModel();
-		path = Uri.fromFile(new File(path)).toString();
-		model.setThumbnail(path);
-		model.setUrl(path);
-		model.setType(type.name().toLowerCase());
-		return model;
+	public static AssetModel getMediaModel(MediaResultModel model) {
+		final AssetModel asset = new AssetModel();
+		asset.setThumbnail(Uri.fromFile(new File(model.getThumbnail()))
+				.toString());
+		asset.setUrl(model.getImageUrl());
+		asset.setVideoUrl(model.getVideoUrl());
+		asset.setType(model.getMediaType().name().toLowerCase());
+		return asset;
 	}
 
 	public static String convertMediaUriToPath(Context context, Uri uri) {
@@ -256,7 +251,5 @@ public class AppUtil {
 		model.setFolders(folders);
 		return model;
 	}
-	
-	
-	
+
 }
