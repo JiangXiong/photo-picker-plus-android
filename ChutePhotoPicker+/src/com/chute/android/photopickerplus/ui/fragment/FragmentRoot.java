@@ -40,6 +40,7 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.araneaapps.android.libs.logger.ALog;
 import com.chute.android.photopickerplus.R;
 import com.chute.android.photopickerplus.callback.ImageDataResponseLoader;
 import com.chute.android.photopickerplus.config.PhotoPicker;
@@ -116,8 +117,9 @@ public class FragmentRoot extends Fragment implements AdapterItemClickListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		setRetainInstance(true);
+		this.setRetainInstance(true);
 	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

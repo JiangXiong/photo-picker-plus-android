@@ -70,7 +70,7 @@ public class CursorAdapterVideos extends BaseCursorAdapter implements
 	@Override
 	public List<String> getCursorVideosSelection() {
 		final ArrayList<String> photos = new ArrayList<String>();
-		final Iterator<String> iterator = tick.values().iterator();
+		final Iterator<String> iterator = tick.keySet().iterator();
 		while (iterator.hasNext()) {
 			photos.add(iterator.next());
 		}

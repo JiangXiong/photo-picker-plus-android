@@ -456,12 +456,15 @@ public class ServicesActivity extends FragmentActivity implements
 				.findFragmentByTag(Constants.TAG_FRAGMENT_FOLDER);
 		if (fragmentSingle != null
 				&& photoFilterType == PhotoFilterType.SOCIAL_PHOTOS.ordinal()) {
-			fragmentSingle.setRetainInstance(true);
+//			fragmentSingle.setRetainInstance(true);
 			fragmentSingle.updateFragment(account, folderId,
 					accountItemPositions);
 		}
 		if (fragmentRoot != null) {
-			fragmentRoot.setRetainInstance(true);
+			ALog.d("services onrestoreinstancestate root != null");
+			ALog.d("services onrestoreinstance state images: " + imageItemPaths);
+			ALog.d("services onrestoreinstancestate videos: " + videoItemPaths);
+//			fragmentRoot.setRetainInstance(true);
 			fragmentRoot.updateFragment(account,
 					PhotoFilterType.values()[photoFilterType],
 					accountItemPositions, imageItemPaths, videoItemPaths);
@@ -475,6 +478,7 @@ public class ServicesActivity extends FragmentActivity implements
 
 		imageItemPaths = savedInstanceState != null ? savedInstanceState
 				.getStringArrayList(Constants.KEY_SELECTED_IMAGES_ITEMS) : null;
+				
 
 		videoItemPaths = savedInstanceState != null ? savedInstanceState
 				.getStringArrayList(Constants.KEY_SELECTED_VIDEOS_ITEMS) : null;
