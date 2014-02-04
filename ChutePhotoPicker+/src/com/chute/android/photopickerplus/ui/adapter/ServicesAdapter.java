@@ -52,7 +52,6 @@ public class ServicesAdapter extends BaseAdapter {
 
 
 	private static LayoutInflater inflater;
-	private final boolean supportsVideos;
 	private final boolean supportsImages;
 	public ImageLoader loader;
 	private final Activity context;
@@ -72,7 +71,6 @@ public class ServicesAdapter extends BaseAdapter {
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		loader = ImageLoader.getLoader(context.getApplicationContext());
-		supportsVideos = PhotoPicker.getInstance().supportVideos();
 		supportsImages = PhotoPicker.getInstance().supportImages();
 
 	}

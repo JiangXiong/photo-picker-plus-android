@@ -116,10 +116,6 @@ public class CursorAdapterImages extends BaseCursorAdapter implements
 		final Iterator<String> iterator = tick.values().iterator();
 		while (iterator.hasNext()) {
 			String url = iterator.next();
-//			MediaResultModel resultModel = new MediaResultModel();
-//			resultModel.setImageUrl(url);
-//			resultModel.setThumbnail(url);
-//			resultModel.setMediaType(MediaType.VIDEO);
 			deliverList.add(createMediaResultModel(url));
 		}
 		return deliverList;

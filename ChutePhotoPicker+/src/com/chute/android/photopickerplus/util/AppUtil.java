@@ -37,7 +37,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
@@ -112,28 +111,6 @@ public class AppUtil {
 		String path = Images.Media.insertImage(context.getContentResolver(),
 				inImage, "Title", null);
 		return path;
-	}
-
-	public static String getImageUri(Context inContext, Bitmap inImage) {
-		Uri uri = Uri.parse(getImagePath(inContext, inImage));
-		return getRealPathFromURI(inContext, uri);
-	}
-
-	public static String getRealPathFromURI(Context context, Uri uri) {
-		Cursor cursor = null;
-		try {
-			String[] proj = { MediaStore.Images.Media.DATA };
-			cursor = context.getContentResolver().query(uri, proj, null, null,
-					null);
-			int column_index = cursor
-					.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-			cursor.moveToFirst();
-			return cursor.getString(column_index);
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
 	}
 
 	public static File getAppCacheDir(Context context) {
@@ -213,18 +190,6 @@ public class AppUtil {
 		asset.setVideoUrl(model.getVideoUrl());
 		asset.setType(model.getMediaType().name().toLowerCase());
 		return asset;
-	}
-
-	public static String convertMediaUriToPath(Context context, Uri uri) {
-		String[] proj = { MediaStore.Images.Media.DATA };
-		Cursor cursor = context.getContentResolver().query(uri, proj, null,
-				null, null);
-		int column_index = cursor
-				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-		cursor.moveToFirst();
-		String path = cursor.getString(column_index);
-		cursor.close();
-		return path;
 	}
 
 	public static AccountBaseModel filterFiles(
